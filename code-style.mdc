@@ -1,0 +1,253 @@
+---
+alwaysApply: true
+---
+- **Python code files must be at around 250 to 300 lines long** Split into multiple files if necessary. Create a folder for each functional module or feature. Do not modify functionality to reeduce file size!
+- **ANY code files must be at most 250 to 300 lines long** Split into multiple files if necessary. Create a folder for each functional module or feature. Do not modify functionality to reeduce file size!
+- **Clear Algebraic Data Types, ADTs** for type safety and pattern matching
+- **Pure functions** throughout with no side effects
+- **Immutable data structures** for predictable behavior
+- **Functional composition** building complex logic from simple parts
+- **Clear separation** of concerns between extraction, transformation, and response
+- **Use pattern matching** extensively and as much as possible
+- **Use pattern matching de-structuring**s of data structures as much as possible.
+- **Use vectorization** where applicable
+- **Use Named Tuples** for clarity and readability
+- **Always use Polars, never use Pandas**
+- **Use ADTs (Algebraic Data Types) for data structures**
+- **Use type annotations** for clarity and type safety
+- **Use type aliases** for readability and consistency
+- **Do not use defaults** for function arguments unless necessary.
+- **Do not use fallback conditions** unless absolutely necessary. Even then record and flag as a failure. 
+- **Do not use synthetic/dummy data as a fallback** signal and record a failure instead, unless absolutely necessary.
+- **Use basic print statements for any debug logging**
+- **Never use defaults** record failures, do not replace with default values
+- **Try not use Any type** Create or use a type instead
+- **Always use `uv run python` to run your code**
+- **Always use `ruff` to lint your code**
+- **Always use `ty` to type check your code**
+- **Always use `pytest` to run your tests**
+- **Always use `black` to format your code**
+- **Always use `isort` to sort your imports**
+-**IMPORTANT: DO NOT implement backwards compatibility unless specifically stated in the specification**
+-**IMPORTANT: Everything is built and tested in the context of deployment and executing in Google Cloud Run Functions. This includes type checking & linting, testing, and deployment.**
+-**IMPORTANT: Everything is built and tested in the context of deployment and executing in Google Cloud Run Functions. There is no package management support and every test has to add sys.path.append functionality to access production modules**
+-**CRITICAL: All imports must use DIRECT imports for Google Cloud Functions compatibility** - Never use package paths like `from package.subpackage.module import`. Always use direct imports like `from module import function`. In Cloud Functions, all files are deployed flat to `/workspace/` without package structure. Never use relative imports (`.module`) or package imports (`package.module`). Never create `__init__.py` files in Cloud Function code.
+
+## Google Cloud Functions Structure Guidelines
+
+**CRITICAL**: All Cloud Functions must follow this exact structure to deploy and run correctly in Google Cloud Run Functions.
+
+### Cloud Function Folder Structure
+
+Each Cloud Function should follow this pattern (based on analysis and augmentation functions):
+
+```
+function_name/
+├── main.py                 # Entry point with @functions_framework decorator
+├── function_orchestrator.py  # Main orchestration logic
+├── types.py               # Shared ADT types and Result types
+├── request_handler.py     # Request parsing and validation (if needed)
+├── subfolder1/            # Organized by functionality
+│   ├── module1.py
+│   └── module2.py
+├── subfolder2/
+│   ├── module3.py
+│   └── module4.py
+├── utils/                 # Utility modules
+│   ├── gcs_operations.py
+│   └── helper_functions.py
+└── requirements.txt       # Dependencies
+```
+
+### Import Rules for Cloud Functions
+
+1. **Root-level modules**: Use direct imports
+   ```python
+   from types import Result, Success, Failure
+   from request_handler import parse_request
+   from function_orchestrator import orchestrate
+   ```
+
+2. **Subfolder modules**: Use `folder.module` pattern
+   ```python
+   from subfolder1.module1 import function_name
+   from utils.gcs_operations import load_data
+   ```
+
+3. **Cross-module imports within subfolders**: Use `folder.module` pattern (NOT relative)
+   ```python
+   # CORRECT:
+   from subfolder1.module1 import helper_function
+
+   # WRONG:
+   from .module1 import helper_function  # Relative import ❌
+   from package.subfolder1.module1 import helper_function  # Package path ❌
+   ```
+
+4. **Never use**:
+   - Package imports: `from solar_data_augmentation.gc.function.module import` ❌
+   - Relative imports: `from .module import` or `from ..module import` ❌
+   - `__init__.py` files ❌
+
+### Test Structure for Cloud Functions
+
+All tests must use `sys.path.append()` to simulate Cloud Functions flat deployment:
+
+```python
+# test_module.py
+import sys
+from pathlib import Path
+
+# Add the function directory to path (simulates Cloud Functions deployment)
+function_dir = Path(__file__).parent.parent.parent / "gc" / "function_name"
+sys.path.insert(0, str(function_dir))
+
+# Now imports work as they would in Cloud Functions
+from module_name import function_to_test
+from subfolder.module import another_function
+```
+
+### Mock Patches in Tests
+
+When using `@patch` or `with patch()`, use the full module path as it appears in imports:
+
+```python
+# If production code has: from utils.gcs_operations import load_data
+# Test mock should be:
+@patch('utils.gcs_operations.load_data')
+
+# NOT:
+@patch('gcs_operations.load_data')  # Wrong ❌
+```
+
+### Example: Correct Cloud Function Structure
+
+**main.py** (entry point):
+```python
+import functions_framework
+from function_orchestrator import orchestrate
+from request_handler import parse_request
+
+@functions_framework.http
+def main(request):
+    params = parse_request(request)
+    result = orchestrate(params)
+    return result
+```
+
+**function_orchestrator.py**:
+```python
+from types import Result, Success, Failure
+from validators.ml_validator import validate
+from runners.pattern_runner import run_analysis
+from utils.gcs_operations import save_data
+
+def orchestrate(params):
+    # Orchestration logic using subfolder imports
+    pass
+```
+
+**validators/ml_validator.py**:
+```python
+from types import Result, Success, Failure
+# Import other validators in same folder using folder.module pattern
+from validators.physics_validator import check_physics
+
+def validate(data):
+    # Validation logic
+    pass
+```
+
+**Test file** (tests/function_name/test_orchestrator.py):
+```python
+import sys
+from pathlib import Path
+from unittest.mock import patch
+
+# Add function to path
+function_dir = Path(__file__).parent.parent.parent / "gc" / "function_name"
+sys.path.insert(0, str(function_dir))
+
+from function_orchestrator import orchestrate
+from types import Success, Failure
+
+@patch('utils.gcs_operations.save_data')  # Full path from function root
+def test_orchestrate(mock_save):
+    # Test logic
+    pass
+```
+
+### Deployment Verification
+
+Before deploying, verify:
+1. ✅ No `__init__.py` files in function directory
+2. ✅ All imports use direct or `folder.module` pattern (no package paths)
+3. ✅ All tests use `sys.path.append()`
+4. ✅ All tests pass locally with this structure
+5. ✅ Mock patches use full module paths
+
+### Common Cloud Functions Deployment Errors
+
+- `ModuleNotFoundError: No module named 'package'` → Using package imports instead of direct/folder.module
+- `ModuleNotFoundError: No module named 'module'` → Forgot `sys.path.append()` in tests
+- `AttributeError: module has no attribute` → Mock patch path doesn't match import path
+
+Create a central `types.py` module for your ADTs. The `Result` type should be generic to handle any success value or error type.
+
+```python
+# types.py
+from typing import Generic, TypeVar
+from dataclasses import dataclass
+
+T = TypeVar('T') # Represents the success type
+E = TypeVar('E') # Represents the error type
+
+@dataclass(frozen=True)
+class Success(Generic[T]):
+    value: T
+
+@dataclass(frozen=True)
+class Failure(Generic[E]):
+    error: E
+
+Result = Success[T] | Failure[E]
+```
+
+**2. Functions Must Return a `Result`:**
+
+Any function that performs a fallible operation, like validation, must have a return type of `Result`.
+
+```python
+# some_validator.py
+from .types import Result, Success, Failure
+
+def validate_data(data: dict) -> Result[dict, str]:
+    if "key" not in data:
+        return Failure("Validation Error: Missing 'key'.")
+    
+    # ... more validation ...
+
+    return Success(data)
+```
+
+**3. Use Pattern Matching to Handle the `Result`:**
+
+The calling code **must** use pattern matching (`match`) to handle the `Result`. This is the most declarative and safe way to unwrap the value, ensuring both `Success` and `Failure` paths are explicitly handled. **Do not use `isinstance()` checks.**
+
+```python
+# orchestrator.py
+from .some_validator import validate_data
+from .types import Result, Success, Failure
+
+def process_data(data: dict):
+    validation_result = validate_data(data)
+
+    match validation_result:
+        case Failure(error_message):
+            print(f"Halting process due to validation failure: {error_message}")
+            # Halt or return a failure report
+
+        case Success(validated_data):
+            print("Validation succeeded. Proceeding with processing...")
+            # Continue with the "happy path" logic
+```
