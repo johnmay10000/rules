@@ -169,9 +169,104 @@ Based on user feedback and review of ARCHITECTURE_PLAN.md example, we need to ad
 - ✅ When priority level is assigned in ARCHITECTURE_PLAN.md
 
 **Examples**:
-- `docs/plans/DEPLOYMENT_PLAN.md`
-- `docs/plans/BATTERY_SIMULATION_PLAN.md`
-- `docs/plans/ADVANCED_CALIBRATION_METHODS_PLAN.md`
+- `docs/plans/DEPLOYMENT_PLAN.md` + `docs/plans/DEPLOYMENT_TODO.md`
+- `docs/plans/BATTERY_SIMULATION_PLAN.md` + `docs/plans/BATTERY_SIMULATION_TODO.md`
+- `docs/plans/ADVANCED_CALIBRATION_METHODS_PLAN.md` + `docs/plans/ADVANCED_CALIBRATION_TODO.md`
+
+#### Tier 2b: TODO Lists for Plans (docs/plans/)
+
+**CRITICAL ADDITION**: Each sub-plan MUST have an accompanying TODO list document.
+
+**Naming Convention**: `FEATURE_NAME_TODO.md` (matches plan name)
+
+**Purpose**: Track progress on plan implementation, updated by Cursor as work completes
+
+**Characteristics**:
+- ✅ **Living document** (updated continuously as work progresses)
+- ✅ **Paired with plan** (one TODO per plan document)
+- ✅ **Cursor-updated** (Cursor marks tasks complete as it works)
+- ✅ **Progress tracking** (shows what's done vs remaining)
+- ✅ **Time tracking** (actual time vs estimated time)
+
+**Required Structure**:
+
+```markdown
+# [Feature/Initiative] TODO List
+
+**Plan Reference**: [FEATURE_NAME_PLAN.md](FEATURE_NAME_PLAN.md)
+**Status**: [⏳ IN PROGRESS | ✅ COMPLETE]
+**Last Updated**: YYYY-MM-DD HH:MM
+**Progress**: X/Y tasks complete (Z%)
+
+---
+
+## Phase 1: [Phase Name]
+
+**Status**: [⏳ IN PROGRESS | ✅ COMPLETE | 🔄 NOT STARTED]
+**Progress**: X/Y tasks complete
+
+- [x] Task 1.1: Description (Estimated: 2h, Actual: 1.5h)
+- [x] Task 1.2: Description (Estimated: 1h, Actual: 1.2h)
+- [ ] Task 1.3: Description (Estimated: 3h, Actual: -)
+- [ ] Task 1.4: Description (Estimated: 1h, Actual: -)
+
+**Phase Total**: Estimated 7h | Actual 2.7h | Remaining ~4.3h
+
+---
+
+## Phase 2: [Phase Name]
+
+**Status**: 🔄 NOT STARTED
+**Progress**: 0/Y tasks complete
+
+- [ ] Task 2.1: Description (Estimated: 2h, Actual: -)
+- [ ] Task 2.2: Description (Estimated: 1h, Actual: -)
+
+**Phase Total**: Estimated 3h | Actual 0h | Remaining ~3h
+
+---
+
+## Overall Progress
+
+**Total Tasks**: X completed / Y total (Z%)
+**Total Time**: Estimated 10h | Actual 2.7h | Remaining ~7.3h
+**Completion Rate**: XX% complete
+
+---
+
+## Update History
+
+### YYYY-MM-DD HH:MM
+- Completed tasks 1.1, 1.2
+- Started task 1.3
+- Phase 1: 50% complete
+
+### YYYY-MM-DD HH:MM
+- Initial TODO list created
+- All tasks estimated
+```
+
+**Update Frequency**:
+- ✅ **Immediate**: Mark task complete as soon as finished
+- ✅ **After each work session**: Update progress percentages
+- ✅ **When starting new phase**: Update phase status
+- ✅ **When blockers encountered**: Add notes to tasks
+
+**Cursor's Responsibility**:
+As Cursor completes work, it MUST:
+1. Mark completed tasks with [x]
+2. Add actual time spent
+3. Update progress percentages
+4. Add entry to Update History
+5. Update "Last Updated" timestamp
+6. Git commit the TODO update
+
+**Benefits**:
+- ✅ **Real-time progress tracking**: Always know what's done
+- ✅ **Time accuracy**: Compare estimated vs actual
+- ✅ **Accountability**: Clear record of work completed
+- ✅ **Planning improvement**: Learn from time estimates
+- ✅ **Cursor integration**: Automated progress updates
 - `docs/plans/PERFORMANCE_OPTIMIZATION_PLAN.md`
 
 ---
@@ -241,6 +336,10 @@ ARCHITECTURE_PLAN.md (Root)
     │
     ├─ References ──→ docs/plans/FEATURE_X_PLAN.md
     │                      │
+    │                      ├─ Paired with ──→ docs/plans/FEATURE_X_TODO.md ⭐ NEW
+    │                      │                         │
+    │                      │                         └─ Updated by Cursor
+    │                      │
     │                      └─ References ──→ docs/YYYY_MM_DD/YYYYMMDD_HHMM_*.md
     │
     └─ References ──→ docs/YYYY_MM_DD/YYYYMMDD_HHMM_DAILY_SUMMARY.md
@@ -249,8 +348,10 @@ ARCHITECTURE_PLAN.md (Root)
 **Flow**:
 1. ARCHITECTURE_PLAN.md defines priorities
 2. Sub-plans in docs/plans/ detail how to achieve priorities
-3. Point-in-time docs in docs/YYYY_MM_DD/ capture daily work
-4. All three levels cross-reference each other
+3. TODO lists in docs/plans/ track progress on each plan ⭐ NEW
+4. Cursor updates TODO lists as work completes ⭐ NEW
+5. Point-in-time docs in docs/YYYY_MM_DD/ capture daily work
+6. All levels cross-reference each other
 
 ---
 
@@ -309,11 +410,35 @@ ARCHITECTURE_PLAN.md (Root)
 
 **Requirements**:
 - ✅ MUST create sub-plan in docs/plans/ before starting
-- ✅ MUST include phases, tasks, success criteria
-- ✅ MUST update as work progresses
+- ✅ MUST create paired TODO list (FEATURE_NAME_TODO.md) ⭐ NEW
+- ✅ MUST include phases, tasks, success criteria in plan
+- ✅ MUST track progress in TODO list as work completes ⭐ NEW
+- ✅ MUST update TODO list immediately after completing tasks ⭐ NEW
 - ✅ MUST link from ARCHITECTURE_PLAN.md
 
 **Enforcement**: Part of work initiation checklist
+
+### Rule 2b: TODO Lists Updated by Cursor ⭐ NEW
+
+**Applicability**: All sub-plans in docs/plans/
+
+**Requirements**:
+- ✅ MUST create TODO list when creating plan
+- ✅ MUST mark tasks complete [x] as soon as finished
+- ✅ MUST record actual time spent on completed tasks
+- ✅ MUST update progress percentages after each session
+- ✅ MUST add Update History entry when completing tasks
+- ✅ MUST git commit TODO updates
+
+**Cursor's Workflow**:
+1. Complete a task
+2. Mark task [x] in TODO.md
+3. Add actual time spent
+4. Update progress percentage
+5. Add Update History entry
+6. Git commit with message "Update TODO: completed task X.Y"
+
+**Enforcement**: Cursor must update TODO before moving to next task
 
 ### Rule 3: Point-in-Time Docs Required
 
@@ -400,15 +525,28 @@ As part of this addition, we need to create:
    - Phase template
    - Task checklist format
 
-3. **templates/DAILY_WORK_SUMMARY_TEMPLATE.md**
+3. **templates/SUB_PLAN_TODO_TEMPLATE.md** ⭐ NEW
+   - TODO list structure for plans
+   - Progress tracking format
+   - Time tracking (estimated vs actual)
+   - Update history section
+   - Cursor update workflow
+
+4. **templates/DAILY_WORK_SUMMARY_TEMPLATE.md**
    - End-of-day summary format
    - Standard sections
 
-4. **examples/python_architecture_plan_example.md**
+5. **examples/python_architecture_plan_example.md**
    - Filled-out example for Python project
 
-5. **examples/typescript_architecture_plan_example.md**
+6. **examples/typescript_architecture_plan_example.md**
    - Filled-out example for TypeScript project
+
+7. **examples/plan_with_todo_pair_example/**  ⭐ NEW
+   - Example PLAN.md file
+   - Example TODO.md file (paired)
+   - Shows how they work together
+   - Demonstrates Cursor updates
 
 ---
 
