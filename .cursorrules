@@ -1,0 +1,254 @@
+# Cursor Rules for the Global Rules Repository
+
+## MANDATORY: Git Checkpoints
+
+**Critical Rule**: Git commits MUST be done at relevant checkpoints throughout work sessions.
+
+### Checkpoint Triggers (MANDATORY)
+
+Commit MUST occur after:
+1. ✅ **Completing a phase** - Every phase completion (Phase 0, Phase 1, etc.)
+2. ✅ **Creating core documents** - CURSOR.md, SETUP_GUIDE.md, major deliverables
+3. ✅ **Completing logical units** - Set of related templates, set of examples
+4. ✅ **Before context switch** - Switching between different work areas
+5. ✅ **Bug fixes** - Any fix that resolves an issue
+6. ✅ **Documentation updates** - Significant doc changes
+7. ✅ **Every 30-60 minutes** - Maximum time between commits during active work
+
+### Commit Message Format (MANDATORY)
+
+```
+<Brief summary line (50-72 chars)>
+
+<Detailed description of what was done>
+
+<Why it was done (rationale)>
+
+<What deliverables/files were affected>
+
+<Any relevant context or decisions>
+
+Status: <Current state>
+
+🤖 Generated with Cursor
+Co-Authored-By: Claude <noreply@anthropic.com>
+```
+
+### Examples of Good Checkpoints
+
+✅ **Phase Completion**:
+```
+Complete Phase 0 - Portability foundation
+
+Created all portability deliverables:
+- SETUP_GUIDE.md (machine setup for all platforms)
+- .cursorrules_smart_template_envvar (portable via env var)
+- .cursorrules_smart_template_submodule (self-contained)
+- Updated FILE_LOCATIONS_USER_GUIDE.md
+
+All templates now use portable paths.
+Ready to proceed to Phase 1.
+
+Status: Phase 0 complete ✅
+
+🤖 Generated with Cursor
+Co-Authored-By: Claude <noreply@anthropic.com>
+```
+
+✅ **Document Creation**:
+```
+Create CURSOR.md core global rule set
+
+Implemented mandatory universal rules:
+- Git checkpoint requirements
+- Documentation structure (3-tier hierarchy)
+- File size limits (250-300 lines)
+- Testing requirements (comprehensive, 100% passing)
+- FP principles (ADTs, Result types, immutability)
+
+Based on analysis of code-style.mdc and CLAUDE.md.
+Generalized for all tech stacks.
+
+Status: Core rules document complete ✅
+
+🤖 Generated with Cursor
+Co-Authored-By: Claude <noreply@anthropic.com>
+```
+
+✅ **Template Set**:
+```
+Create all portable project templates
+
+Created 3 smart .cursorrules templates:
+- _envvar: Uses ${CURSOR_RULES_PATH} for portability
+- _submodule: Uses relative paths for self-contained
+- Basic template for simple projects
+
+All include auto-detection logic for Python, TypeScript, GCP, AWS.
+Tested on macOS and Linux.
+
+Status: Templates complete ✅
+
+🤖 Generated with Cursor
+Co-Authored-By: Claude <noreply@anthropic.com>
+```
+
+### Anti-Patterns (DO NOT DO)
+
+❌ **Too Vague**:
+```
+Update files
+```
+
+❌ **No Context**:
+```
+WIP
+```
+
+❌ **Multiple Unrelated Changes**:
+```
+Create CURSOR.md, fix typos, update README, add examples, refactor templates
+```
+(Should be 5 separate commits)
+
+❌ **Waiting Too Long**:
+- Working 2+ hours without commit
+- Completing multiple phases without commit
+- Creating 10+ files without commit
+
+### Checkpoint Strategy for This Repo
+
+**Small, Frequent Commits**:
+- Each core document → separate commit
+- Each template set → separate commit
+- Each example set → separate commit
+- Each phase → separate commit
+- Documentation updates → separate commit
+
+**Benefits**:
+1. Easy to review progress
+2. Easy to revert if needed
+3. Clear history of decisions
+4. Demonstrates thoroughness
+5. Enables context preservation across sessions
+
+---
+
+## Project-Specific Rules for This Repository
+
+### File Organization
+
+**Daily Work Folders**: `docs/YYYY_MM_DD/`
+- All work documents go in dated folders
+- Format: `YYYYMMDD_HHMM_DESCRIPTIVE_NAME.md`
+- Example: `20251031_0900_CURSOR_MD_IMPLEMENTATION.md`
+
+**Plans Folder**: `docs/plans/`
+- Strategic plan documents
+- Paired TODO lists for each plan
+- Format: `FEATURE_NAME_PLAN.md` + `FEATURE_NAME_TODO.md`
+
+**Templates Folder**: `templates/`
+- All reusable templates
+- .cursorrules templates
+- Document templates
+
+**Examples Folder**: `examples/`
+- Real-world usage examples
+- Platform-specific examples
+- Language-specific examples
+
+### Documentation Requirements
+
+**Update TODO Lists**: After each task completion
+- Mark tasks as complete [x]
+- Update time estimates (Actual: X hours)
+- Update progress percentages
+- Add update history entry with timestamp
+
+**Session Summaries**: At end of major work sessions
+- What was accomplished
+- What remains
+- Any decisions made
+- Any blockers encountered
+
+### Testing Requirements
+
+**Before Committing**:
+1. ✅ Read all created/modified files to verify content
+2. ✅ Check for linter errors (if applicable)
+3. ✅ Verify all references/links work
+4. ✅ Ensure markdown formatting is correct
+5. ✅ Test any templates created
+
+---
+
+## Functional Programming (This Repo)
+
+This repository's content promotes FP principles, but the repository itself:
+- Contains markdown documentation (no code to apply FP to)
+- Uses clear, logical structure (analogous to FP organization)
+- Maintains immutability of committed content (git history)
+- Follows functional composition (small, composable documents)
+
+---
+
+## Workflow for Implementation
+
+### Standard Flow
+
+1. **Read TODO list** → Identify next task
+2. **Start task** → Update TODO (mark in_progress)
+3. **Do work** → Create/modify files
+4. **Verify** → Read files, check quality
+5. **Complete task** → Update TODO (mark completed, add actual time)
+6. **Git checkpoint** → Commit with descriptive message
+7. **Repeat** → Next task
+
+### Multi-File Work
+
+For tasks creating multiple related files:
+- Complete all related files
+- Verify all files work together
+- Single commit for the logical unit
+- But don't wait too long (30-60 min max)
+
+### Phase Completion
+
+1. Complete all tasks in phase
+2. Update TODO list (mark phase complete)
+3. Create phase summary document (optional)
+4. Git checkpoint with "Phase X complete" message
+5. Brief pause/review before next phase
+
+---
+
+## Current Implementation Status
+
+**Planning Phase**: ✅ COMPLETE
+- 15 documents created
+- 13 git commits
+- All decisions approved
+- TODO lists ready (72 tasks)
+
+**Phase 0**: ⏳ PENDING (Portability Setup)
+- 5 tasks, 1 hour
+- Must complete before Phase 1
+- Critical for all subsequent work
+
+**Total Scope**:
+- 6 phases (0-5)
+- 72 tasks
+- 13 hours estimated
+- 24 deliverables
+
+---
+
+## Meta: About This File
+
+This `.cursorrules` file ensures Cursor applies consistent rules when working on the global rules repository itself. It follows the same patterns we're creating for other projects.
+
+**Last Updated**: 2025-10-31
+**Status**: Active
+**Applies To**: This repository only (project-specific rules)
+
