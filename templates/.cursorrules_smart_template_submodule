@@ -1,0 +1,338 @@
+# Smart .cursorrules Template (Git Submodule Version)
+# 
+# SELF-CONTAINED: Rules included as git submodule, no machine setup needed
+# SETUP: git submodule add <rules-repo-url> .cursor-rules
+#
+# Quick Setup:
+#   git submodule add https://github.com/yourusername/rules.git .cursor-rules
+#   git submodule update --init --recursive
+#
+# This template automatically detects your project type and loads
+# appropriate rules. Copy to your project root as .cursorrules
+
+---
+
+## ⚠️ SETUP CHECK
+
+# If you see errors about files not found:
+# 1. Ensure submodule is initialized: git submodule update --init
+# 2. Verify .cursor-rules/ exists: ls .cursor-rules/
+# 3. See SETUP_GUIDE.md in .cursor-rules/ for troubleshooting
+
+---
+
+## 🌍 GLOBAL RULES (All Projects)
+
+# Core mandatory rules - git checkpoints, FP principles, documentation
+@.cursor-rules/CURSOR.md
+
+# Workflow guide - git workflow, documentation hierarchy, TODO lists
+@.cursor-rules/CURSOR_WORKFLOW_GUIDE.md
+
+# FP principles deep dive - ADTs, Result types, monadic composition
+@.cursor-rules/CURSOR_FP_PRINCIPLES.md
+
+---
+
+## 📝 LANGUAGE-SPECIFIC RULES (Auto-Detected)
+
+### Python Projects
+# Detected if: requirements.txt, pyproject.toml, setup.py, or *.py files exist
+# 
+# Includes: returns, toolz, ADTs, Result types, pytest, uv, mypy
+# FP libraries: returns (Result/Maybe), toolz (functional utilities)
+# Style: File size 250-300 lines, immutable data, pattern matching
+#
+# Uncomment if this is a Python project:
+# @.cursor-rules/python-fp-style-guide.md
+
+### TypeScript Projects
+# Detected if: package.json with "typescript" dependency exists
+#
+# Includes: fp-ts, Effect, io-ts, ADTs, TaskEither, pattern matching
+# FP libraries: fp-ts (core), Effect (next-gen), monocle-ts (optics)
+# Style: File size 250-300 lines, immutable data, discriminated unions
+#
+# Uncomment if this is a TypeScript project:
+# @.cursor-rules/typescript-fp-style-guide.md
+
+### Swift Projects
+# Detected if: Package.swift, *.xcodeproj, or *.swift files exist
+#
+# Includes: Built-in Result, Bow, Composable Architecture, enums, protocols
+# FP libraries: Bow (Arrow-based), Composable Architecture (state management)
+# Style: Protocol-oriented + FP, value types, pattern matching
+#
+# Uncomment if this is a Swift project:
+# @.cursor-rules/swift-fp-style-guide.md
+
+### Kotlin Projects
+# Detected if: build.gradle.kts, pom.xml with Kotlin, or *.kt files exist
+#
+# Includes: Arrow, sealed classes, data classes, Result, coroutines
+# FP libraries: Arrow (comprehensive FP), kotlinx-coroutines (async)
+# Style: Data classes, sealed classes, when expressions, immutability
+#
+# Uncomment if this is a Kotlin project:
+# @.cursor-rules/kotlin-fp-style-guide.md
+
+---
+
+## ☁️ PLATFORM-SPECIFIC RULES (Auto-Detected)
+
+### Google Cloud Platform (GCP)
+# Detected if: gc/ folder, workflows/ folder, or gcp-related files exist
+#
+# Includes: Cloud Functions structure, imports (sys.path.append for tests),
+# Workflows, GCS, deployment patterns, testing requirements
+# Structure: gc/function_name/ with main.py and requirements.txt
+#
+# Uncomment if this is a GCP project:
+# @.cursor-rules/CURSOR_CLOUD_GCP.md
+
+### Amazon Web Services (AWS)
+# Detected if: lambda/ folder, serverless.yml, or AWS SAM files exist
+#
+# Includes: Lambda structure, API Gateway, S3, deployment patterns,
+# testing requirements, SAM/Serverless framework
+# Structure: lambda/function_name/ with handler and requirements
+#
+# Uncomment if this is an AWS project:
+# @.cursor-rules/CURSOR_CLOUD_AWS.md
+
+---
+
+## 🎯 PROJECT-SPECIFIC RULES (Customize Below)
+
+# Add any project-specific rules here that override or extend global rules
+# These take precedence over global rules
+
+### Custom Requirements
+
+# Example: Special data processing library
+# - Use pandas for legacy compatibility (exception to Polars-only rule)
+
+# Example: Larger file size for specific module
+# - analytics/ module: Max 500 lines (exception to 250-300 rule)
+
+# Example: Project-specific testing
+# - Integration tests required for all API endpoints
+# - Minimum 85% coverage for business logic
+
+### Project Architecture
+
+# Document your project's architecture here
+# See .cursor-rules/templates/ARCHITECTURE_PLAN_TEMPLATE.md for structure
+
+### Team Conventions
+
+# Any team-specific conventions that differ from global rules
+
+---
+
+## 🔍 AUTO-DETECTION LOGIC (Reference)
+
+# This section documents what the smart template detects.
+# No action needed - for reference only.
+
+# Python Detection:
+#   - requirements.txt exists
+#   - pyproject.toml exists
+#   - setup.py exists
+#   - Any *.py files in src/ or project root
+
+# TypeScript Detection:
+#   - package.json exists AND
+#   - "typescript" in devDependencies OR dependencies
+
+# Swift Detection:
+#   - Package.swift exists
+#   - *.xcodeproj directory exists
+#   - Any *.swift files
+
+# Kotlin Detection:
+#   - build.gradle.kts exists
+#   - pom.xml with kotlin dependency
+#   - Any *.kt files
+
+# GCP Detection:
+#   - gc/ directory exists (Cloud Functions)
+#   - workflows/ directory exists (Cloud Workflows)
+#   - gcloud/ directory exists
+#   - cloudbuild.yaml exists
+
+# AWS Detection:
+#   - lambda/ directory exists
+#   - serverless.yml exists
+#   - template.yaml exists (SAM)
+#   - aws/ directory exists
+
+---
+
+## 📚 AVAILABLE GUIDES (Reference)
+
+# Core Rules:
+#   - CURSOR.md (mandatory universal rules)
+#   - CURSOR_WORKFLOW_GUIDE.md (git, docs, workflow)
+#   - CURSOR_FP_PRINCIPLES.md (FP deep dive)
+
+# Language Guides:
+#   - python-fp-style-guide.md (Python + returns + toolz)
+#   - typescript-fp-style-guide.md (TypeScript + fp-ts + Effect)
+#   - swift-fp-style-guide.md (Swift + Bow + Composable Architecture)
+#   - kotlin-fp-style-guide.md (Kotlin + Arrow + coroutines)
+
+# Platform Guides:
+#   - CURSOR_CLOUD_GCP.md (Cloud Functions, Workflows, GCS)
+#   - CURSOR_CLOUD_AWS.md (Lambda, API Gateway, S3)
+
+# Additional Resources:
+#   - SETUP_GUIDE.md (machine setup instructions)
+#   - FILE_LOCATIONS_USER_GUIDE.md (where to put files)
+#   - MIGRATION_GUIDE.md (migrating from legacy rules)
+
+# Templates:
+#   - templates/ARCHITECTURE_PLAN_TEMPLATE.md
+#   - templates/SUB_PLAN_TEMPLATE.md
+#   - templates/SUB_PLAN_TODO_TEMPLATE.md
+#   - templates/DAILY_WORK_SUMMARY_TEMPLATE.md
+#   - templates/GIT_COMMIT_MESSAGE_TEMPLATE.md
+
+# Examples:
+#   - examples/python_cursorrules_example
+#   - examples/typescript_cursorrules_example
+#   - examples/polyglot_cursorrules_example
+#   - examples/python_architecture_plan_example
+#   - examples/plan_with_todo_pair_example/
+
+---
+
+## 🚀 QUICK START
+
+# 1. Add rules as git submodule (one-time per project):
+#    git submodule add https://github.com/yourusername/rules.git .cursor-rules
+#    git submodule update --init --recursive
+
+# 2. Copy this template to your project:
+#    cp .cursor-rules/templates/.cursorrules_smart_template_submodule .cursorrules
+
+# 3. Uncomment the sections for your tech stack:
+#    - Uncomment Python section if Python project
+#    - Uncomment TypeScript section if TypeScript project
+#    - Uncomment GCP section if using Google Cloud
+#    - etc.
+
+# 4. Add project-specific rules in the "Project-Specific Rules" section
+
+# 5. Commit submodule and .cursorrules:
+#    git add .gitmodules .cursor-rules .cursorrules
+#    git commit -m "Add Cursor rules as submodule"
+
+# 6. Open your project in Cursor and start coding!
+
+---
+
+## 🔄 UPDATING RULES
+
+# Update to latest rules:
+#   git submodule update --remote .cursor-rules
+#   git add .cursor-rules
+#   git commit -m "Update cursor rules to latest version"
+
+# Lock to specific version:
+#   cd .cursor-rules
+#   git checkout v1.0.0
+#   cd ..
+#   git add .cursor-rules
+#   git commit -m "Lock cursor rules to v1.0.0"
+
+---
+
+## 👥 FOR COLLABORATORS
+
+# When cloning this project:
+#   git clone --recurse-submodules <your-repo-url>
+#
+# Or if already cloned:
+#   git submodule update --init --recursive
+
+---
+
+## 🔧 TROUBLESHOOTING
+
+# Rules not loading?
+# 1. Check submodule initialized: ls .cursor-rules/
+# 2. Initialize if needed: git submodule update --init --recursive
+# 3. Restart Cursor
+# 4. See .cursor-rules/SETUP_GUIDE.md for detailed troubleshooting
+
+# Submodule empty?
+# 1. Initialize submodules: git submodule update --init --recursive
+# 2. If still empty: git submodule add --force <rules-repo-url> .cursor-rules
+
+# File not found?
+# 1. Verify file exists: ls .cursor-rules/filename.md
+# 2. Check spelling of filename
+# 3. Update submodule: git submodule update --remote .cursor-rules
+
+# Path errors?
+# 1. Ensure using forward slashes: .cursor-rules/ (not .\cursor-rules\)
+# 2. No leading slash: .cursor-rules/file (not /.cursor-rules/file)
+# 3. Relative to project root (where .cursorrules is)
+
+---
+
+## 📖 DOCUMENTATION HIERARCHY
+
+# This project should follow the 3-tier documentation structure:
+
+# Tier 1: ARCHITECTURE_PLAN.md (strategic, high-level, project root)
+#   - Overall system architecture
+#   - Major components and their interactions
+#   - Technology choices and rationale
+#   - Links to Tier 2 plans
+
+# Tier 2: docs/plans/*.md (tactical, feature/area-specific)
+#   - Detailed plans for specific features or areas
+#   - Each plan paired with TODO list (*_TODO.md)
+#   - Implementation phases and tasks
+#   - Updated by Cursor as work progresses
+
+# Tier 3: docs/YYYY_MM_DD/*.md (execution, daily work)
+#   - Daily work documents
+#   - Session summaries
+#   - Decision logs
+#   - Timestamped: YYYYMMDD_HHMM_DESCRIPTIVE_NAME.md
+
+---
+
+## ✅ CHECKLIST
+
+# Before committing, ensure:
+# - [ ] All TODO lists updated (if applicable)
+# - [ ] Git checkpoint made (30-60 min max)
+# - [ ] Tests pass (if code changes)
+# - [ ] File sizes within limits (250-300 lines)
+# - [ ] Documentation updated (if architecture changes)
+# - [ ] Linter clean (if applicable)
+
+---
+
+## 🎁 BENEFITS OF SUBMODULE APPROACH
+
+# ✅ Self-contained - rules included in project
+# ✅ Version-controlled - lock to specific rules version
+# ✅ No machine setup - works immediately after git clone
+# ✅ Team-friendly - everyone gets same rules
+# ✅ Portable - works on any machine
+# ✅ Deterministic - same output everywhere
+
+---
+
+# Last Updated: 2025-10-31
+# Version: 1.0.0
+# Requires: Cursor, git submodule at .cursor-rules/
+# Portability: ✅ Works on macOS, Linux, Windows
+# Determinism: ✅ Same output across machines
+# Self-Contained: ✅ No machine-specific setup required
+
