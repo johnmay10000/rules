@@ -1,4 +1,23 @@
 # Python Functional Programming Style Guide
+
+**Version**: 2.0.0  
+**Last Updated**: 2025-10-31  
+**Part of**: [CURSOR.md](CURSOR.md) Global Rule Set  
+**Target**: Python projects (ML, backend, data processing)
+
+> **📖 Global Rules**: This document extends [CURSOR.md](CURSOR.md) with Python-specific guidance. For mandatory universal rules (Git, documentation, testing, file size), see [CURSOR.md](CURSOR.md).
+
+---
+
+## Quick Links
+
+- **Mandatory Rules**: See [CURSOR.md](CURSOR.md) sections 1-4
+- **FP Principles Deep Dive**: See [CURSOR_FP_PRINCIPLES.md](CURSOR_FP_PRINCIPLES.md)
+- **Workflow Guide**: See [CURSOR_WORKFLOW_GUIDE.md](CURSOR_WORKFLOW_GUIDE.md)
+- **Integration**: See [.cursorrules Integration](#cursorrules-integration) below
+
+---
+
 ## For MLX and Machine Learning Projects
 
 ### Core Principles
@@ -494,5 +513,169 @@ warn_unused_configs = true
 [tool.ruff]
 select = ["E", "F", "I", "N", "UP", "RUF"]
 ```
+
+---
+
+## .cursorrules Integration
+
+### Setup in Your Python Project
+
+**Step 1**: Set up global rules (one-time machine setup)
+
+See [SETUP_GUIDE.md](SETUP_GUIDE.md) for detailed instructions.
+
+Quick setup:
+```bash
+# Option 1: Environment variable
+export CURSOR_RULES_PATH="$HOME/path/to/rules"
+
+# Option 2: Git submodule
+git submodule add <rules-repo-url> .cursor-rules
+```
+
+**Step 2**: Create `.cursorrules` in your project root:
+
+```markdown
+# .cursorrules for Python Project
+
+## Global Rules
+@${CURSOR_RULES_PATH}/CURSOR.md
+# Or if using submodule: @.cursor-rules/CURSOR.md
+
+## Language-Specific Rules
+@${CURSOR_RULES_PATH}/python-fp-style-guide.md
+
+## Project-Specific Overrides
+
+### Tech Stack
+- **Language**: Python 3.11+
+- **FP Library**: returns
+- **Type Checking**: mypy (strict mode)
+- **Package Manager**: uv
+- **Linting**: ruff, black, isort
+
+### Project Structure
+```
+src/
+├── types/          # ADTs and type definitions
+├── pure/           # Pure business logic
+├── io/             # IO operations
+├── api/            # API endpoints (if applicable)
+└── pipeline/       # Composed pipelines
+```
+
+### Mandatory for This Project
+- All functions must have type hints
+- All public functions must return Result types
+- No exceptions except at IO boundaries
+- 100% test coverage for pure functions
+- File size limit: 250 lines
+```
+
+---
+
+### Example: Python + GCP Project
+
+```markdown
+# .cursorrules for Python + GCP Project
+
+## Global Rules
+@${CURSOR_RULES_PATH}/CURSOR.md
+
+## Language Rules
+@${CURSOR_RULES_PATH}/python-fp-style-guide.md
+
+## Platform Rules
+@${CURSOR_RULES_PATH}/GCP_GUIDELINES.md
+
+## Project Context
+- **Platform**: Google Cloud Run Functions
+- **Data**: Cloud Storage (GCS)
+- **Libraries**: returns, polars, google-cloud-storage
+
+## Testing
+- Use `sys.path.append()` for Cloud Functions imports
+- Test structure mirrors function structure
+- All tests must pass before commit
+```
+
+---
+
+### Auto-Detection Example
+
+If using the smart template (see [SETUP_GUIDE.md](SETUP_GUIDE.md)):
+
+```markdown
+# .cursorrules (auto-detects Python)
+
+@${CURSOR_RULES_PATH}/templates/.cursorrules_smart_template_envvar
+
+# The template will automatically detect:
+# - Language: Python (from .py files)
+# - FP library: returns (from pyproject.toml)
+# - Testing: pytest (from pyproject.toml)
+# - Platform: GCP (from dependencies)
+```
+
+---
+
+## Quick Reference Card
+
+**Before Every Commit** (from [CURSOR.md](CURSOR.md)):
+- [ ] All tests passing (mandatory)
+- [ ] Type checks passing (mypy strict)
+- [ ] Linters passing (ruff, black, isort)
+- [ ] All files < 250 lines (mandatory)
+- [ ] Commit message follows template (mandatory)
+- [ ] TODO list updated (if applicable)
+
+**Python-Specific Checks**:
+- [ ] All functions have type hints
+- [ ] Public functions return Result types
+- [ ] Dataclasses are frozen
+- [ ] No naked exceptions
+- [ ] Pattern matching used for ADTs
+
+---
+
+## Universal FP Pattern (Python)
+
+From [CURSOR.md](CURSOR.md) section 5.2:
+
+```python
+# Railway-oriented programming
+result = (
+    Success(data)
+    .bind(validate)      # Returns Result
+    .bind(transform)     # Returns Result
+    .map(format)         # Pure function
+)
+
+# Mental model: Factory assembly line
+# - Each function = one station
+# - Errors stop the line
+# - Success continues to next station
+```
+
+---
+
+## Mandatory Rules Reference
+
+From [CURSOR.md](CURSOR.md):
+
+1. **Git Checkpoints** (Section 1) - Commit every 30-60 min
+2. **Documentation** (Section 2) - 3-tier hierarchy
+3. **Testing** (Section 3) - Comprehensive coverage, all passing
+4. **File Size** (Section 4) - 250-300 lines maximum
+
+See [CURSOR.md](CURSOR.md) for complete details.
+
+---
+
+**Version**: 2.0.0  
+**Last Updated**: 2025-10-31  
+**Maintained By**: Global Rules Repository
+
+---
 
 This guide transforms Python into a strongly typed, pure functional language similar to Haskell while working within Python's constraints.

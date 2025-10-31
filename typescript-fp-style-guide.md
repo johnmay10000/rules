@@ -1,4 +1,23 @@
 # TypeScript Functional Programming Style Guide
+
+**Version**: 2.0.0  
+**Last Updated**: 2025-10-31  
+**Part of**: [CURSOR.md](CURSOR.md) Global Rule Set  
+**Target**: TypeScript projects (Next.js, Supabase, Inngest, backend)
+
+> **📖 Global Rules**: This document extends [CURSOR.md](CURSOR.md) with TypeScript-specific guidance. For mandatory universal rules (Git, documentation, testing, file size), see [CURSOR.md](CURSOR.md).
+
+---
+
+## Quick Links
+
+- **Mandatory Rules**: See [CURSOR.md](CURSOR.md) sections 1-4
+- **FP Principles Deep Dive**: See [CURSOR_FP_PRINCIPLES.md](CURSOR_FP_PRINCIPLES.md)
+- **Workflow Guide**: See [CURSOR_WORKFLOW_GUIDE.md](CURSOR_WORKFLOW_GUIDE.md)
+- **Integration**: See [.cursorrules Integration](#cursorrules-integration) below
+
+---
+
 ## For Next.js, Supabase & Inngest Projects
 
 ### Core Principles
@@ -917,5 +936,217 @@ src/
 - **Effect**: https://effect.website/
 - **monocle-ts** (Lenses): https://github.com/gcanti/monocle-ts
 - **io-ts** (Runtime validation): https://github.com/gcanti/io-ts
+
+---
+
+## .cursorrules Integration
+
+### Setup in Your TypeScript Project
+
+**Step 1**: Set up global rules (one-time machine setup)
+
+See [SETUP_GUIDE.md](SETUP_GUIDE.md) for detailed instructions.
+
+Quick setup:
+```bash
+# Option 1: Environment variable
+export CURSOR_RULES_PATH="$HOME/path/to/rules"
+
+# Option 2: Git submodule
+git submodule add <rules-repo-url> .cursor-rules
+```
+
+**Step 2**: Create `.cursorrules` in your project root:
+
+```markdown
+# .cursorrules for TypeScript Project
+
+## Global Rules
+@${CURSOR_RULES_PATH}/CURSOR.md
+# Or if using submodule: @.cursor-rules/CURSOR.md
+
+## Language-Specific Rules
+@${CURSOR_RULES_PATH}/typescript-fp-style-guide.md
+
+## Project-Specific Overrides
+
+### Tech Stack
+- **Language**: TypeScript 5.0+
+- **Framework**: Next.js 14+
+- **FP Library**: fp-ts (or Effect)
+- **Database**: Supabase
+- **Background Jobs**: Inngest
+- **Testing**: Vitest
+
+### Project Structure
+```
+src/
+├── types/          # ADTs and type definitions
+├── lib/
+│   ├── fp/         # FP utilities
+│   ├── db/         # Database operations (TaskEither)
+│   └── api/        # API clients
+├── app/
+│   └── api/        # Next.js routes
+└── inngest/        # Inngest functions
+```
+
+### Mandatory for This Project
+- All functions must have explicit return types
+- All async operations must return TaskEither
+- No exceptions except at boundaries
+- Discriminated unions for all error types
+- File size limit: 250 lines
+```
+
+---
+
+### Example: Next.js + Supabase Project
+
+```markdown
+# .cursorrules for Next.js + Supabase Project
+
+## Global Rules
+@${CURSOR_RULES_PATH}/CURSOR.md
+
+## Language Rules
+@${CURSOR_RULES_PATH}/typescript-fp-style-guide.md
+
+## Project Context
+- **Framework**: Next.js 14 (App Router)
+- **Database**: Supabase (PostgreSQL)
+- **Auth**: Supabase Auth
+- **Storage**: Supabase Storage
+- **Libraries**: fp-ts, zod, inngest
+
+## Route Handlers
+- All routes return TaskEither
+- Use pipe for composition
+- Pattern match errors to status codes
+- Handle at route boundary
+
+## Testing
+- Vitest for unit tests
+- Mock Supabase client
+- Test pure functions extensively
+- Integration tests for routes
+```
+
+---
+
+### Example: TypeScript + AWS Project
+
+```markdown
+# .cursorrules for TypeScript + AWS Project
+
+## Global Rules
+@${CURSOR_RULES_PATH}/CURSOR.md
+
+## Language Rules
+@${CURSOR_RULES_PATH}/typescript-fp-style-guide.md
+
+## Platform Rules
+@${CURSOR_RULES_PATH}/AWS_GUIDELINES.md
+
+## Project Context
+- **Platform**: AWS Lambda
+- **Framework**: CDK
+- **Database**: DynamoDB
+- **Libraries**: fp-ts, aws-sdk-v3
+
+## Lambda Functions
+- Single responsibility per function
+- Pure business logic in lib/
+- IO operations in TaskEither
+- All errors typed
+```
+
+---
+
+### Auto-Detection Example
+
+If using the smart template (see [SETUP_GUIDE.md](SETUP_GUIDE.md)):
+
+```markdown
+# .cursorrules (auto-detects TypeScript)
+
+@${CURSOR_RULES_PATH}/templates/.cursorrules_smart_template_envvar
+
+# The template will automatically detect:
+# - Language: TypeScript (from .ts files)
+# - Framework: Next.js (from package.json)
+# - FP library: fp-ts (from package.json)
+# - Testing: Vitest (from package.json)
+# - Platform: Supabase/AWS (from dependencies)
+```
+
+---
+
+## Quick Reference Card
+
+**Before Every Commit** (from [CURSOR.md](CURSOR.md)):
+- [ ] All tests passing (mandatory)
+- [ ] Type checks passing (tsc --noEmit)
+- [ ] Linters passing (ESLint)
+- [ ] All files < 250 lines (mandatory)
+- [ ] Commit message follows template (mandatory)
+- [ ] TODO list updated (if applicable)
+
+**TypeScript-Specific Checks**:
+- [ ] All functions have explicit return types
+- [ ] All async operations return TaskEither
+- [ ] Discriminated unions for errors
+- [ ] No `any` types
+- [ ] Pattern matching exhaustive
+
+---
+
+## Universal FP Pattern (TypeScript)
+
+From [CURSOR.md](CURSOR.md) section 5.2:
+
+```typescript
+// Railway-oriented programming with fp-ts
+const result = pipe(
+  data,
+  TE.flatMap(validate),    // Returns TaskEither
+  TE.flatMap(transform),   // Returns TaskEither
+  TE.map(format)           // Pure function
+)
+
+// With Effect (cleaner syntax)
+const result = pipe(
+  data,
+  Effect.flatMap(validate),
+  Effect.flatMap(transform),
+  Effect.map(format)
+)
+
+// Mental model: Factory assembly line
+// - Each function = one station
+// - Errors stop the line
+// - Success continues to next station
+```
+
+---
+
+## Mandatory Rules Reference
+
+From [CURSOR.md](CURSOR.md):
+
+1. **Git Checkpoints** (Section 1) - Commit every 30-60 min
+2. **Documentation** (Section 2) - 3-tier hierarchy
+3. **Testing** (Section 3) - Comprehensive coverage, all passing
+4. **File Size** (Section 4) - 250-300 lines maximum
+
+See [CURSOR.md](CURSOR.md) for complete details.
+
+---
+
+**Version**: 2.0.0  
+**Last Updated**: 2025-10-31  
+**Maintained By**: Global Rules Repository
+
+---
 
 This guide brings Haskell's functional purity to TypeScript while embracing the ecosystem's strengths.

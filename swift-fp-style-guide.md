@@ -1,4 +1,23 @@
 # Swift Functional Programming Style Guide
+
+**Version**: 2.0.0  
+**Last Updated**: 2025-10-31  
+**Part of**: [CURSOR.md](CURSOR.md) Global Rule Set  
+**Target**: Swift projects (iOS, macOS, SwiftUI, server-side)
+
+> **📖 Global Rules**: This document extends [CURSOR.md](CURSOR.md) with Swift-specific guidance. For mandatory universal rules (Git, documentation, testing, file size), see [CURSOR.md](CURSOR.md).
+
+---
+
+## Quick Links
+
+- **Mandatory Rules**: See [CURSOR.md](CURSOR.md) sections 1-4
+- **FP Principles Deep Dive**: See [CURSOR_FP_PRINCIPLES.md](CURSOR_FP_PRINCIPLES.md)
+- **Workflow Guide**: See [CURSOR_WORKFLOW_GUIDE.md](CURSOR_WORKFLOW_GUIDE.md)
+- **Integration**: See [.cursorrules Integration](#cursorrules-integration) below
+
+---
+
 ## For iOS, macOS, and SwiftUI Projects
 
 ### Core Principles
@@ -919,5 +938,214 @@ let package = Package(
     ]
 )
 ```
+
+---
+
+## .cursorrules Integration
+
+### Setup in Your Swift Project
+
+**Step 1**: Set up global rules (one-time machine setup)
+
+See [SETUP_GUIDE.md](SETUP_GUIDE.md) for detailed instructions.
+
+Quick setup:
+```bash
+# Option 1: Environment variable
+export CURSOR_RULES_PATH="$HOME/path/to/rules"
+
+# Option 2: Git submodule
+git submodule add <rules-repo-url> .cursor-rules
+```
+
+**Step 2**: Create `.cursorrules` in your project root:
+
+```markdown
+# .cursorrules for Swift Project
+
+## Global Rules
+@${CURSOR_RULES_PATH}/CURSOR.md
+# Or if using submodule: @.cursor-rules/CURSOR.md
+
+## Language-Specific Rules
+@${CURSOR_RULES_PATH}/swift-fp-style-guide.md
+
+## Project-Specific Overrides
+
+### Tech Stack
+- **Language**: Swift 5.9+
+- **Platform**: iOS 17+ / macOS 14+
+- **UI Framework**: SwiftUI
+- **Architecture**: TCA (Composable Architecture) [optional]
+- **Testing**: XCTest
+
+### Project Structure
+```
+Sources/
+├── Domain/
+│   ├── Models/     # Value types, immutable
+│   └── Types/      # RemoteData, Result extensions
+├── Data/
+│   ├── API/        # Network layer
+│   └── Repository/ # Data access
+├── Presentation/
+│   ├── ViewModels/ # ObservableObjects
+│   └── Views/      # SwiftUI views
+└── Core/
+    ├── FP/         # FP utilities
+    └── Extensions/ # Shared extensions
+```
+
+### Mandatory for This Project
+- All models are value types (struct)
+- Functions return Result instead of throwing
+- All properties use `let` unless mutation required
+- Pattern matching for all enum cases
+- File size limit: 250 lines
+```
+
+---
+
+### Example: iOS + SwiftUI Project
+
+```markdown
+# .cursorrules for iOS + SwiftUI Project
+
+## Global Rules
+@${CURSOR_RULES_PATH}/CURSOR.md
+
+## Language Rules
+@${CURSOR_RULES_PATH}/swift-fp-style-guide.md
+
+## Project Context
+- **Platform**: iOS 17+
+- **UI**: SwiftUI
+- **Architecture**: MVVM with Composable Architecture
+- **Networking**: URLSession with Result types
+- **Persistence**: SwiftData
+
+## SwiftUI Guidelines
+- All views immutable (struct)
+- @State minimal, prefer @StateObject for ViewModels
+- Use RemoteData pattern for async state
+- Compose small views
+- Extract logic to ViewModels
+
+## Testing
+- XCTest for unit tests
+- Quick/Nimble for BDD style
+- Test pure functions extensively
+- Mock API responses
+```
+
+---
+
+### Example: iOS + Backend Integration
+
+```markdown
+# .cursorrules for iOS + Node.js Backend Project
+
+## Global Rules
+@${CURSOR_RULES_PATH}/CURSOR.md
+
+## Frontend Rules
+@${CURSOR_RULES_PATH}/swift-fp-style-guide.md
+
+## Backend Rules
+@${CURSOR_RULES_PATH}/typescript-fp-style-guide.md
+
+## Project Structure
+- `/ios` - Swift/SwiftUI app
+- `/backend` - TypeScript/Node.js API
+
+## Shared Patterns
+- Both use Result/Either types
+- Both use ADTs for domain modeling
+- Consistent error types across stack
+```
+
+---
+
+### Auto-Detection Example
+
+If using the smart template (see [SETUP_GUIDE.md](SETUP_GUIDE.md)):
+
+```markdown
+# .cursorrules (auto-detects Swift)
+
+@${CURSOR_RULES_PATH}/templates/.cursorrules_smart_template_envvar
+
+# The template will automatically detect:
+# - Language: Swift (from .swift files)
+# - Platform: iOS/macOS (from Package.swift or .xcodeproj)
+# - UI: SwiftUI (from imports)
+# - Testing: XCTest (from test targets)
+```
+
+---
+
+## Quick Reference Card
+
+**Before Every Commit** (from [CURSOR.md](CURSOR.md)):
+- [ ] All tests passing (mandatory)
+- [ ] No compiler warnings
+- [ ] SwiftLint passing
+- [ ] All files < 250 lines (mandatory)
+- [ ] Commit message follows template (mandatory)
+- [ ] TODO list updated (if applicable)
+
+**Swift-Specific Checks**:
+- [ ] All models use value types (struct)
+- [ ] Functions return Result instead of throwing
+- [ ] All properties use `let` unless mutation required
+- [ ] Pattern matching exhaustive (no default case)
+- [ ] No force unwrapping (!)
+
+---
+
+## Universal FP Pattern (Swift)
+
+From [CURSOR.md](CURSOR.md) section 5.2:
+
+```swift
+// Railway-oriented programming
+let result = validatePositive(data)
+    .flatMap(transform)      // Returns Result
+    .flatMap(save)           // Returns Result
+    .map(format)             // Pure function
+
+// Alternative: Custom operators
+let result = data
+    |> validatePositive
+    >=> transform
+    >=> save
+    >>> format
+
+// Mental model: Factory assembly line
+// - Each function = one station
+// - Errors stop the line
+// - Success continues to next station
+```
+
+---
+
+## Mandatory Rules Reference
+
+From [CURSOR.md](CURSOR.md):
+
+1. **Git Checkpoints** (Section 1) - Commit every 30-60 min
+2. **Documentation** (Section 2) - 3-tier hierarchy
+3. **Testing** (Section 3) - Comprehensive coverage, all passing
+4. **File Size** (Section 4) - 250-300 lines maximum
+
+See [CURSOR.md](CURSOR.md) for complete details.
+
+---
+
+**Version**: 2.0.0  
+**Last Updated**: 2025-10-31  
+**Maintained By**: Global Rules Repository
+
+---
 
 This guide transforms Swift into a strongly typed, pure functional language similar to Haskell while leveraging Swift's modern features like async/await and SwiftUI.

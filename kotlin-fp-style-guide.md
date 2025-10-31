@@ -1,4 +1,23 @@
 # Kotlin Functional Programming Style Guide
+
+**Version**: 2.0.0  
+**Last Updated**: 2025-10-31  
+**Part of**: [CURSOR.md](CURSOR.md) Global Rule Set  
+**Target**: Kotlin projects (Android, Ktor, Multiplatform)
+
+> **📖 Global Rules**: This document extends [CURSOR.md](CURSOR.md) with Kotlin-specific guidance. For mandatory universal rules (Git, documentation, testing, file size), see [CURSOR.md](CURSOR.md).
+
+---
+
+## Quick Links
+
+- **Mandatory Rules**: See [CURSOR.md](CURSOR.md) sections 1-4
+- **FP Principles Deep Dive**: See [CURSOR_FP_PRINCIPLES.md](CURSOR_FP_PRINCIPLES.md)
+- **Workflow Guide**: See [CURSOR_WORKFLOW_GUIDE.md](CURSOR_WORKFLOW_GUIDE.md)
+- **Integration**: See [.cursorrules Integration](#cursorrules-integration) below
+
+---
+
 ## For Android, Backend (Ktor), and Multiplatform Projects
 
 ### Core Principles
@@ -893,5 +912,227 @@ dependencies {
     testImplementation("io.arrow-kt:arrow-fx-coroutines-test:1.2.0")
 }
 ```
+
+---
+
+## .cursorrules Integration
+
+### Setup in Your Kotlin Project
+
+**Step 1**: Set up global rules (one-time machine setup)
+
+See [SETUP_GUIDE.md](SETUP_GUIDE.md) for detailed instructions.
+
+Quick setup:
+```bash
+# Option 1: Environment variable
+export CURSOR_RULES_PATH="$HOME/path/to/rules"
+
+# Option 2: Git submodule
+git submodule add <rules-repo-url> .cursor-rules
+```
+
+**Step 2**: Create `.cursorrules` in your project root:
+
+```markdown
+# .cursorrules for Kotlin Project
+
+## Global Rules
+@${CURSOR_RULES_PATH}/CURSOR.md
+# Or if using submodule: @.cursor-rules/CURSOR.md
+
+## Language-Specific Rules
+@${CURSOR_RULES_PATH}/kotlin-fp-style-guide.md
+
+## Project-Specific Overrides
+
+### Tech Stack
+- **Language**: Kotlin 1.9+
+- **Platform**: Android / JVM / Multiplatform
+- **FP Library**: Arrow
+- **Coroutines**: kotlinx-coroutines
+- **Testing**: JUnit 5, Kotest
+
+### Project Structure
+```
+src/
+├── main/kotlin/
+│   ├── domain/
+│   │   ├── models/     # Data classes, sealed classes
+│   │   └── types/      # Either, RemoteData extensions
+│   ├── data/
+│   │   ├── api/        # Network layer
+│   │   └── repository/ # Data access
+│   ├── presentation/
+│   │   ├── viewmodel/  # ViewModels with StateFlow
+│   │   └── ui/         # Compose UI
+│   └── core/
+│       ├── fp/         # FP utilities
+│       └── extensions/ # Shared extensions
+└── test/kotlin/        # Unit tests
+```
+
+### Mandatory for This Project
+- All properties use `val` unless mutation required
+- Functions return Either instead of throwing
+- Data classes for immutability
+- Sealed classes for ADTs
+- File size limit: 250 lines
+```
+
+---
+
+### Example: Android + Jetpack Compose Project
+
+```markdown
+# .cursorrules for Android + Compose Project
+
+## Global Rules
+@${CURSOR_RULES_PATH}/CURSOR.md
+
+## Language Rules
+@${CURSOR_RULES_PATH}/kotlin-fp-style-guide.md
+
+## Project Context
+- **Platform**: Android (minSdk 26, targetSdk 34)
+- **UI**: Jetpack Compose
+- **Architecture**: MVVM with Arrow
+- **DI**: Hilt
+- **Networking**: Ktor or Retrofit with Either
+- **Storage**: Room with Either
+- **Testing**: JUnit 5, Turbine (Flow testing)
+
+## Compose Guidelines
+- All Composables are pure (no side effects in composition)
+- Use LaunchedEffect for side effects
+- StateFlow for state management
+- Either for error handling in ViewModels
+- Small, composable UI functions
+
+## Testing
+- Unit tests for ViewModels (use Turbine for Flow)
+- Compose UI tests
+- Mock repositories return Either
+- Test pure functions extensively
+```
+
+---
+
+### Example: Kotlin + Ktor Backend
+
+```markdown
+# .cursorrules for Ktor Backend Project
+
+## Global Rules
+@${CURSOR_RULES_PATH}/CURSOR.md
+
+## Language Rules
+@${CURSOR_RULES_PATH}/kotlin-fp-style-guide.md
+
+## Project Context
+- **Framework**: Ktor
+- **Database**: PostgreSQL with Exposed
+- **FP**: Arrow
+- **Validation**: Arrow validation
+- **Testing**: Ktor test tools, Kotest
+
+## Route Handlers
+- All handlers return Either
+- Use Arrow's validation for input
+- Suspend functions for async
+- Pattern match Either to status codes
+- Handle errors at route boundary
+
+## Database
+- Repository pattern with Either
+- All queries in transactions
+- Validation before DB operations
+```
+
+---
+
+### Auto-Detection Example
+
+If using the smart template (see [SETUP_GUIDE.md](SETUP_GUIDE.md)):
+
+```markdown
+# .cursorrules (auto-detects Kotlin)
+
+@${CURSOR_RULES_PATH}/templates/.cursorrules_smart_template_envvar
+
+# The template will automatically detect:
+# - Language: Kotlin (from .kt files)
+# - Platform: Android (from build.gradle.kts)
+# - FP library: Arrow (from dependencies)
+# - Testing: JUnit/Kotest (from dependencies)
+# - Framework: Ktor (from dependencies)
+```
+
+---
+
+## Quick Reference Card
+
+**Before Every Commit** (from [CURSOR.md](CURSOR.md)):
+- [ ] All tests passing (mandatory)
+- [ ] Gradle build passing
+- [ ] Detekt/ktlint passing
+- [ ] All files < 250 lines (mandatory)
+- [ ] Commit message follows template (mandatory)
+- [ ] TODO list updated (if applicable)
+
+**Kotlin-Specific Checks**:
+- [ ] All properties use `val` unless mutation required
+- [ ] Functions return Either instead of throwing
+- [ ] Data classes used for immutability
+- [ ] Sealed classes for ADTs
+- [ ] Pattern matching exhaustive (no else)
+
+---
+
+## Universal FP Pattern (Kotlin)
+
+From [CURSOR.md](CURSOR.md) section 5.2:
+
+```kotlin
+// Railway-oriented programming with Arrow
+val result = validatePositive(data)
+    .flatMap { transform(it) }      // Returns Either
+    .flatMap { save(it) }            // Returns Either
+    .map { format(it) }              // Pure function
+
+// With Arrow's computational blocks
+val result = either {
+    val validated = validatePositive(data).bind()
+    val transformed = transform(validated).bind()
+    val saved = save(transformed).bind()
+    format(saved)
+}
+
+// Mental model: Factory assembly line
+// - Each function = one station
+// - Errors stop the line
+// - Success continues to next station
+```
+
+---
+
+## Mandatory Rules Reference
+
+From [CURSOR.md](CURSOR.md):
+
+1. **Git Checkpoints** (Section 1) - Commit every 30-60 min
+2. **Documentation** (Section 2) - 3-tier hierarchy
+3. **Testing** (Section 3) - Comprehensive coverage, all passing
+4. **File Size** (Section 4) - 250-300 lines maximum
+
+See [CURSOR.md](CURSOR.md) for complete details.
+
+---
+
+**Version**: 2.0.0  
+**Last Updated**: 2025-10-31  
+**Maintained By**: Global Rules Repository
+
+---
 
 This guide transforms Kotlin into a strongly typed, pure functional language similar to Haskell while leveraging Kotlin's modern features like coroutines, null safety, and Jetpack Compose.
