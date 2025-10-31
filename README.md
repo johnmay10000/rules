@@ -1,523 +1,499 @@
-# Functional Programming Guides Collection
+# Global Cursor Rules Repository
 
-Complete set of Haskell-inspired functional programming guides for TypeScript and Python projects.
+**Universal functional programming rules and guidelines for Cursor AI**
 
----
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)]()
+[![Languages](https://img.shields.io/badge/languages-Python%20%7C%20TypeScript%20%7C%20Swift%20%7C%20Kotlin-green.svg)]()
+[![Platforms](https://img.shields.io/badge/platforms-GCP%20%7C%20AWS%20%7C%20iOS%20%7C%20Android-orange.svg)]()
 
-## 📚 Guide Overview
-
-### 1. Python FP Style Guide
-**File:** `python-fp-style-guide.md`
-
-Comprehensive functional programming style guide for Python MLX and ML projects.
-
-**Covers:**
-- Error handling with Result/Either types
-- Monadic composition (do-notation style)
-- Currying and partial application
-- Function composition and pipelines
-- Immutable data structures
-- Railway-oriented programming
-- IO and side effect management
-- Higher-order functions
-- Type-level programming with Protocols
-
-**Libraries:** `returns`, `toolz`, `mypy`
+> **Cross-language functional programming patterns, mandatory development practices, and intelligent auto-detection for Cursor AI.**
 
 ---
 
-### 2. TypeScript FP Style Guide
-**File:** `typescript-fp-style-guide.md`
+## 🎯 What Is This?
 
-Comprehensive functional programming style guide for TypeScript Next.js, Supabase, and Inngest projects.
+A **portable, production-tested** global rule set for Cursor that enforces:
+- ✅ Mandatory universal practices (Git, docs, testing, file size)
+- ✅ Functional programming patterns (Result types, railway-oriented programming)
+- ✅ Language-specific guidelines (Python, TypeScript, Swift, Kotlin)
+- ✅ Platform-specific rules (GCP, AWS)
+- ✅ Auto-detection (detects your stack automatically)
 
-**Covers:**
-- Error handling with Either/TaskEither
-- Monadic composition with fp-ts or Effect
-- Currying and function composition
-- Immutable data with readonly
-- Railway-oriented programming for APIs
-- Next.js server actions with Effect
-- Inngest functions with TaskEither
-- Higher-kinded type simulation
-- Pattern matching with discriminated unions
-
-**Libraries:** `fp-ts` or `Effect`, `monocle-ts`, `io-ts`
+**One setup, works everywhere.** Use the same FP patterns across all languages.
 
 ---
 
-### 3. Swift FP Style Guide
-**File:** `swift-fp-style-guide.md`
+## ⚡ Quick Start
 
-Comprehensive functional programming style guide for Swift iOS, macOS, and SwiftUI projects.
+### 1. One-Time Machine Setup
 
-**Covers:**
-- Error handling with Result type
-- Monadic composition with flatMap
-- Immutable data with structs and let
-- Function composition with custom operators
-- Railway-oriented programming
-- Async/await with Result
-- Pattern matching with switch
-- Optics (Lenses and Prisms)
-- SwiftUI integration
+Choose your approach:
 
-**Libraries:** Built-in Swift features, optional: `Bow`, `Composable Architecture`
+**Option A: Environment Variable** (Recommended)
+```bash
+# Add to ~/.zshrc or ~/.bashrc
+export CURSOR_RULES_PATH="$HOME/path/to/rules"
+```
 
----
+**Option B: Git Submodule**
+```bash
+# In your project
+git submodule add https://github.com/your-org/rules .cursor-rules
+```
 
-### 4. Kotlin FP Style Guide
-**File:** `kotlin-fp-style-guide.md`
+See [SETUP_GUIDE.md](SETUP_GUIDE.md) for detailed instructions.
 
-Comprehensive functional programming style guide for Kotlin Android, Backend (Ktor), and Multiplatform projects.
+### 2. Create `.cursorrules` in Your Project
 
-**Covers:**
-- Error handling with Either/Result
-- Monadic composition with flatMap
-- Immutable data classes
-- Function composition with operators
-- Railway-oriented programming
-- Suspending functions with Either
-- Sealed classes for ADTs
-- Arrow Optics for lenses
-- Jetpack Compose integration
+```markdown
+# .cursorrules
 
-**Libraries:** `Arrow` (core, fx-coroutines, optics), `kotlinx-coroutines`
+## Global Rules
+@${CURSOR_RULES_PATH}/cursor/CURSOR.md
 
----
+## Language-Specific Rules
+@${CURSOR_RULES_PATH}/cursor/python-fp-style-guide.md
+# Or: cursor/typescript-fp-style-guide.md, cursor/swift-fp-style-guide.md, cursor/kotlin-fp-style-guide.md
 
-### 5. How to Use FP Style Guides
-**File:** `how-to-use-fp-style-guides.md`
+## Project-Specific Overrides
+[Your project-specific rules here]
+```
 
-Complete setup and integration guide for using the FP style guides with Claude Code and VS Code.
+### 3. Start Coding!
 
-**Covers:**
-- Quick setup for Python and TypeScript
-- Integration methods (custom skills, project docs, templates)
-- Using with VS Code Claude Code extension
-- Project setup and directory structure
-- Best practices for FP development
-- Troubleshooting common issues
-- Tooling configuration
-
-**Essential reading** for setting up your development environment.
+Cursor now enforces:
+- Git checkpoints every 30-60 min
+- Result types for error handling
+- File size limits (250 lines)
+- Comprehensive testing
+- FP principles
 
 ---
 
-### 6. Automatic Type & ADT Generation Guide
-**File:** `automatic-type-generation-guide.md`
+## 📚 Core Documents
 
-Shows Claude how to automatically generate types and ADTs for any data flow scenario.
+### Essential Reading
 
-**Covers:**
-- Polars DataFrame operations → Schema types, Error ADTs, Result wrappers
-- MLX array operations → Shape types, Training state, Model errors
-- Supabase queries → Database types, Domain types, TaskEither operations
-- React UI components → RemoteData ADT, UI state, Form validation
-- Cross-system data flows → End-to-end type safety
-- Pattern recognition rules for automatic inference
-
-**What Claude Auto-Generates:**
-- Domain types for data structure
-- State ADTs for operation states
-- Error types for failure modes
-- Validation types for boundaries
-- Transformation types for processing
-- Result/Either/TaskEither wrappers
-
----
-
-### 7. Automatic Chain Generation Guide ⭐⭐⭐
-**File:** `automatic-chain-generation-guide.md`
-
-**⭐ MOST IMPORTANT:** Shows how Claude automatically generates complete, error-checked function chains with **identical patterns across Python, TypeScript, Swift, and Kotlin**. Developers don't need to understand monads - they just follow the pattern.
-
-**Covers:**
-- Universal pipeline pattern (same across all languages)
-- Automatic chain generation for any task
-- Pattern library (fetch-validate-save, ETL, parallel operations)
-- Maintenance guide for non-FP developers
-- Real-world examples (API endpoints, data processing, ML training)
+**[cursor/CURSOR.md](cursor/CURSOR.md)** ⭐ START HERE
+- Main global rule set
+- Mandatory universal rules
+- FP principles overview
 - Quick reference card
 
-**What This Enables:**
-- Consistent code across all projects and languages
-- Maintainable by developers who don't know FP
-- Automatic error handling
-- Same mental model (factory assembly line)
-- Copy-paste patterns
+**[cursor/SETUP_GUIDE.md](cursor/SETUP_GUIDE.md)** 🚀 SETUP
+- One-time machine configuration
+- Both portable approaches
+- Platform-specific setup (macOS, Linux, Windows)
 
-**Example:** User says "fetch user, validate age, update profile" → Claude generates complete pipeline with types, error handling, and composition in Python, TypeScript, Swift, or Kotlin.
+**[cursor/FILE_LOCATIONS_USER_GUIDE.md](cursor/FILE_LOCATIONS_USER_GUIDE.md)** 📁 FILE LOCATIONS
+- Where to put global rules
+- Where to put project rules
+- How Cursor finds files
 
----
+### Deep Dives
 
-### 8. Traversable and Foldable Guide
-**File:** `traversable-foldable-guide.md`
+**[cursor/CURSOR_FP_PRINCIPLES.md](cursor/CURSOR_FP_PRINCIPLES.md)** 🧠 FP DEEP DIVE
+- ADTs explained
+- Result/Either types
+- Monadic composition
+- Railway-oriented programming
+- Real-world examples
 
-Deep dive into implementing Haskell's Traversable and Foldable typeclasses in TypeScript and Python.
-
-**Covers:**
-- Haskell typeclass refresher
-- Type system comparison and HKT challenges
-- Complete Foldable implementations
-- Complete Traversable implementations
-- Practical examples (validation, APIs, ETL)
-- Limitations and workarounds
-- Real-world usage patterns
-- Library support comparison
-
-**Use cases:**
-- Collection validation with early exit
-- Parallel API calls with error handling
-- Batch database operations
-- ETL pipelines
-- Form validation
+**[cursor/CURSOR_WORKFLOW_GUIDE.md](cursor/CURSOR_WORKFLOW_GUIDE.md)** 🔄 WORKFLOW
+- Git checkpoint strategy
+- Commit message templates
+- Documentation hierarchy
+- TODO list management
 
 ---
 
-## 🚀 Quick Start
+## 🗂️ Language Guides
 
-### For VS Code Claude Code Extension Users
+### Functional Programming Style Guides
 
-1. **Download all guides** from this conversation
+**[cursor/python-fp-style-guide.md](cursor/python-fp-style-guide.md)** 🐍
+- For ML, data processing, cloud functions
+- Libraries: `returns`, `toolz`, `polars`
+- Testing: `pytest` with Result types
 
-2. **Add to your projects:**
-   ```bash
-   # Python MLX Project
-   cd your-mlx-project
-   mkdir -p docs
-   cp python-fp-style-guide.md docs/CODE_STYLE.md
-   
-   # TypeScript Next.js Project
-   cd your-nextjs-project
-   mkdir -p docs
-   cp typescript-fp-style-guide.md docs/CODE_STYLE.md
-   ```
+**[cursor/typescript-fp-style-guide.md](cursor/typescript-fp-style-guide.md)** 📘
+- For Next.js, backends, serverless
+- Libraries: `fp-ts`, `Effect`
+- Patterns: TaskEither, pipe, discriminated unions
 
-3. **Reference in Claude Code:**
-   ```
-   @docs/CODE_STYLE.md create a user service with proper error handling
-   ```
+**[cursor/swift-fp-style-guide.md](cursor/swift-fp-style-guide.md)** 🍎
+- For iOS, macOS, SwiftUI
+- Libraries: Built-in Result, Bow, TCA
+- Patterns: Result types, value types, Combine
 
-### For Claude.ai Web Interface Users
-
-The guides are already installed as custom skills in this interface at:
-- `/mnt/skills/user/python-fp/SKILL.md`
-- `/mnt/skills/user/typescript-fp/SKILL.md`
-
-Just start coding and Claude will automatically apply these patterns!
+**[cursor/kotlin-fp-style-guide.md](cursor/kotlin-fp-style-guide.md)** 🤖
+- For Android, Ktor, multiplatform
+- Libraries: Arrow
+- Patterns: Either, sealed classes, coroutines
 
 ---
 
-## 📖 Recommended Reading Order
+## 📖 Universal FP Pattern
 
-1. **Start here:** `how-to-use-fp-style-guides.md` - Setup and integration
-2. **Most important:** `automatic-chain-generation-guide.md` ⭐ - How Claude generates code
-3. **Also essential:** `automatic-type-generation-guide.md` - Type generation patterns
-4. **Language reference (choose your stack):**
-   - Python: `python-fp-style-guide.md`
-   - TypeScript: `typescript-fp-style-guide.md`
-   - Swift: `swift-fp-style-guide.md`
-   - Kotlin: `kotlin-fp-style-guide.md`
-5. **Advanced (optional):** `traversable-foldable-guide.md` - Advanced typeclasses
+**The same pattern works in ALL languages**:
 
----
-
-## 🎯 What These Guides Enable
-
-### Automatic Code Generation
-
-**You say:** "Fetch user from database, validate age, update profile"
-
-**Claude generates complete pipeline in your language:**
-
-**Python:**
 ```python
-def process_user(user_id: str) -> Result[dict, UserError]:
-    return (
-        fetch_user(user_id)      # Get from DB
-        .bind(validate_age)       # Check age >= 18
-        .bind(update_profile)     # Update verified status
-        .map(format_response)     # Format output
-    )
+# Python
+result = (
+    Success(data)
+    .bind(validate)      # Returns Result
+    .bind(transform)     # Returns Result
+    .map(format)         # Pure function
+)
 ```
 
-**TypeScript:**
 ```typescript
-const processUser = (userId: string): TE.TaskEither<UserError, object> =>
-  pipe(
-    fetchUser(userId),           // Get from DB
-    TE.flatMap(validateAge),     // Check age >= 18
-    TE.flatMap(updateProfile),   // Update verified status
-    TE.map(formatResponse)       // Format output
-  )
+// TypeScript
+const result = pipe(
+  data,
+  TE.flatMap(validate),    // Returns TaskEither
+  TE.flatMap(transform),   // Returns TaskEither
+  TE.map(format)           // Pure function
+)
 ```
 
-**Swift:**
 ```swift
-func processUser(_ userId: String) -> Result<[String: Any], UserError> {
-    fetchUser(userId)
-        .flatMap(validateAge)
-        .flatMap(updateProfile)
-        .map(formatResponse)
-}
+// Swift
+let result = loadData()
+    .flatMap(validate)       // Returns Result
+    .flatMap(transform)      // Returns Result
+    .map(format)             // Pure function
 ```
 
-**Kotlin:**
 ```kotlin
-fun processUser(userId: String): Either<UserError, Map<String, Any>> =
-    fetchUser(userId)
-        .flatMap { validateAge(it) }
-        .flatMap { updateProfile(it) }
-        .map { formatResponse(it) }
+// Kotlin
+val result = loadData()
+    .flatMap { validate(it) }      // Returns Either
+    .flatMap { transform(it) }     // Returns Either
+    .map { format(it) }            // Pure function
 ```
 
-**Same pattern. Same mental model. All languages.**
-
-### Code Transformation
-
-**Before (Imperative):**
-```typescript
-async function fetchUser(id: string): Promise<User> {
-  try {
-    const response = await fetch(`/api/users/${id}`)
-    if (!response.ok) throw new Error('Failed')
-    return await response.json()
-  } catch (error) {
-    throw error
-  }
-}
-```
-
-**After (Functional):**
-```typescript
-const fetchUser = (id: string): TE.TaskEither<FetchError, User> =>
-  pipe(
-    TE.tryCatch(
-      () => fetch(`/api/users/${id}`),
-      (error): FetchError => ({ _tag: 'NetworkError', message: String(error) })
-    ),
-    TE.filterOrElse(
-      (response) => response.ok,
-      (response): FetchError => ({ _tag: 'NotFound' })
-    ),
-    TE.flatMap((response) =>
-      TE.tryCatch(
-        () => response.json(),
-        (error): FetchError => ({ _tag: 'ParseError', message: String(error) })
-      )
-    )
-  )
-```
-
-### Key Benefits
-
-✅ **No more try/catch** - Use Result/Either types
-✅ **Composable error handling** - Railway-oriented programming
-✅ **Type-safe** - Compiler catches errors
-✅ **Immutable** - No accidental mutations
-✅ **Testable** - Pure functions are easy to test
-✅ **Refactorable** - Small, composable functions
-✅ **Consistent across stacks** - Same patterns in Python, TypeScript, Swift, and Kotlin
-✅ **Maintainable by anyone** - Developers don't need to understand monads
-✅ **Cross-platform** - Works for web, mobile, backend, and ML
-
-**Mental Model for Your Team:**
-> "It's like a factory assembly line. Each station does one thing. If any station fails, the line stops. If all succeed, you get the final product."
-
-No category theory required. Just follow the pattern.
+**Mental Model**: Factory assembly line
+- Each function = one station
+- Errors stop the line
+- Success continues to next station
 
 ---
 
-## 🛠️ Technology Stack
+## 🎨 Templates & Examples
 
-### Python (MLX Projects)
-```python
-# Core FP
-from returns.result import Result, Success, Failure
-from returns.pipeline import flow, pipe
-from returns.curry import curry
-from toolz import compose
+### Ready-to-Use Examples
 
-# Type checking
-mypy --strict
-```
+**[cursor/examples/python_project/](cursor/examples/python_project/)**
+- Python + GCP Cloud Functions
+- Data processing pipeline
+- Complete `.cursorrules` example
 
-### TypeScript (Next.js/Supabase/Inngest)
-```typescript
-// Option 1: fp-ts (Haskell-like)
-import * as E from 'fp-ts/Either'
-import * as TE from 'fp-ts/TaskEither'
-import { pipe } from 'fp-ts/function'
+**[cursor/examples/typescript_project/](cursor/examples/typescript_project/)**
+- TypeScript + Next.js + Supabase
+- SaaS application
+- Background jobs with Inngest
 
-// Option 2: Effect (Ergonomic)
-import { Effect, pipe } from 'effect'
-```
+**[cursor/examples/polyglot_project/](cursor/examples/polyglot_project/)**
+- Swift (iOS) + TypeScript (API) + Python (ML)
+- Multi-language full-stack
+- Shared type definitions
 
-### Swift (iOS/macOS/SwiftUI)
-```swift
-// Built-in Result type
-func divide(_ a: Double, by b: Double) -> Result<Double, Error>
+**[cursor/examples/plan_with_todo/](cursor/examples/plan_with_todo/)**
+- 3-tier documentation hierarchy
+- ARCHITECTURE_PLAN.md example
+- Sub-plan with paired TODO list
+- Cursor auto-update workflow
 
-// Optional: Advanced FP
-import Bow                    // FP library
-import ComposableArchitecture // App architecture
-```
+### Smart Templates
 
-### Kotlin (Android/Backend/Multiplatform)
-```kotlin
-// Arrow for FP
-import arrow.core.Either
-import arrow.core.raise.either
-import arrow.fx.coroutines.*
+**[cursor/templates/.cursorrules_smart_template_envvar](cursor/templates/.cursorrules_smart_template_envvar)**
+- Auto-detects language and platform
+- Uses `${CURSOR_RULES_PATH}`
+- Copy and customize
 
-// Data classes + sealed classes for ADTs
-```
+**[cursor/templates/.cursorrules_smart_template_submodule](cursor/templates/.cursorrules_smart_template_submodule)**
+- Auto-detects language and platform
+- Uses `.cursor-rules/` relative path
+- For git submodule approach
 
 ---
 
-## 📋 Style Rules Summary
+## 🔧 Auto-Detection
 
-### Universal Rules (Both Languages)
+Cursor **automatically detects** your stack:
 
-1. **No naked exceptions** - Wrap in Result/Either
-2. **No mutations** - Use immutable data structures
-3. **Explicit effects** - Mark IO and side effects
-4. **Compose functions** - Build complexity from small pieces
-5. **Curry for reuse** - Enable partial application
-6. **Type everything** - Leverage type systems
-7. **Pattern match** - Use exhaustive matching for ADTs
-8. **Small functions** - One responsibility per function
-9. **Railway-oriented** - Chain operations, handle errors at boundaries
-10. **Document purity** - Make pure vs impure clear
+**Languages**:
+- `.py` files → Python guide
+- `.ts`, `.tsx` files → TypeScript guide
+- `.swift` files → Swift guide
+- `.kt` files → Kotlin guide
+
+**Platforms**:
+- `google-cloud-*` deps → GCP guidelines
+- `aws-sdk` deps → AWS guidelines
+- `Package.swift` → iOS patterns
+- `build.gradle.kts` → Android patterns
+
+**Frameworks**:
+- `next.config.js` → Next.js patterns
+- `Podfile` → SwiftUI patterns
+- `inngest` → Background job patterns
+
+**No manual configuration needed!**
 
 ---
 
-## 🔧 Tooling Recommendations
+## 📏 Mandatory Rules Summary
 
-### Python
-```toml
-# pyproject.toml
-[tool.mypy]
-strict = true
+From [CURSOR.md](CURSOR.md):
 
-[tool.ruff]
-select = ["E", "F", "I", "N", "UP", "RUF"]
-```
+### 1. Git Checkpoints (MANDATORY)
+- ✅ Commit every **30-60 minutes**
+- ✅ After bug fixes, features, docs
+- ✅ Specific commit message format
+- ✅ Small, frequent commits
 
-### TypeScript
-```json
-{
-  "compilerOptions": {
-    "strict": true,
-    "noUncheckedIndexedAccess": true
-  }
-}
-```
+### 2. Documentation (MANDATORY)
+- ✅ **3-tier hierarchy**: ARCHITECTURE_PLAN → plans/ → YYYY_MM_DD/
+- ✅ Timestamped daily work docs
+- ✅ TODO lists paired with plans
+- ✅ Cursor auto-updates TODOs
 
-```json
-{
-  "plugins": ["functional"],
-  "rules": {
-    "functional/immutable-data": "error",
-    "functional/no-let": "warn"
-  }
-}
-```
+### 3. Testing (MANDATORY)
+- ✅ **Comprehensive coverage**: happy path + errors + edge cases
+- ✅ **80%+ coverage** for business logic
+- ✅ **All tests pass** before commit
+- ✅ 3+ tests per function
+
+### 4. File Size (MANDATORY)
+- ✅ **250-300 lines** target
+- ✅ **350 lines** absolute maximum
+- ✅ Split into modules if exceeded
+- ✅ Document exceptions
+
+---
+
+## 🚀 Recommended Patterns
+
+From [cursor/CURSOR.md](cursor/CURSOR.md):
+
+### 5. Functional Programming
+- ✅ Pure functions (no side effects)
+- ✅ Immutable data structures
+- ✅ Result/Either types (no exceptions)
+- ✅ Pattern matching (exhaustive)
+- ✅ Railway-oriented programming
+- ✅ ADTs for domain modeling
+- ✅ No defaults/fallbacks
+
+### 6. Code Organization
+- ✅ 4-layer architecture (Entry → IO → Result → Pure)
+- ✅ Clear separation of concerns
+- ✅ Small, composable functions
+
+### 7. Type Safety
+- ✅ Type-driven development
+- ✅ Define types first
+- ✅ Compiler-guided implementation
+
+---
+
+## 🌍 Platform Guidelines
+
+### Google Cloud Platform
+
+**Coming Soon**: [GCP_GUIDELINES.md](GCP_GUIDELINES.md)
+- Cloud Run Functions structure
+- GCS operations
+- Pub/Sub patterns
+- Testing with `sys.path.append()`
+
+### Amazon Web Services
+
+**Coming Soon**: [AWS_GUIDELINES.md](AWS_GUIDELINES.md)
+- Lambda function structure
+- DynamoDB operations
+- S3 patterns
+- CDK infrastructure
 
 ---
 
 ## 🎓 Learning Path
 
-### Beginner
-1. Read "How to Use" guide
-2. Set up tooling
-3. Convert one module to FP style
-4. Focus on Result/Either types
+**New to FP?** Follow this path:
 
-### Intermediate
-1. Learn function composition
-2. Master pipe and flow
-3. Implement currying patterns
-4. Build complete pipelines
+1. Read [cursor/CURSOR.md](cursor/CURSOR.md) (30 min)
+   - Understand mandatory rules
+   - See universal FP pattern
 
-### Advanced
-1. Study Traversable and Foldable
-2. Create custom type classes
-3. Implement monad transformers
-4. Design pure core architectures
+2. Read [cursor/CURSOR_FP_PRINCIPLES.md](cursor/CURSOR_FP_PRINCIPLES.md) (1 hour)
+   - Learn ADTs
+   - Understand Result types
+   - Master railway-oriented programming
 
----
+3. Choose your language guide (30 min)
+   - [Python](cursor/python-fp-style-guide.md)
+   - [TypeScript](cursor/typescript-fp-style-guide.md)
+   - [Swift](cursor/swift-fp-style-guide.md)
+   - [Kotlin](cursor/kotlin-fp-style-guide.md)
 
-## 📚 Additional Resources
+4. Try an example (15 min)
+   - Copy example `.cursorrules`
+   - Adapt to your project
+   - Start coding!
 
-### Haskell Learning
-- **Learn You a Haskell** - Free online book
-- **Haskell Programming from First Principles** - Comprehensive
-
-### Functional Programming
-- **Domain Modeling Made Functional** - Scott Wlaschin
-- **Railway-Oriented Programming** - fsharpforfunandprofit.com
-
-### Libraries
-- **fp-ts docs:** https://gcanti.github.io/fp-ts/
-- **Effect docs:** https://effect.website/
-- **returns docs:** https://returns.readthedocs.io/
-- **toolz docs:** https://toolz.readthedocs.io/
+**Total time**: ~2 hours to full productivity
 
 ---
 
-## 💡 Tips for Success
+## 💡 FAQ
 
-1. **Start small** - Convert utilities first
-2. **Be consistent** - Apply patterns uniformly
-3. **Team buy-in** - Share guides with your team
-4. **Iterate** - Refine patterns as you learn
-5. **Measure** - Track bug reduction and testability
-6. **Document** - Explain why FP benefits your project
+### Why functional programming?
+
+**Benefits**:
+- ✅ **Testability**: Pure functions easy to test
+- ✅ **Reliability**: Type system catches errors
+- ✅ **Maintainability**: Explicit, no hidden state
+- ✅ **Composability**: Build complex from simple
+- ✅ **Concurrency**: Immutability = thread-safe
+
+### Do I need to know category theory?
+
+**No!** We use the "factory assembly line" mental model:
+- Each function = one station
+- Errors stop the line
+- Success continues
+
+No monads, functors, or category theory required.
+
+### What if my team uses imperative style?
+
+**Incremental adoption**:
+- ✅ Start with new code (mandatory FP)
+- ✅ Refactor old code gradually
+- ✅ Small changes with tests
+- ✅ Monitor for improvements
+
+### Can I use this with existing codebases?
+
+**Yes!** Two approaches:
+- Add `.cursorrules` to root (new code follows rules)
+- Gradual migration (see migration guide)
+
+### What about other languages?
+
+The principles apply to **any language**:
+- Same Result/Either pattern
+- Same railway-oriented programming
+- Same ADT concepts
+- Adapt syntax to your language
 
 ---
 
-## 🤝 Using with Claude Code
-
-When working with Claude Code (VS Code extension), reference the guides:
+## 🗺️ Repository Structure
 
 ```
-Following the FP style guide in docs/CODE_STYLE.md, create a user 
-service that fetches data from Supabase using TaskEither for error 
-handling and railway-oriented programming patterns.
+rules/
+├── cursor/                             # 🎯 All Cursor files (isolated)
+│   ├── CURSOR.md                       # ⭐ Main global rule set
+│   ├── CURSOR_FP_PRINCIPLES.md         # 🧠 FP deep dive
+│   ├── CURSOR_WORKFLOW_GUIDE.md        # 🔄 Git and docs workflow
+│   ├── SETUP_GUIDE.md                  # 🚀 Initial setup
+│   ├── FILE_LOCATIONS_USER_GUIDE.md    # 📁 Where files go
+│   │
+│   ├── python-fp-style-guide.md        # 🐍 Python guide
+│   ├── typescript-fp-style-guide.md    # 📘 TypeScript guide
+│   ├── swift-fp-style-guide.md         # 🍎 Swift guide
+│   ├── kotlin-fp-style-guide.md        # 🤖 Kotlin guide
+│   │
+│   ├── templates/                      # 📋 Smart templates
+│   │   ├── .cursorrules_smart_template_envvar
+│   │   └── .cursorrules_smart_template_submodule
+│   │
+│   └── examples/                       # 🎨 Real-world examples
+│       ├── python_project/
+│       ├── typescript_project/
+│       ├── polyglot_project/
+│       └── plan_with_todo/
+│
+├── claude/                             # 🔮 Future: Claude files (isolated)
+│
+├── docs/                               # 📚 Planning docs (for this repo)
+│   ├── 2025_10_30/                    # Daily work
+│   ├── 2025_10_31/                    # Daily work
+│   └── plans/                          # Sub-plans
+│
+├── .cursorrules                        # 🔧 Rules for this repo
+├── README.md                           # 📖 This file
+└── MIGRATION_GUIDE.md                  # 🚀 Migration guide
 ```
-
-Claude Code will:
-- Read the style guide
-- Apply functional patterns
-- Use recommended libraries
-- Follow immutability rules
-- Generate type-safe code
 
 ---
 
-## 📥 Download Links
+## 🤝 Contributing
 
-All guides are available in the `/mnt/user-data/outputs/` directory:
+This is a living repository! To contribute:
 
-1. `python-fp-style-guide.md`
-2. `typescript-fp-style-guide.md`
-3. `how-to-use-fp-style-guides.md`
-4. `traversable-foldable-guide.md`
+1. Follow the rules in [CURSOR.md](CURSOR.md)
+2. Create feature plan in `docs/plans/`
+3. Create paired TODO list
+4. Make changes with tests
+5. Update documentation
+6. Submit PR
+
+---
+
+## 📜 License
+
+See LICENSE file for details.
 
 ---
 
 ## 📞 Support
 
-If you encounter issues:
-1. Check the "How to Use" troubleshooting section
-2. Review language-specific style guide
-3. Consult Traversable/Foldable guide for advanced patterns
-4. Test with minimal examples first
+**Issues**: GitHub Issues  
+**Docs**: This README + [CURSOR.md](CURSOR.md)  
+**Examples**: `examples/` directory  
 
 ---
 
-**Happy Functional Programming! 🎉**
+## 🎯 Quick Links
 
-Transform your codebase into a type-safe, composable, and maintainable system using Haskell-inspired patterns.
+**Essential**:
+- [cursor/CURSOR.md](cursor/CURSOR.md) - Main rules
+- [cursor/SETUP_GUIDE.md](cursor/SETUP_GUIDE.md) - Setup
+- [Examples](cursor/examples/) - Real-world templates
+
+**Guides**:
+- [Python](cursor/python-fp-style-guide.md)
+- [TypeScript](cursor/typescript-fp-style-guide.md)
+- [Swift](cursor/swift-fp-style-guide.md)
+- [Kotlin](cursor/kotlin-fp-style-guide.md)
+
+**Deep Dives**:
+- [FP Principles](cursor/CURSOR_FP_PRINCIPLES.md)
+- [Workflow](cursor/CURSOR_WORKFLOW_GUIDE.md)
+
+---
+
+**Version**: 1.0.0  
+**Last Updated**: 2025-10-31  
+**Status**: Production Ready ✅  
+
+---
+
+**Start here**: Read [cursor/CURSOR.md](cursor/CURSOR.md), follow [cursor/SETUP_GUIDE.md](cursor/SETUP_GUIDE.md), try an [example](cursor/examples/)!
+
+---
+
+## 📂 Why the `cursor/` Folder?
+
+**Isolation**: All Cursor-specific files are self-contained in `cursor/`
+- Easy to add parallel `claude/` folder for Claude-specific rules
+- Clear separation of concerns
+- Portable as a unit
+- No conflicts between AI tools
+
+**Future**: Add `claude/`, `copilot/`, etc. as needed!
+

@@ -24,13 +24,13 @@
 ## 🌍 GLOBAL RULES (All Projects)
 
 # Core mandatory rules - git checkpoints, FP principles, documentation
-@${CURSOR_RULES_PATH}/CURSOR.md
+@${CURSOR_RULES_PATH}/cursor/CURSOR.md
 
 # Workflow guide - git workflow, documentation hierarchy, TODO lists
-@${CURSOR_RULES_PATH}/CURSOR_WORKFLOW_GUIDE.md
+@${CURSOR_RULES_PATH}/cursor/CURSOR_WORKFLOW_GUIDE.md
 
 # FP principles deep dive - ADTs, Result types, monadic composition
-@${CURSOR_RULES_PATH}/CURSOR_FP_PRINCIPLES.md
+@${CURSOR_RULES_PATH}/cursor/CURSOR_FP_PRINCIPLES.md
 
 ---
 
@@ -44,7 +44,7 @@
 # Style: File size 250-300 lines, immutable data, pattern matching
 #
 # Uncomment if this is a Python project:
-# @${CURSOR_RULES_PATH}/python-fp-style-guide.md
+# @${CURSOR_RULES_PATH}/cursor/python-fp-style-guide.md
 
 ### TypeScript Projects
 # Detected if: package.json with "typescript" dependency exists
@@ -54,7 +54,7 @@
 # Style: File size 250-300 lines, immutable data, discriminated unions
 #
 # Uncomment if this is a TypeScript project:
-# @${CURSOR_RULES_PATH}/typescript-fp-style-guide.md
+# @${CURSOR_RULES_PATH}/cursor/typescript-fp-style-guide.md
 
 ### Swift Projects
 # Detected if: Package.swift, *.xcodeproj, or *.swift files exist
@@ -64,7 +64,7 @@
 # Style: Protocol-oriented + FP, value types, pattern matching
 #
 # Uncomment if this is a Swift project:
-# @${CURSOR_RULES_PATH}/swift-fp-style-guide.md
+# @${CURSOR_RULES_PATH}/cursor/swift-fp-style-guide.md
 
 ### Kotlin Projects
 # Detected if: build.gradle.kts, pom.xml with Kotlin, or *.kt files exist
@@ -74,7 +74,7 @@
 # Style: Data classes, sealed classes, when expressions, immutability
 #
 # Uncomment if this is a Kotlin project:
-# @${CURSOR_RULES_PATH}/kotlin-fp-style-guide.md
+# @${CURSOR_RULES_PATH}/cursor/kotlin-fp-style-guide.md
 
 ---
 
@@ -88,7 +88,7 @@
 # Structure: gc/function_name/ with main.py and requirements.txt
 #
 # Uncomment if this is a GCP project:
-# @${CURSOR_RULES_PATH}/CURSOR_CLOUD_GCP.md
+# @${CURSOR_RULES_PATH}/cursor/CURSOR_CLOUD_GCP.md
 
 ### Amazon Web Services (AWS)
 # Detected if: lambda/ folder, serverless.yml, or AWS SAM files exist
@@ -98,7 +98,7 @@
 # Structure: lambda/function_name/ with handler and requirements
 #
 # Uncomment if this is an AWS project:
-# @${CURSOR_RULES_PATH}/CURSOR_CLOUD_AWS.md
+# @${CURSOR_RULES_PATH}/cursor/CURSOR_CLOUD_AWS.md
 
 ---
 

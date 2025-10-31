@@ -7,13 +7,13 @@
 ---
 
 ## Global Rules
-@${CURSOR_RULES_PATH}/CURSOR.md
+@${CURSOR_RULES_PATH}/cursor/CURSOR.md
 
 ## Language-Specific Rules
-@${CURSOR_RULES_PATH}/python-fp-style-guide.md
+@${CURSOR_RULES_PATH}/cursor/python-fp-style-guide.md
 
 ## Platform-Specific Rules
-@${CURSOR_RULES_PATH}/GCP_GUIDELINES.md
+@${CURSOR_RULES_PATH}/cursor/GCP_GUIDELINES.md
 
 ---
 
@@ -211,7 +211,7 @@ gcloud functions deploy my-function \
 - Before-commit checklist
 
 **See Also**:
-- [CURSOR.md](../../CURSOR.md) - Mandatory universal rules
-- [python-fp-style-guide.md](../../python-fp-style-guide.md) - Python FP patterns
-- [SETUP_GUIDE.md](../../SETUP_GUIDE.md) - Initial setup instructions
+- [CURSOR.md](../CURSOR.md) - Mandatory universal rules
+- [python-fp-style-guide.md](../python-fp-style-guide.md) - Python FP patterns
+- [SETUP_GUIDE.md](../SETUP_GUIDE.md) - Initial setup instructions
 

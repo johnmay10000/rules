@@ -7,16 +7,16 @@
 ---
 
 ## Global Rules
-@${CURSOR_RULES_PATH}/CURSOR.md
+@${CURSOR_RULES_PATH}/cursor/CURSOR.md
 
 ## Language-Specific Rules (Multiple)
-@${CURSOR_RULES_PATH}/swift-fp-style-guide.md
-@${CURSOR_RULES_PATH}/typescript-fp-style-guide.md
-@${CURSOR_RULES_PATH}/python-fp-style-guide.md
+@${CURSOR_RULES_PATH}/cursor/swift-fp-style-guide.md
+@${CURSOR_RULES_PATH}/cursor/typescript-fp-style-guide.md
+@${CURSOR_RULES_PATH}/cursor/python-fp-style-guide.md
 
 ## Platform-Specific Rules
-@${CURSOR_RULES_PATH}/AWS_GUIDELINES.md
-@${CURSOR_RULES_PATH}/GCP_GUIDELINES.md
+@${CURSOR_RULES_PATH}/cursor/AWS_GUIDELINES.md
+@${CURSOR_RULES_PATH}/cursor/GCP_GUIDELINES.md
 
 ---
 
@@ -432,9 +432,9 @@ The same FP principles apply regardless of language:
 - Pattern matching
 
 **See Also**:
-- [CURSOR.md](../../CURSOR.md) - Mandatory universal rules
-- [swift-fp-style-guide.md](../../swift-fp-style-guide.md) - Swift patterns
-- [typescript-fp-style-guide.md](../../typescript-fp-style-guide.md) - TypeScript patterns
-- [python-fp-style-guide.md](../../python-fp-style-guide.md) - Python patterns
-- [SETUP_GUIDE.md](../../SETUP_GUIDE.md) - Initial setup
+- [CURSOR.md](../CURSOR.md) - Mandatory universal rules
+- [swift-fp-style-guide.md](../swift-fp-style-guide.md) - Swift patterns
+- [typescript-fp-style-guide.md](../typescript-fp-style-guide.md) - TypeScript patterns
+- [python-fp-style-guide.md](../python-fp-style-guide.md) - Python patterns
+- [SETUP_GUIDE.md](../SETUP_GUIDE.md) - Initial setup
 

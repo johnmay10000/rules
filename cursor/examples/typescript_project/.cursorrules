@@ -7,10 +7,10 @@
 ---
 
 ## Global Rules
-@${CURSOR_RULES_PATH}/CURSOR.md
+@${CURSOR_RULES_PATH}/cursor/CURSOR.md
 
 ## Language-Specific Rules
-@${CURSOR_RULES_PATH}/typescript-fp-style-guide.md
+@${CURSOR_RULES_PATH}/cursor/typescript-fp-style-guide.md
 
 ---
 
@@ -345,7 +345,7 @@ pnpm inngest:dev
 - Before-commit checklist
 
 **See Also**:
-- [CURSOR.md](../../CURSOR.md) - Mandatory universal rules
-- [typescript-fp-style-guide.md](../../typescript-fp-style-guide.md) - TypeScript FP patterns
-- [SETUP_GUIDE.md](../../SETUP_GUIDE.md) - Initial setup instructions
+- [CURSOR.md](../CURSOR.md) - Mandatory universal rules
+- [typescript-fp-style-guide.md](../typescript-fp-style-guide.md) - TypeScript FP patterns
+- [SETUP_GUIDE.md](../SETUP_GUIDE.md) - Initial setup instructions
 
