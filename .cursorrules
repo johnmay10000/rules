@@ -140,8 +140,10 @@ Create CURSOR.md, fix typos, update README, add examples, refactor templates
 
 **Daily Work Folders**: `docs/YYYY_MM_DD/`
 - All work documents go in dated folders
-- Format: `YYYYMMDD_HHMM_DESCRIPTIVE_NAME.md`
-- Example: `20251031_0900_CURSOR_MD_IMPLEMENTATION.md`
+- Format: `YYYYMMDD_NNNN_DESCRIPTIVE_NAME.md` (**MANDATORY**)
+- NNNN = 4-digit sequence (0000, 0001, 0002, ...)
+- Example: `20251031_0000_CURSOR_MD_IMPLEMENTATION.md`
+- Example: `20251031_0001_PHASE_1_COMPLETE.md`
 
 **Plans Folder**: `docs/plans/`
 - Strategic plan documents

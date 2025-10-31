@@ -326,9 +326,9 @@ const ProfileContext = createContext<ProfileState>(...)
 - [ARCHITECTURE_PLAN.md](../../ARCHITECTURE_PLAN.md)
 
 ### Daily Work Docs (Tier 3)
-- [2025-10-31 Avatar Upload Frontend](../../2025_10_31/20251031_0900_AVATAR_UPLOAD_FRONTEND.md)
-- [2025-10-30 S3 IAM Configuration](../../2025_10_30/20251030_1500_S3_IAM_CONFIG.md)
-- [2025-10-29 Profile API Implementation](../../2025_10_29/20251029_1000_PROFILE_API.md)
+- [2025-10-31 Avatar Upload Frontend](../../2025_10_31/20251031_0000_AVATAR_UPLOAD_FRONTEND.md)
+- [2025-10-30 S3 IAM Configuration](../../2025_10_30/20251030_0000_S3_IAM_CONFIG.md)
+- [2025-10-29 Profile API Implementation](../../2025_10_29/20251029_0000_PROFILE_API.md)
 
 ---
 

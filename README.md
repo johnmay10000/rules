@@ -256,7 +256,7 @@ From [CURSOR.md](CURSOR.md):
 
 ### 2. Documentation (MANDATORY)
 - ✅ **3-tier hierarchy**: ARCHITECTURE_PLAN → plans/ → YYYY_MM_DD/
-- ✅ Timestamped daily work docs
+- ✅ Sequential daily work docs (YYYYMMDD_NNNN_NAME.md)
 - ✅ TODO lists paired with plans
 - ✅ Cursor auto-updates TODOs
 

@@ -79,8 +79,11 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 
 **End of Day** (Session Checkpoint):
 ```bash
-# 1. Create session summary
-cat > docs/$(date +%Y_%m_%d)/$(date +%Y%m%d_%H%M)_SESSION_SUMMARY.md << 'EOF'
+# 1. Create session summary (use next sequence number)
+# Find next number: ls docs/$(date +%Y_%m_%d)/ | tail -1
+# If last file is 20251031_0001_*, next is 0002
+
+cat > docs/$(date +%Y_%m_%d)/$(date +%Y%m%d)_0002_SESSION_SUMMARY.md << 'EOF'
 # Session Summary - $(date +%Y-%m-%d)
 
 ## Accomplished
@@ -653,6 +656,16 @@ git commit -m "Complete Phase 1: User Profile Schema ✅"
 - Design decisions
 - Investigation results
 - Session summaries
+
+**Naming Convention** (MANDATORY):
+- Format: `YYYYMMDD_NNNN_DESCRIPTIVE_NAME.md`
+- NNNN = 4-digit sequence (0000, 0001, 0002, ...)
+- Start each day at 0000
+- Increment for each new document
+- Examples:
+  - `20251031_0000_SETUP_GUIDE.md`
+  - `20251031_0001_PHASE_1_COMPLETE.md`
+  - `20251031_0002_SESSION_SUMMARY.md`
 
 ---
 

@@ -187,9 +187,9 @@
 - [Two-Factor Auth Plan](docs/plans/TWO_FACTOR_AUTH_PLAN.md)
 
 ### Daily Work Docs (Tier 3)
-- [2025-10-31 Session Summary](docs/2025_10_31/20251031_1430_SESSION_SUMMARY.md)
-- [2025-10-31 Avatar Upload Implementation](docs/2025_10_31/20251031_0900_AVATAR_UPLOAD_IMPL.md)
-- [2025-10-30 S3 Troubleshooting](docs/2025_10_30/20251030_1500_S3_ISSUES.md)
+- [2025-10-31 Session Summary](docs/2025_10_31/20251031_0002_SESSION_SUMMARY.md)
+- [2025-10-31 Avatar Upload Implementation](docs/2025_10_31/20251031_0000_AVATAR_UPLOAD_IMPL.md)
+- [2025-10-30 S3 Troubleshooting](docs/2025_10_30/20251030_0001_S3_ISSUES.md)
 
 ---
 
