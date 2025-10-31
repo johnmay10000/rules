@@ -2178,27 +2178,69 @@ def etl_pipeline(source: str) -> Result[None, EtlError]:
 
 **Recommendation:** Use `returns` for monadic patterns, `toolz` for general FP utilities.
 
+### Kotlin
+
+| Library | Foldable | Traversable | HKT | Quality |
+|---------|----------|-------------|-----|---------|
+| **Arrow** | ✅ Full | ✅ Full | ✅ Kind<F, A> | ⭐⭐⭐⭐⭐ |
+| **arrow-fx-coroutines** | ✅ Full | ✅ Full | ✅ Kind<F, A> | ⭐⭐⭐⭐⭐ |
+| **Native Kotlin** | ✅ Good | ❌ | ❌ | ⭐⭐⭐⭐⭐ |
+
+**Recommendation:** Use **Arrow** for full typeclass support. It's the standard FP library for Kotlin with production-ready Foldable and Traversable implementations. Arrow 1.2.0+ includes excellent coroutine integration via `arrow-fx-coroutines` for parallel operations.
+
+**Dependencies:**
+```kotlin
+dependencies {
+    implementation("io.arrow-kt:arrow-core:1.2.0")
+    implementation("io.arrow-kt:arrow-fx-coroutines:1.2.0")
+}
+```
+
 ---
 
 ## Summary
 
-### Can TypeScript and Python Handle These Typeclasses?
+### Can All Four Languages Handle These Typeclasses?
 
-**Foldable:** ✅ Yes, both languages can express Foldable well
+**Foldable:** ✅ Yes, all four languages can express Foldable excellently
 - TypeScript: Full support via fp-ts/Effect
 - Python: Good support via protocols and libraries
+- Kotlin: Full support via Arrow + excellent native fold/reduce
+- Swift: Excellent native reduce + Bow library
 
-**Traversable:** ⚠️ Partially, with significant encoding overhead
-- TypeScript: Requires HKT encoding, but fp-ts/Effect handle this
-- Python: Requires Protocol workarounds, less elegant than Haskell
+**Traversable:** ✅ Yes, with varying approaches
+- TypeScript: Full support via fp-ts/Effect (HKT encoding)
+- Python: Limited, requires manual implementation
+- Kotlin: Full support via Arrow (HKT encoding with Kind<F, A>)
+- Swift: Good native support + Bow for full typeclasses
 
 ### Key Takeaways
 
-1. **Use libraries** - Don't implement from scratch (fp-ts, Effect, returns)
-2. **Foldable is easy** - Both languages handle it naturally
-3. **Traversable requires HKT** - Languages fake it with encoding tricks
-4. **Type inference suffers** - Be explicit with type annotations
-5. **Performance cost exists** - Acceptable for most applications
+1. **Use libraries** - Don't implement from scratch
+   - TypeScript: fp-ts or Effect
+   - Python: returns + toolz
+   - Kotlin: Arrow
+   - Swift: Native first, then Bow if needed
+   
+2. **Foldable is universal** - All languages handle it excellently
+   - Native support: Kotlin (fold), Swift (reduce), TypeScript (Array.reduce), Python (reduce)
+   - Library support: All have excellent options
+   
+3. **Traversable varies by language**
+   - Best: TypeScript (fp-ts/Effect), Kotlin (Arrow)
+   - Good: Swift (native + Bow)
+   - Limited: Python (manual implementation)
+   
+4. **HKT encoding trade-offs**
+   - TypeScript & Kotlin: Verbose but powerful
+   - Python: Protocol workarounds
+   - Swift: Native-first is often sufficient
+   
+5. **Best async support** - Swift's async/await is exceptional
+   - Swift: TaskGroup for parallel operations
+   - Kotlin: Arrow + coroutines (parTraverse)
+   - TypeScript: Effect for structured concurrency
+   - Python: asyncio integration
 
 ### When to Use
 
@@ -2215,11 +2257,45 @@ def etl_pipeline(source: str) -> Result[None, EtlError]:
 
 ### Further Reading
 
+**General:**
 - **Haskell Typeclassopedia:** Comprehensive typeclass guide
-- **fp-ts Documentation:** TypeScript implementation details
-- **returns Documentation:** Python FP patterns
-- **"Applicative Programming with Effects":** Original traversable paper
+- **"Applicative Programming with Effects":** Original traversable paper (McBride & Paterson)
+
+**TypeScript:**
+- **fp-ts Documentation:** Complete guide to FP in TypeScript
+- **Effect Documentation:** Modern, powerful FP library
+
+**Python:**
+- **returns Documentation:** Monadic patterns and FP utilities
+- **toolz Documentation:** Functional programming tools
+
+**Kotlin:**
+- **Arrow Documentation:** Official Arrow library guide
+- **Arrow Tutorials:** Getting started with typeclasses
+- **Arrow Examples:** Real-world usage patterns
+
+**Swift:**
+- **Swift Standard Library:** Native protocols and functional features
+- **Bow Documentation:** Functional programming library for Swift
 
 ---
 
-*This document provides a foundation for using Haskell-style typeclasses in practical TypeScript and Python development. While not as elegant as Haskell, both languages can express these powerful abstractions effectively.*
+## When to Use This Guide
+
+**Use Foldable/Traversable patterns when designing:**
+- ✅ Data structure access and transformations
+- ✅ Collection validation with early exit
+- ✅ Async/parallel operations on collections
+- ✅ Data pipelines (ETL, processing)
+- ✅ Form validation across fields
+- ✅ API response aggregation
+
+**Consider this guideline for:**
+- Data structure design decisions
+- Data flow through modules
+- Collection update strategies
+- Error handling in transformations
+
+---
+
+*This document provides comprehensive patterns for using Haskell-style typeclasses across Python, TypeScript, Kotlin, and Swift. Each language brings unique strengths: TypeScript's fp-ts/Effect libraries, Python's simplicity, Kotlin's Arrow with coroutines, and Swift's exceptional native async/await. Together, they demonstrate that functional data structure patterns are practical and powerful in modern development.*
