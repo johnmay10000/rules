@@ -105,8 +105,8 @@ claude/
 
 **Deliverables**:
 - [x] `docs/plans/CLAUDE_IMPLEMENTATION_PLAN.md` (this file)
-- [ ] `docs/plans/CLAUDE_IMPLEMENTATION_TODO.md`
-- [ ] `docs/2025_10_31/20251031_0930_CLAUDE_PLANNING_SUMMARY.md`
+- [x] `docs/plans/CLAUDE_IMPLEMENTATION_TODO.md`
+- [x] `docs/2025_10_31/20251031_0006_CLAUDE_PLANNING_COMPLETE.md`
 
 ---
 
@@ -130,7 +130,7 @@ claude/
 - `claude/CLAUDE_WORKFLOW_GUIDE.md` (650+ lines)
 - `claude/SETUP_GUIDE.md` (500+ lines)
 - `claude/FILE_LOCATIONS_USER_GUIDE.md` (400+ lines)
-- `docs/2025_10_31/20251031_XXXX_PHASE_1_COMPLETE.md`
+- `docs/2025_10_31/20251031_NNNN_PHASE_1_COMPLETE.md` (sequential number)
 
 **Key Adaptations**:
 - Change `.cursorrules` references → `CLAUDE.md` references
@@ -160,7 +160,7 @@ claude/
 - `claude/typescript-fp-style-guide.md` (1,150+ lines)
 - `claude/swift-fp-style-guide.md` (1,150+ lines)
 - `claude/kotlin-fp-style-guide.md` (1,150+ lines)
-- `docs/2025_10_31/20251031_XXXX_PHASE_2_COMPLETE.md`
+- `docs/2025_10_31/20251031_NNNN_PHASE_2_COMPLETE.md` (sequential number)
 
 **Claude-Specific Notes** (add to each guide):
 ```markdown
@@ -203,7 +203,7 @@ See ${CLAUDE_RULES_PATH}/claude/python-fp-style-guide.md for Python patterns.
 - `claude/templates/CLAUDE.md_smart_template_envvar` (300+ lines)
 - `claude/templates/CLAUDE.md_smart_template_submodule` (300+ lines)
 - `claude/templates/README.md` (usage guide)
-- `docs/2025_10_31/20251031_XXXX_PHASE_3_COMPLETE.md`
+- `docs/2025_10_31/20251031_NNNN_PHASE_3_COMPLETE.md` (sequential number)
 
 **Template Structure**:
 ```markdown
@@ -258,7 +258,7 @@ Contents of ${CLAUDE_RULES_PATH}/claude/CLAUDE.md:
 - `claude/examples/polyglot_project/CLAUDE.md`
 - `claude/examples/polyglot_project/README.md`
 - `claude/examples/plan_with_todo/` (full example)
-- `docs/2025_10_31/20251031_XXXX_PHASE_4_COMPLETE.md`
+- `docs/2025_10_31/20251031_NNNN_PHASE_4_COMPLETE.md` (sequential number)
 
 **Example Content**:
 Each example includes:
@@ -286,7 +286,7 @@ Each example includes:
 - Updated `README.md` (add Claude section)
 - `claude/README.md` (overview)
 - Updated `.cursorrules`
-- `docs/2025_10_31/20251031_XXXX_PHASE_5_COMPLETE.md`
+- `docs/2025_10_31/20251031_NNNN_PHASE_5_COMPLETE.md` (sequential number)
 
 ---
 
@@ -305,8 +305,8 @@ Each example includes:
 7. Final git checkpoint: "Claude implementation v1.0.0 COMPLETE"
 
 **Deliverables**:
-- `docs/2025_10_31/20251031_XXXX_TESTING_RESULTS.md`
-- `docs/2025_10_31/20251031_XXXX_COMPLETION_SUMMARY.md`
+- `docs/2025_10_31/20251031_NNNN_TESTING_RESULTS.md` (sequential number)
+- `docs/2025_10_31/20251031_NNNN_COMPLETION_SUMMARY.md` (sequential number)
 - `CLAUDE_COMPLETION_CHECKLIST.md` (root level)
 
 ---
@@ -393,13 +393,28 @@ Each example includes:
 - Users can implement detection logic if needed
 - Focus on clear documentation
 
-### 5. Daily Work Documentation
-**Decision**: Save all work in `docs/2025_10_31/` with timestamped filenames
+### 5. Daily Work Documentation Naming (MANDATORY)
+**Decision**: Use sequential numbered filenames in `docs/YYYY_MM_DD/` folders
+**Format**: `YYYYMMDD_NNNN_DESCRIPTIVE_NAME.md`
+- **YYYYMMDD**: Date with NO separators (e.g., 20251031)
+- **NNNN**: 4-digit sequential number starting at 0000 (e.g., 0000, 0001, 0002, ... 0010, 0011, ...)
+- **DESCRIPTIVE_NAME**: ALL_CAPS with underscores (e.g., PHASE_1_COMPLETE)
+
+**Examples**:
+- ✅ `20251031_0000_MANDATORY_GIT_CHECKPOINTS.md`
+- ✅ `20251031_0001_FILE_LOCATIONS_USER_GUIDE_PORTABLE.md`
+- ✅ `20251031_0006_CLAUDE_PLANNING_COMPLETE.md`
+- ❌ `20251031_0930_SUMMARY.md` (timestamp instead of sequential number)
+- ❌ `2025_10_31_0000_SUMMARY.md` (has date separators)
+- ❌ `SUMMARY.md` (missing date and number)
+
 **Rationale**:
-- Follows existing repo convention
-- Automatic chronological sorting
-- Easy to find work by date/time
-- Format: `YYYYMMDD_HHMM_DESCRIPTIVE_NAME.md`
+- Follows existing repo convention (see docs/2025_10_30/ and docs/2025_10_31/)
+- Automatic chronological sorting within each day
+- Clear document creation order
+- No time-of-day ambiguity (0000 = first doc, 0001 = second, etc.)
+- Easy to reference (date + sequence number)
+- **MANDATORY**: Must use this format, NO exceptions
 
 ---
 
