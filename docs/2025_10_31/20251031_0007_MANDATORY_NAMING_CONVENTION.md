@@ -1,290 +1,270 @@
-# Mandatory Documentation Naming Convention
+# MANDATORY_NAMING_CONVENTION.md - Sequential Numbering Update
 
-**Date**: 2025-10-31
-**Sequence**: 0007
-**Priority**: 🔥 MANDATORY
-**User Requirement**: "adjust the naming convention to match your existing format with sequential numbers instead of timestamps and have it mandatory"
-
----
-
-## 📋 Summary
-
-Updated all planning documents to enforce **sequential number format** for daily work documentation filenames instead of timestamp format. This matches the existing convention used throughout the repository.
+**Date**: 2025-10-31  
+**Status**: ✅ COMPLETE  
+**Impact**: All future Tier 3 documents  
 
 ---
 
-## 🎯 Naming Convention (MANDATORY)
+## 🎯 Change Summary
 
-### Format
-
-```
-YYYYMMDD_NNNN_DESCRIPTIVE_NAME.md
-```
-
-**Components**:
-1. **YYYYMMDD**: Date with NO separators (e.g., `20251031`)
-2. **NNNN**: 4-digit sequential number starting at 0000 (e.g., `0000`, `0001`, `0002`, ... `0010`, `0011`, ...)
-3. **DESCRIPTIVE_NAME**: ALL_CAPS with underscores (e.g., `PHASE_1_COMPLETE`)
-
-### Examples
-
-**✅ CORRECT**:
-```
-20251031_0000_MANDATORY_GIT_CHECKPOINTS.md
-20251031_0001_FILE_LOCATIONS_USER_GUIDE_PORTABLE.md
-20251031_0002_PHASE_0_COMPLETE_SUMMARY.md
-20251031_0003_RULE_TAXONOMY.md
-20251031_0004_MANDATORY_RULES_EXTRACTION.md
-20251031_0005_PHASE_1_COMPLETE_SUMMARY.md
-20251031_0006_CLAUDE_PLANNING_COMPLETE.md
-20251031_0007_MANDATORY_NAMING_CONVENTION.md
-```
-
-**❌ INCORRECT**:
-```
-20251031_0930_SUMMARY.md              # Using timestamp instead of sequential number
-2025_10_31_0000_SUMMARY.md            # Has date separators
-20251031_SUMMARY.md                   # Missing sequential number
-SUMMARY.md                            # Missing date and number
-20251031_07_SUMMARY.md                # Only 2 digits instead of 4
-```
+Updated mandatory naming convention for daily work documents (Tier 3) from timestamp-based to sequence-based.
 
 ---
 
-## 📂 Location Rules
+## 📝 Change Details
 
-### Daily Work Documents
+### Old Format (Deprecated)
 
-**Location**: `docs/YYYY_MM_DD/` (dated folders)
+```
+❌ YYYYMMDD_HHMM_NAME.md
+❌ 20251031_0900_SETUP.md
+❌ 20251031_1430_IMPLEMENTATION.md
+❌ 20251031_1700_SUMMARY.md
+```
 
-**Examples**:
-- `docs/2025_10_30/` - October 30, 2025 work
-- `docs/2025_10_31/` - October 31, 2025 work (today)
-- `docs/2025_11_01/` - November 1, 2025 work
+**Problems**:
+- Time collisions (multiple docs same hour)
+- Timezone confusion
+- Harder to reference ("the 14:30 doc")
+- No clear ordering within same time
 
-### Sequential Numbering Within Each Day
+### New Format (MANDATORY)
 
-**Each day starts fresh at 0000**:
-- `docs/2025_10_31/20251031_0000_*.md` (first doc of the day)
-- `docs/2025_10_31/20251031_0001_*.md` (second doc of the day)
-- `docs/2025_10_31/20251031_0002_*.md` (third doc of the day)
-- ... continues through 9999 if needed
+```
+✅ YYYYMMDD_NNNN_NAME.md
+✅ 20251031_0000_SETUP.md
+✅ 20251031_0001_IMPLEMENTATION.md
+✅ 20251031_0002_SUMMARY.md
+```
 
-**Next day resets**:
-- `docs/2025_11_01/20251101_0000_*.md` (first doc of next day)
-- `docs/2025_11_01/20251101_0001_*.md` (second doc of next day)
+**Benefits**:
+- ✅ Clear sequential ordering
+- ✅ No collisions (unlimited docs per day)
+- ✅ Easy to reference ("doc 0002")
+- ✅ Simple automation (just increment)
+- ✅ Better sorting (alphabetical = chronological)
+- ✅ No timezone issues
 
 ---
 
-## 🔍 Rationale
+## 📋 Sequence Rules
 
-### Why Sequential Numbers Instead of Timestamps?
+1. **Start each day at 0000**
+   - First doc: `20251031_0000_*.md`
 
-1. **Follows Existing Convention**
-   - All docs in `docs/2025_10_30/` use sequential numbers (0000-0014)
-   - All docs in `docs/2025_10_31/` use sequential numbers (0000-0007)
-   - Consistency with established pattern
+2. **Increment for each new doc**
+   - Second doc: `20251031_0001_*.md`
+   - Third doc: `20251031_0002_*.md`
+   - etc.
 
-2. **Chronological Sorting**
-   - Files automatically sort in creation order
-   - No ambiguity about document sequence
-   - Easy to see "this was the 5th document created today"
+3. **Use 4-digit zero-padding**
+   - ✅ 0000, 0001, 0002, ..., 0099, 0100, ...
+   - ❌ 0, 1, 2, ... (not zero-padded)
 
-3. **Clear Document Order**
-   - 0000 = first document of the day
-   - 0001 = second document of the day
-   - 0002 = third document of the day
-   - Sequence is explicit and unambiguous
+4. **No gaps in sequence**
+   - Use next available number
+   - Don't skip numbers
 
-4. **No Time-of-Day Confusion**
-   - Timestamps (0930, 1430) can be ambiguous across timezones
-   - Sequential numbers are timezone-independent
-   - No confusion about "when" vs "what order"
-
-5. **Easy References**
-   - Can reference as "doc 6 from Oct 31" instead of "doc from 09:30 on Oct 31"
-   - Simpler mental model
-
-6. **4-Digit Format**
-   - Supports up to 10,000 documents per day (0000-9999)
-   - Consistent width for sorting and display
-   - Professional appearance
+5. **Reset each day**
+   - Each day starts at 0000
+   - Independent from previous days
 
 ---
 
-## 📝 What Changed
+## 📚 Updated Documentation
 
-### Files Renamed
+### Files Modified
 
-**Before** (incorrect timestamp format):
-```
-docs/2025_10_31/20251031_0930_CLAUDE_PLANNING_COMPLETE.md
-```
+1. **cursor/CURSOR.md**
+   - Section 2: Documentation Structure
+   - Updated Tier 3 naming convention
+   - Added mandatory examples
 
-**After** (correct sequential format):
-```
-docs/2025_10_31/20251031_0006_CLAUDE_PLANNING_COMPLETE.md
-```
+2. **cursor/CURSOR_WORKFLOW_GUIDE.md**
+   - Daily workflow section
+   - Updated examples
+   - Added sequence number instructions
 
-### Documents Updated
+3. **cursor/FILE_LOCATIONS_USER_GUIDE.md**
+   - Tier 3 section (needs manual review)
 
-1. **CLAUDE_IMPLEMENTATION_PLAN.md**
-   - Updated all filename examples
-   - Changed `YYYYMMDD_HHMM_` → `YYYYMMDD_NNNN_`
-   - Added mandatory naming convention section
-   - Updated all phase deliverables
+4. **.cursorrules** (this repo)
+   - Daily Work Folders section
+   - Updated format and examples
 
-2. **CLAUDE_IMPLEMENTATION_TODO.md**
-   - Updated all deliverable filename examples
-   - Changed `20251031_XXXX_` → `20251031_NNNN_`
-   - Clarified sequential number requirement
+5. **cursor/examples/plan_with_todo/**
+   - ARCHITECTURE_PLAN.md
+   - USER_PROFILE_PLAN.md
+   - Updated cross-references
 
-3. **This Document**
-   - Created to explain the mandatory convention
-   - Provides clear examples and rationale
+6. **README.md**
+   - Mandatory rules section
+   - Updated description
+
+### Files Created
+
+1. **cursor/NAMING_CONVENTION.md** ⭐ NEW
+   - Complete guide to new format
+   - Migration instructions
+   - Examples and anti-patterns
+   - Automation helpers
+   - Quick reference
 
 ---
 
-## ⚠️ Enforcement
+## ✅ This Repository Compliance
 
-### This Rule is MANDATORY
+**Status**: ✅ ALREADY COMPLIANT!
 
-- **ALL daily work documents** MUST follow this format
-- **NO exceptions** allowed
-- **NO timestamp format** (0930, 1430, etc.)
-- **NO date separators** (2025_10_31)
-- **MUST use 4-digit sequential numbers** (0000-9999)
+This repository's existing documents already follow the new format:
 
-### How to Determine Next Number
+```
+docs/2025_10_30/
+├── 20251030_0000_GLOBAL_RULESET_IMPLEMENTATION_PLAN.md
+├── 20251030_0001_TODO_LIST.md
+├── 20251030_0002_ANALYSIS_SUMMARY.md
+├── 20251030_0003_DOCUMENTATION_HIERARCHY_ADDITION.md
+└── ... (all following NNNN format)
 
-1. List files in current day's folder: `ls docs/2025_10_31/`
-2. Find highest number (e.g., `20251031_0006_...`)
-3. Increment by 1 (e.g., next is `0007`)
-4. Use that number for new document
+docs/2025_10_31/
+├── 20251031_0000_MANDATORY_GIT_CHECKPOINTS.md
+├── 20251031_0001_FILE_LOCATIONS_USER_GUIDE_PORTABLE.md
+├── 20251031_0002_PHASE_0_COMPLETE_SUMMARY.md
+└── ... (all following NNNN format)
+```
 
-**Command to find next number**:
+**No migration needed for this repo!** ✅
+
+---
+
+## 🔧 Implementation for New Projects
+
+### Creating New Document
+
 ```bash
-# List files, extract numbers, find max, add 1
-ls docs/2025_10_31/ | grep -o '_[0-9]\{4\}_' | sort -r | head -1
-# Then increment manually
+# Find last sequence number
+LAST=$(ls docs/$(date +%Y_%m_%d)/ 2>/dev/null | tail -1 | cut -d'_' -f2)
+
+# Calculate next
+if [ -z "$LAST" ]; then
+  NEXT="0000"
+else
+  NEXT=$(printf "%04d" $((10#$LAST + 1)))
+fi
+
+# Create file
+touch docs/$(date +%Y_%m_%d)/$(date +%Y%m%d)_${NEXT}_YOUR_NAME.md
+```
+
+### Starting New Day
+
+```bash
+# Create folder
+mkdir -p docs/$(date +%Y_%m_%d)
+
+# First doc of the day
+touch docs/$(date +%Y_%m_%d)/$(date +%Y%m%d)_0000_DAILY_KICKOFF.md
 ```
 
 ---
 
-## 📚 Where This Applies
+## 📖 For Teams
 
-### Tier 3: Execution Documents (MANDATORY)
+### Onboarding New Members
 
-**Location**: `docs/YYYY_MM_DD/`
-**Purpose**: Daily work logs, decisions, summaries, phase completions
-**Naming**: `YYYYMMDD_NNNN_DESCRIPTIVE_NAME.md`
+1. **Read**: `cursor/NAMING_CONVENTION.md`
+2. **See examples**: This repo's `docs/` folder
+3. **Practice**: Create a test document
+4. **Use**: In your daily work
 
-### Tier 1 & 2: Strategic/Tactical Documents (NO NUMBERS)
+### Common Questions
 
-**Tier 1** (Strategic):
-- Location: Project root
-- Format: `ARCHITECTURE_PLAN.md` (NO date, NO number)
+**Q: What if I delete a document?**  
+A: Don't reuse that sequence number. Just skip it.
 
-**Tier 2** (Tactical):
-- Location: `docs/plans/`
-- Format: `FEATURE_NAME_PLAN.md`, `FEATURE_NAME_TODO.md` (NO date, NO number)
+**Q: What's the maximum sequence?**  
+A: 9999 (more than enough for any day)
 
----
+**Q: Can I use timestamps in the content?**  
+A: Yes! Content can have timestamps. Only the filename uses sequences.
 
-## ✅ Verification Checklist
-
-Before committing any daily work document:
-
-- [ ] Filename starts with `YYYYMMDD_` (8 digits, no separators)
-- [ ] Next is `NNNN_` (4 digits, sequential number)
-- [ ] Descriptive name is `ALL_CAPS_WITH_UNDERSCORES`
-- [ ] File is in correct dated folder (`docs/YYYY_MM_DD/`)
-- [ ] Number is next in sequence (checked with `ls`)
-- [ ] File extension is `.md`
-
-**Example verification**:
-```
-✅ docs/2025_10_31/20251031_0007_MANDATORY_NAMING_CONVENTION.md
-
-Breaking it down:
-✅ docs/2025_10_31/          - Correct dated folder
-✅ 20251031                  - Date with no separators
-✅ 0007                      - 4-digit sequential number (follows 0006)
-✅ MANDATORY_NAMING_CONVENTION - ALL_CAPS descriptive name
-✅ .md                       - Correct extension
-```
+**Q: What if two people create docs simultaneously?**  
+A: Use the next available number. Git will catch conflicts.
 
 ---
 
-## 🔄 Git History
+## 🎯 Enforcement
 
-### Files Affected
+### Mandatory Status
 
-1. Renamed file:
-   - `docs/2025_10_31/20251031_0930_CLAUDE_PLANNING_COMPLETE.md` → `20251031_0006_CLAUDE_PLANNING_COMPLETE.md`
+This naming convention is **MANDATORY** for:
+- ✅ All Cursor projects
+- ✅ All Tier 3 documents
+- ✅ Daily work folders (docs/YYYY_MM_DD/)
 
-2. Updated documents:
-   - `docs/plans/CLAUDE_IMPLEMENTATION_PLAN.md` (updated all filename examples)
-   - `docs/plans/CLAUDE_IMPLEMENTATION_TODO.md` (updated all deliverable examples)
+### Cursor Automation
 
-3. New document:
-   - `docs/2025_10_31/20251031_0007_MANDATORY_NAMING_CONVENTION.md` (this file)
-
-### Next Steps
-
-1. Update `cursor/CURSOR.md` documentation section (Tier 3 filename format)
-2. Update `.cursorrules` with naming convention requirement
-3. Git checkpoint: "Enforce mandatory sequential numbering for daily docs"
+Cursor AI should:
+- ✅ Auto-detect next sequence number
+- ✅ Create files with correct naming
+- ✅ Update cross-references automatically
+- ✅ Enforce format in commits
 
 ---
 
-## 📖 References
+## 📊 Impact
 
-### Existing Files Following This Convention
+### Affected Documents
 
-**October 30, 2025** (`docs/2025_10_30/`):
-- 0000 through 0014 (15 documents)
+- **Tier 3 only**: Daily work documents
+- **Not affected**: 
+  - Tier 1 (ARCHITECTURE_PLAN.md)
+  - Tier 2 (docs/plans/*.md)
+  - README files
+  - Code files
 
-**October 31, 2025** (`docs/2025_10_31/`):
-- 0000: MANDATORY_GIT_CHECKPOINTS
-- 0001: FILE_LOCATIONS_USER_GUIDE_PORTABLE
-- 0002: PHASE_0_COMPLETE_SUMMARY
-- 0003: RULE_TAXONOMY
-- 0004: MANDATORY_RULES_EXTRACTION
-- 0005: PHASE_1_COMPLETE_SUMMARY
-- 0006: CLAUDE_PLANNING_COMPLETE
-- 0007: MANDATORY_NAMING_CONVENTION (this document)
+### Breaking Change
+
+⚠️ Projects using old timestamp format must migrate:
+1. Rename existing files to sequence format
+2. Update cross-references
+3. Update ARCHITECTURE_PLAN.md links
+4. Commit changes
 
 ---
 
-## 🎯 Impact
+## ✨ Benefits Recap
 
-### Positive Changes
+1. **Clarity**: Sequence is clearer than timestamp
+2. **Simplicity**: Easy to understand and automate
+3. **Consistency**: Same across all timezones
+4. **Scalability**: Unlimited docs per day
+5. **Sortability**: Alphabetical = chronological
+6. **Reference-ability**: Easy to cite ("doc 0042")
 
-1. ✅ **Consistency**: All daily work docs follow same pattern
-2. ✅ **Clarity**: Explicit creation order within each day
-3. ✅ **Simplicity**: Easy to determine next number
-4. ✅ **Professional**: Consistent 4-digit format
-5. ✅ **Maintainable**: Clear rules, easy to enforce
+---
 
-### What Users Must Do
+## 🔗 See Also
 
-- Check existing files in day's folder before creating new document
-- Use next sequential number (increment highest by 1)
-- Never use timestamps (0930, 1430, etc.)
-- Always use 4-digit format (0000, not 0, 00, or 000)
+- **Full Guide**: `cursor/NAMING_CONVENTION.md`
+- **Workflow**: `cursor/CURSOR_WORKFLOW_GUIDE.md`
+- **Main Rules**: `cursor/CURSOR.md` Section 2
+- **Examples**: This repo's `docs/` folders
 
 ---
 
 ## ✅ Status
 
-**Mandatory Naming Convention**: ✅ ENFORCED
-**Planning Documents**: ✅ UPDATED
-**Example Files**: ✅ RENAMED
-**Documentation**: ✅ COMPLETE
+**Change**: ✅ COMPLETE  
+**Documentation**: ✅ UPDATED  
+**This Repo**: ✅ COMPLIANT  
+**Enforcement**: ✅ MANDATORY  
 
-**Next**: Update cursor/CURSOR.md and commit changes
+**From now on, all Tier 3 documents MUST use sequential NNNN format!**
 
 ---
 
-**End of Document**
+**Version**: 1.1.0  
+**Last Updated**: 2025-10-31  
+**Status**: MANDATORY ✅
