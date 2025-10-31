@@ -1,0 +1,351 @@
+# .cursorrules - TypeScript Next.js + Supabase Project
+
+**Project**: SaaS Application with Real-time Features  
+**Stack**: Next.js 14, Supabase, fp-ts, Inngest  
+**Platform**: Vercel (Frontend) + Supabase (Backend)  
+
+---
+
+## Global Rules
+@${CURSOR_RULES_PATH}/CURSOR.md
+
+## Language-Specific Rules
+@${CURSOR_RULES_PATH}/typescript-fp-style-guide.md
+
+---
+
+## Project Context
+
+### Tech Stack
+- **Language**: TypeScript 5.0+
+- **Framework**: Next.js 14 (App Router)
+- **FP Library**: fp-ts (or Effect for new code)
+- **Database**: Supabase (PostgreSQL)
+- **Auth**: Supabase Auth
+- **Storage**: Supabase Storage
+- **Background Jobs**: Inngest
+- **Testing**: Vitest + Playwright
+- **Validation**: zod
+
+### Project Structure
+```
+project_root/
+├── src/
+│   ├── app/                    # Next.js App Router
+│   │   ├── api/                # API routes
+│   │   │   └── users/
+│   │   │       └── route.ts    # TaskEither handlers
+│   │   ├── (dashboard)/        # Protected routes
+│   │   └── (auth)/             # Auth routes
+│   ├── lib/
+│   │   ├── types/              # ADTs and type definitions
+│   │   │   ├── errors.ts       # Discriminated unions
+│   │   │   ├── domain.ts       # Domain types
+│   │   │   └── api.ts          # API types
+│   │   ├── fp/                 # FP utilities
+│   │   │   ├── result.ts       # TaskEither helpers
+│   │   │   ├── validation.ts   # Validation with Either
+│   │   │   └── compose.ts      # Composition utils
+│   │   ├── db/                 # Database operations
+│   │   │   ├── users.ts        # User queries (TaskEither)
+│   │   │   └── posts.ts        # Post queries (TaskEither)
+│   │   ├── supabase/           # Supabase client
+│   │   │   ├── client.ts       # Browser client
+│   │   │   └── server.ts       # Server client
+│   │   └── inngest/            # Background jobs
+│   │       ├── client.ts
+│   │       └── functions/
+│   │           └── send-email.ts
+│   └── components/             # React components
+│       ├── ui/                 # shadcn/ui components
+│       └── features/           # Feature components
+├── tests/
+│   ├── unit/                   # Unit tests (Vitest)
+│   └── e2e/                    # E2E tests (Playwright)
+├── inngest/                    # Inngest function definitions
+├── .env.local                  # Environment variables
+├── tsconfig.json               # TypeScript config (strict)
+└── .cursorrules                # This file
+```
+
+---
+
+## Mandatory Rules for This Project
+
+### Code Style (from CURSOR.md)
+- ✅ All files **< 250 lines** (mandatory)
+- ✅ Explicit return types on **all functions**
+- ✅ All async operations **return TaskEither**
+- ✅ No exceptions except at boundaries
+- ✅ Discriminated unions for all error types
+- ✅ No `any` types
+
+### Testing (from CURSOR.md)
+- ✅ **80%+ coverage** for business logic
+- ✅ **3+ tests per function** minimum
+- ✅ All tests **must pass** before commit
+- ✅ Mock Supabase client in tests
+
+### Next.js Patterns (Project-Specific)
+- ✅ All route handlers **return TaskEither**
+- ✅ Use `pipe` for composition
+- ✅ Pattern match errors to HTTP status codes
+- ✅ Handle errors at route boundary
+- ✅ Server components by default
+
+### Git Workflow (from CURSOR.md)
+- ✅ **Commit every 30-60 min** (mandatory)
+- ✅ Commit message follows template
+- ✅ Update TODO list after each task
+
+---
+
+## Example: Next.js API Route with TaskEither
+
+```typescript
+// src/app/api/users/[id]/route.ts
+import { NextRequest, NextResponse } from 'next/server'
+import { pipe } from 'fp-ts/function'
+import * as TE from 'fp-ts/TaskEither'
+import * as E from 'fp-ts/Either'
+import { getUser } from '@/lib/db/users'
+import { ApiError } from '@/lib/types/errors'
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const result = await pipe(
+    getUser(params.id),
+    TE.flatMap(validateUser),
+    TE.map(formatUserResponse)
+  )()
+
+  return pipe(
+    result,
+    E.match(
+      handleError,
+      (user) => NextResponse.json(user, { status: 200 })
+    )
+  )
+}
+
+function handleError(error: ApiError): NextResponse {
+  switch (error._tag) {
+    case 'NotFound':
+      return NextResponse.json(
+        { error: 'User not found' },
+        { status: 404 }
+      )
+    case 'ValidationError':
+      return NextResponse.json(
+        { error: error.message },
+        { status: 400 }
+      )
+    case 'DatabaseError':
+      return NextResponse.json(
+        { error: 'Internal server error' },
+        { status: 500 }
+      )
+  }
+}
+```
+
+---
+
+## Example: Database Operation with TaskEither
+
+```typescript
+// src/lib/db/users.ts
+import * as TE from 'fp-ts/TaskEither'
+import { pipe } from 'fp-ts/function'
+import { createClient } from '@/lib/supabase/server'
+import { DbError } from '@/lib/types/errors'
+import type { User } from '@/lib/types/domain'
+
+export const getUser = (
+  id: string
+): TE.TaskEither<DbError, User> =>
+  pipe(
+    TE.tryCatch(
+      async () => {
+        const supabase = createClient()
+        const { data, error } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', id)
+          .single()
+
+        if (error) throw error
+        return data as User
+      },
+      (error): DbError => ({
+        _tag: 'DatabaseError',
+        message: String(error)
+      })
+    ),
+    TE.filterOrElse(
+      (user): user is User => user !== null,
+      (): DbError => ({ _tag: 'NotFound', id })
+    )
+  )
+```
+
+---
+
+## Example: Inngest Background Job
+
+```typescript
+// src/lib/inngest/functions/send-email.ts
+import { inngest } from '../client'
+import * as TE from 'fp-ts/TaskEither'
+import { pipe } from 'fp-ts/function'
+
+export const sendWelcomeEmail = inngest.createFunction(
+  { id: 'send-welcome-email' },
+  { event: 'user/created' },
+  async ({ event, step }) => {
+    const result = await pipe(
+      getUser(event.data.userId),
+      TE.flatMap(validateEmail),
+      TE.flatMap(sendEmail),
+      TE.map(logSuccess)
+    )()
+
+    return pipe(
+      result,
+      E.fold(
+        (error) => ({ success: false, error }),
+        (data) => ({ success: true, data })
+      )
+    )
+  }
+)
+```
+
+---
+
+## Testing Pattern
+
+```typescript
+// tests/unit/lib/db/users.test.ts
+import { describe, it, expect, vi } from 'vitest'
+import { getUser } from '@/lib/db/users'
+import * as E from 'fp-ts/Either'
+
+// Mock Supabase
+vi.mock('@/lib/supabase/server', () => ({
+  createClient: () => ({
+    from: () => ({
+      select: () => ({
+        eq: () => ({
+          single: vi.fn().mockResolvedValue({
+            data: { id: '123', name: 'Test User' },
+            error: null
+          })
+        })
+      })
+    })
+  })
+}))
+
+describe('getUser', () => {
+  it('returns Right with user data on success', async () => {
+    const result = await getUser('123')()
+    
+    expect(E.isRight(result)).toBe(true)
+    if (E.isRight(result)) {
+      expect(result.right.name).toBe('Test User')
+    }
+  })
+
+  it('returns Left with NotFound on missing user', async () => {
+    const result = await getUser('999')()
+    
+    expect(E.isLeft(result)).toBe(true)
+    if (E.isLeft(result)) {
+      expect(result.left._tag).toBe('NotFound')
+    }
+  })
+})
+```
+
+---
+
+## Before Every Commit Checklist
+
+- [ ] All tests passing (`pnpm test`)
+- [ ] Type checks passing (`pnpm type-check`)
+- [ ] Linters passing (`pnpm lint`)
+- [ ] Build succeeds (`pnpm build`)
+- [ ] All files < 250 lines
+- [ ] Commit message follows template
+- [ ] TODO list updated (if applicable)
+
+---
+
+## Quick Commands
+
+```bash
+# Install dependencies
+pnpm install
+
+# Run dev server
+pnpm dev
+
+# Run tests
+pnpm test
+pnpm test:watch
+
+# Type check
+pnpm type-check
+
+# Lint
+pnpm lint
+pnpm lint:fix
+
+# Build
+pnpm build
+
+# E2E tests
+pnpm test:e2e
+
+# Run Inngest dev server
+pnpm inngest:dev
+```
+
+---
+
+## TypeScript Configuration
+
+```json
+// tsconfig.json (strict mode required)
+{
+  "compilerOptions": {
+    "strict": true,
+    "strictNullChecks": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitAny": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true
+  }
+}
+```
+
+---
+
+**This .cursorrules file demonstrates**:
+- Integration with global rules (CURSOR.md)
+- Language-specific rules (TypeScript FP guide)
+- Framework patterns (Next.js App Router)
+- Database integration (Supabase with TaskEither)
+- Background jobs (Inngest)
+- Testing strategy (Vitest + Playwright)
+- Before-commit checklist
+
+**See Also**:
+- [CURSOR.md](../../CURSOR.md) - Mandatory universal rules
+- [typescript-fp-style-guide.md](../../typescript-fp-style-guide.md) - TypeScript FP patterns
+- [SETUP_GUIDE.md](../../SETUP_GUIDE.md) - Initial setup instructions
+

@@ -1,0 +1,440 @@
+# .cursorrules - Polyglot Full-Stack Project
+
+**Project**: Mobile App + Backend + ML Pipeline  
+**Stack**: Swift (iOS), TypeScript (Backend), Python (ML)  
+**Platform**: iOS, AWS Lambda, GCP Cloud Functions  
+
+---
+
+## Global Rules
+@${CURSOR_RULES_PATH}/CURSOR.md
+
+## Language-Specific Rules (Multiple)
+@${CURSOR_RULES_PATH}/swift-fp-style-guide.md
+@${CURSOR_RULES_PATH}/typescript-fp-style-guide.md
+@${CURSOR_RULES_PATH}/python-fp-style-guide.md
+
+## Platform-Specific Rules
+@${CURSOR_RULES_PATH}/AWS_GUIDELINES.md
+@${CURSOR_RULES_PATH}/GCP_GUIDELINES.md
+
+---
+
+## Project Context
+
+### Multi-Language Architecture
+
+**Frontend** (Swift - iOS App):
+- Swift 5.9+ with SwiftUI
+- Composable Architecture (TCA)
+- Result types for error handling
+- Communicates with TypeScript backend
+
+**Backend** (TypeScript - API):
+- TypeScript 5.0+ with AWS Lambda
+- fp-ts for functional programming
+- DynamoDB for persistence
+- Serves iOS app and ML pipeline
+
+**ML Pipeline** (Python - Data Processing):
+- Python 3.11+ with Polars
+- returns for FP patterns
+- Google Cloud Functions
+- Processes data, returns results to backend
+
+### Project Structure
+```
+project_root/
+├── ios/                        # Swift iOS app
+│   ├── Sources/
+│   │   ├── Domain/             # Business logic
+│   │   ├── Data/               # API clients (Result)
+│   │   ├── Presentation/       # ViewModels + Views
+│   │   └── Core/               # FP utilities
+│   ├── Tests/
+│   └── .cursorrules            # iOS-specific rules
+│
+├── backend/                    # TypeScript API
+│   ├── src/
+│   │   ├── functions/          # Lambda handlers
+│   │   ├── lib/
+│   │   │   ├── types/          # Shared types
+│   │   │   ├── db/             # DynamoDB (TaskEither)
+│   │   │   └── ml/             # ML service client
+│   │   └── shared/             # Cross-platform types
+│   ├── tests/
+│   └── .cursorrules            # Backend-specific rules
+│
+├── ml_pipeline/                # Python ML
+│   ├── src/
+│   │   ├── types/              # ADTs
+│   │   ├── pure/               # Pure ML logic
+│   │   ├── io/                 # GCS operations
+│   │   └── functions/          # Cloud Functions
+│   ├── tests/
+│   └── .cursorrules            # ML-specific rules
+│
+├── shared_types/               # Shared type definitions
+│   ├── domain.yaml             # Domain models (OpenAPI)
+│   ├── typescript/             # Generated TS types
+│   ├── swift/                  # Generated Swift types
+│   └── python/                 # Generated Python types
+│
+├── docs/                       # Shared documentation
+│   ├── ARCHITECTURE_PLAN.md    # Project-level plan
+│   ├── plans/                  # Sub-plans
+│   └── 2025_10_31/             # Daily work docs
+│
+└── .cursorrules                # This file (root)
+```
+
+---
+
+## Universal Patterns Across All Languages
+
+### 1. Consistent Error Handling
+
+All three languages use the same pattern:
+
+**Swift**:
+```swift
+func fetchData() -> Result<Data, ApiError> {
+    // ...
+}
+```
+
+**TypeScript**:
+```typescript
+const fetchData = (): TE.TaskEither<ApiError, Data> => {
+    // ...
+}
+```
+
+**Python**:
+```python
+def fetch_data() -> Result[Data, ApiError]:
+    # ...
+```
+
+### 2. Railway-Oriented Programming
+
+Same mental model, different syntax:
+
+**Swift**:
+```swift
+let result = loadData()
+    .flatMap(validate)
+    .flatMap(transform)
+    .map(format)
+```
+
+**TypeScript**:
+```typescript
+const result = pipe(
+    loadData(),
+    TE.flatMap(validate),
+    TE.flatMap(transform),
+    TE.map(format)
+)
+```
+
+**Python**:
+```python
+result = (
+    load_data()
+    .bind(validate)
+    .bind(transform)
+    .map(format)
+)
+```
+
+### 3. ADTs for Domain Modeling
+
+Consistent across languages:
+
+**Swift**:
+```swift
+enum RemoteData<T, E> {
+    case notAsked
+    case loading
+    case failure(E)
+    case success(T)
+}
+```
+
+**TypeScript**:
+```typescript
+type RemoteData<T, E> =
+    | { _tag: 'NotAsked' }
+    | { _tag: 'Loading' }
+    | { _tag: 'Failure'; error: E }
+    | { _tag: 'Success'; data: T }
+```
+
+**Python**:
+```python
+@dataclass(frozen=True)
+class NotAsked: pass
+
+@dataclass(frozen=True)
+class Loading: pass
+
+@dataclass(frozen=True)
+class Failure:
+    error: str
+
+@dataclass(frozen=True)
+class Success:
+    data: Any
+
+RemoteData = NotAsked | Loading | Failure | Success
+```
+
+---
+
+## Mandatory Rules (All Components)
+
+### Code Style (from CURSOR.md)
+- ✅ All files **< 250 lines** (all languages)
+- ✅ Type hints on **all functions** (all languages)
+- ✅ Functions **return Result/Either** (all languages)
+- ✅ No exceptions except at boundaries (all languages)
+- ✅ Immutable data structures (all languages)
+
+### Testing (from CURSOR.md)
+- ✅ **80%+ coverage** for business logic
+- ✅ **3+ tests per function** minimum
+- ✅ All tests **must pass** before commit
+- ✅ Cross-component integration tests
+
+### Git Workflow (from CURSOR.md)
+- ✅ **Commit every 30-60 min** (mandatory)
+- ✅ Commit message follows template
+- ✅ Update TODO list after each task
+- ✅ Git checkpoints at project root
+
+---
+
+## Cross-Language Type Safety
+
+### Shared Type Definitions
+
+```yaml
+# shared_types/domain.yaml (OpenAPI spec)
+components:
+  schemas:
+    User:
+      type: object
+      required:
+        - id
+        - email
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+
+    ApiError:
+      type: object
+      required:
+        - tag
+        - message
+      properties:
+        tag:
+          type: string
+          enum: [NotFound, ValidationError, ServerError]
+        message:
+          type: string
+```
+
+### Generated Types
+
+```bash
+# Generate types for all languages
+pnpm generate:types
+
+# Generates:
+# - shared_types/typescript/domain.ts
+# - shared_types/swift/Domain.swift
+# - shared_types/python/domain.py
+```
+
+---
+
+## Component-Specific Rules
+
+### iOS App (.cursorrules in ios/)
+```markdown
+# Inherits from root .cursorrules
+# Additional iOS-specific rules:
+- Use TCA for state management
+- All views are value types (struct)
+- Use Combine for reactive patterns
+- API client returns Result types
+```
+
+### Backend (.cursorrules in backend/)
+```markdown
+# Inherits from root .cursorrules
+# Additional backend-specific rules:
+- All Lambda handlers return TaskEither
+- DynamoDB operations wrapped in TaskEither
+- Use zod for runtime validation
+- API matches OpenAPI spec exactly
+```
+
+### ML Pipeline (.cursorrules in ml_pipeline/)
+```markdown
+# Inherits from root .cursorrules
+# Additional ML-specific rules:
+- Polars only (no pandas)
+- All Cloud Functions return Result
+- Use GCS for data storage
+- Type all data frames with schema
+```
+
+---
+
+## Communication Patterns
+
+### iOS → Backend (HTTP)
+```swift
+// iOS: API client
+func getUser(id: String) -> Result<User, ApiError> {
+    // HTTP call with Result type
+}
+```
+
+```typescript
+// Backend: Lambda handler
+export const handler = async (event: APIGatewayEvent) => {
+    const result = await pipe(
+        getUserFromDB(event.pathParameters.id),
+        TE.map(formatUserResponse)
+    )()
+    
+    return toAPIGatewayResponse(result)
+}
+```
+
+### Backend → ML Pipeline (HTTP/Pub-Sub)
+```typescript
+// Backend: Trigger ML job
+const triggerMLJob = (data: InputData): TE.TaskEither<Error, JobId> =>
+    pipe(
+        publishToPubSub('ml-jobs', data),
+        TE.map(response => response.jobId)
+    )
+```
+
+```python
+# ML Pipeline: Cloud Function
+def process_ml_job(request):
+    result = (
+        validate_input(request.get_json())
+        .bind(load_data)
+        .bind(run_model)
+        .bind(save_results)
+    )
+    
+    match result:
+        case Success(data):
+            return {"status": "success", "data": data}, 200
+        case Failure(error):
+            return {"status": "error", "message": str(error)}, 500
+```
+
+---
+
+## Before Every Commit Checklist (Root Level)
+
+- [ ] **iOS**: All Swift tests passing
+- [ ] **Backend**: All TypeScript tests passing
+- [ ] **ML**: All Python tests passing
+- [ ] **Types**: Generated types up to date
+- [ ] **Integration**: Cross-component tests passing
+- [ ] All files < 250 lines (all languages)
+- [ ] Commit message follows template
+- [ ] TODO list updated
+
+---
+
+## Quick Commands (Root)
+
+```bash
+# Install all dependencies
+make install
+
+# Run all tests
+make test
+
+# Run tests for specific component
+make test-ios
+make test-backend
+make test-ml
+
+# Generate shared types
+make generate-types
+
+# Type check all components
+make type-check
+
+# Lint all components
+make lint
+
+# Build all components
+make build
+
+# Deploy all
+make deploy
+
+# Deploy specific component
+make deploy-ios
+make deploy-backend
+make deploy-ml
+```
+
+---
+
+## Documentation Strategy
+
+### Project-Level Documentation
+- `ARCHITECTURE_PLAN.md` at root - covers all three components
+- `docs/plans/` - sub-plans for major features across components
+- `docs/YYYY_MM_DD/` - daily work docs (shared by all team members)
+
+### Component-Level Documentation
+- Each component has its own README
+- API documentation generated from OpenAPI spec
+- Inline documentation for complex functions
+
+---
+
+**This .cursorrules file demonstrates**:
+- Multi-language integration (Swift, TypeScript, Python)
+- Universal FP patterns across languages
+- Shared type definitions
+- Component isolation with cross-refs
+- Consistent error handling
+- Project-level documentation strategy
+
+**Key Insight**: 
+The same FP principles apply regardless of language:
+- Result types for error handling
+- Railway-oriented programming
+- Immutable data structures
+- ADTs for domain modeling
+- Pattern matching
+
+**See Also**:
+- [CURSOR.md](../../CURSOR.md) - Mandatory universal rules
+- [swift-fp-style-guide.md](../../swift-fp-style-guide.md) - Swift patterns
+- [typescript-fp-style-guide.md](../../typescript-fp-style-guide.md) - TypeScript patterns
+- [python-fp-style-guide.md](../../python-fp-style-guide.md) - Python patterns
+- [SETUP_GUIDE.md](../../SETUP_GUIDE.md) - Initial setup
+
