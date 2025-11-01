@@ -1,0 +1,438 @@
+# .cursorrules - Rust Systems Programming Project
+
+**Project**: High-Performance Data Processing System  
+**Stack**: Rust 1.75+, tokio, rayon, serde  
+**Platform**: Cloud-agnostic (Kubernetes, AWS Lambda, GCP Cloud Run)  
+
+---
+
+## Global Rules
+@${CURSOR_RULES_PATH}/cursor/CURSOR.md
+
+## Language-Specific Rules
+@${CURSOR_RULES_PATH}/cursor/rust-fp-style-guide.md
+
+---
+
+## Project Context
+
+### Tech Stack
+- **Language**: Rust 1.75+ (2021 edition)
+- **Async Runtime**: tokio (async operations)
+- **Parallel**: rayon (data parallelism)
+- **Serialization**: serde (JSON, MessagePack)
+- **Error Handling**: Result<T, E> and Option<T> (built-in!)
+- **Testing**: cargo test (unit + integration + doc tests)
+- **Benchmarking**: criterion (performance validation)
+
+### Why Rust?
+- ⭐⭐⭐⭐⭐ **Zero-cost abstractions** - FP without overhead
+- ⭐⭐⭐⭐⭐ **Best performance** - Fastest of all 5 languages
+- ⭐⭐⭐⭐⭐ **Memory safety** - No null, no races, no UAF
+- ⭐⭐⭐⭐⭐ **Native Traversable** - collect() with Result/Option
+- ⭐⭐⭐⭐⭐ **Fearless concurrency** - Compiler-enforced safety
+
+### Project Structure
+```
+rust_project/
+├── src/
+│   ├── main.rs              # Entry point
+│   ├── lib.rs               # Library root
+│   ├── types/               # Type definitions
+│   │   ├── mod.rs
+│   │   ├── error.rs         # Error types
+│   │   └── domain.rs        # Domain types
+│   ├── core/                # Pure business logic
+│   │   ├── mod.rs
+│   │   ├── compute.rs       # Core computations
+│   │   └── transform.rs     # Data transformations
+│   ├── io/                  # I/O operations
+│   │   ├── mod.rs
+│   │   ├── load.rs          # Data loading
+│   │   └── save.rs          # Data saving
+│   └── pipeline/            # Composed pipelines
+│       ├── mod.rs
+│       └── process.rs       # Main pipeline
+├── tests/
+│   ├── integration_test.rs  # Integration tests
+│   └── common/              # Test utilities
+├── benches/
+│   └── benchmark.rs         # Performance benchmarks
+├── Cargo.toml               # Dependencies
+└── .cursorrules             # This file
+```
+
+---
+
+## Mandatory Rules for This Project
+
+### Code Style (from CURSOR.md)
+- ✅ All files **< 250 lines** (mandatory)
+- ✅ Type annotations **everywhere** (Rust enforces this!)
+- ✅ Public functions **return Result<T, E>**
+- ✅ No panics except in main() or tests
+- ✅ Structs are immutable by default
+- ✅ Pattern matching for enums (exhaustive!)
+
+### Testing (from CURSOR.md)
+- ✅ **100% coverage** for core logic
+- ✅ **3+ tests per function** minimum
+- ✅ All tests **must pass** before commit
+- ✅ Use `cargo test` for all tests
+- ✅ Integration tests in `tests/`
+- ✅ Benchmarks for performance-critical code
+
+### Performance (Project-Specific)
+- ✅ Use **rayon** for CPU-bound parallel operations
+- ✅ Use **tokio** for I/O-bound async operations
+- ✅ **Zero-cost abstractions** - verify with benchmarks
+- ✅ Avoid unnecessary allocations (use iterators!)
+- ✅ Profile before optimizing (`cargo flamegraph`)
+
+### Error Handling (Rust-Specific)
+- ✅ Use **Result<T, E>** for all fallible operations
+- ✅ Use **Option<T>** for nullable values
+- ✅ Use **?** operator for railway-oriented programming
+- ✅ Custom error types with `thiserror`
+- ✅ No `.unwrap()` except in tests or main()
+
+### Git Workflow (from CURSOR.md)
+- ✅ **Commit every 30-60 min** (mandatory)
+- ✅ Commit message follows template
+- ✅ Update TODO list after each task
+
+---
+
+## Example: Main Entry Point
+
+```rust
+// src/main.rs - Entry point (I/O boundary)
+use crate::pipeline::process::process_data;
+use crate::types::error::AppError;
+
+#[tokio::main]
+async fn main() -> Result<(), AppError> {
+    // Parse CLI args or config
+    let input = std::env::args()
+        .nth(1)
+        .ok_or(AppError::MissingInput)?;
+    
+    // Process data (returns Result)
+    let result = process_data(&input).await?;
+    
+    // Output result
+    println!("Processed: {:?}", result);
+    
+    Ok(())
+}
+```
+
+---
+
+## Example: Error Types (ADTs)
+
+```rust
+// src/types/error.rs - Custom error types
+use thiserror::Error;
+
+#[derive(Error, Debug)]
+pub enum AppError {
+    #[error("Missing input data")]
+    MissingInput,
+    
+    #[error("Invalid data: {0}")]
+    InvalidData(String),
+    
+    #[error("I/O error: {0}")]
+    Io(#[from] std::io::Error),
+    
+    #[error("Parse error: {0}")]
+    Parse(#[from] serde_json::Error),
+}
+
+// Result type alias for convenience
+pub type AppResult<T> = Result<T, AppError>;
+```
+
+---
+
+## Example: Pure Pipeline (Traversable!)
+
+```rust
+// src/pipeline/process.rs - Pure data processing
+use crate::core::{compute::compute, transform::transform};
+use crate::io::{load::load_data, save::save_data};
+use crate::types::error::AppResult;
+
+pub async fn process_data(input: &str) -> AppResult<String> {
+    // Railway-oriented programming with ? operator
+    let data = load_data(input).await?;      // I/O → Result
+    let transformed = transform(data)?;       // Pure → Result
+    let computed = compute(transformed)?;     // Pure → Result
+    let saved = save_data(computed).await?;   // I/O → Result
+    
+    Ok(saved)
+}
+
+// Alternative: Functional style with and_then
+pub async fn process_data_functional(input: &str) -> AppResult<String> {
+    load_data(input)
+        .await
+        .and_then(transform)
+        .and_then(compute)
+        .and_then(|data| {
+            tokio::task::block_in_place(|| {
+                tokio::runtime::Handle::current()
+                    .block_on(save_data(data))
+            })
+        })
+}
+```
+
+---
+
+## Example: Parallel Processing (rayon)
+
+```rust
+// src/core/compute.rs - Parallel computation
+use rayon::prelude::*;
+use crate::types::error::AppResult;
+
+pub fn compute_batch(items: Vec<i32>) -> AppResult<Vec<i32>> {
+    // Parallel map with rayon (zero-cost!)
+    let results: Vec<_> = items
+        .par_iter()
+        .map(|&x| x * 2)
+        .collect();
+    
+    Ok(results)
+}
+
+// With error handling (collect into Result)
+pub fn validate_batch(items: Vec<i32>) -> AppResult<Vec<i32>> {
+    items
+        .par_iter()
+        .map(|&x| validate_item(x))
+        .collect::<Result<Vec<_>, _>>()  // Stops at first error!
+}
+
+fn validate_item(x: i32) -> AppResult<i32> {
+    if x > 0 {
+        Ok(x)
+    } else {
+        Err(crate::types::error::AppError::InvalidData(
+            format!("{} is not positive", x)
+        ))
+    }
+}
+```
+
+---
+
+## Example: Async Operations (tokio)
+
+```rust
+// src/io/load.rs - Async I/O
+use tokio::fs;
+use crate::types::error::AppResult;
+use futures::future::try_join_all;
+
+pub async fn load_data(path: &str) -> AppResult<String> {
+    // Async file read
+    let data = fs::read_to_string(path).await?;
+    Ok(data)
+}
+
+// Parallel async operations (Traversable in async context!)
+pub async fn load_many(paths: Vec<String>) -> AppResult<Vec<String>> {
+    let futures: Vec<_> = paths
+        .iter()
+        .map(|path| load_data(path))
+        .collect();
+    
+    // All run concurrently, stops at first error
+    try_join_all(futures).await
+}
+```
+
+---
+
+## Example: Testing Pattern
+
+```rust
+// tests/integration_test.rs
+use rust_project::pipeline::process::process_data;
+
+#[tokio::test]
+async fn test_process_valid_data() {
+    let result = process_data("valid_input").await;
+    assert!(result.is_ok());
+    assert_eq!(result.unwrap(), "expected_output");
+}
+
+#[tokio::test]
+async fn test_process_invalid_data() {
+    let result = process_data("invalid_input").await;
+    assert!(result.is_err());
+}
+
+// Property-based testing (optional)
+#[cfg(test)]
+mod property_tests {
+    use quickcheck::quickcheck;
+    
+    quickcheck! {
+        fn prop_transform_preserves_length(data: Vec<i32>) -> bool {
+            let result = transform(data.clone());
+            result.map(|r| r.len() == data.len()).unwrap_or(false)
+        }
+    }
+}
+```
+
+---
+
+## Example: Benchmarking
+
+```rust
+// benches/benchmark.rs
+use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use rust_project::core::compute::compute_batch;
+
+fn benchmark_compute(c: &mut Criterion) {
+    let data: Vec<i32> = (1..=10000).collect();
+    
+    c.bench_function("compute_batch", |b| {
+        b.iter(|| compute_batch(black_box(data.clone())))
+    });
+}
+
+criterion_group!(benches, benchmark_compute);
+criterion_main!(benches);
+```
+
+---
+
+## Before Every Commit Checklist
+
+- [ ] All tests passing (`cargo test`)
+- [ ] No clippy warnings (`cargo clippy -- -D warnings`)
+- [ ] Formatted (`cargo fmt`)
+- [ ] All files < 250 lines
+- [ ] No `.unwrap()` outside tests/main
+- [ ] Commit message follows template
+- [ ] TODO list updated (if applicable)
+
+---
+
+## Quick Commands
+
+```bash
+# Build project
+cargo build
+
+# Build optimized
+cargo build --release
+
+# Run tests (all)
+cargo test
+
+# Run tests with output
+cargo test -- --nocapture
+
+# Check without building
+cargo check
+
+# Linting
+cargo clippy -- -D warnings
+
+# Formatting
+cargo fmt
+
+# Benchmarks
+cargo bench
+
+# Documentation
+cargo doc --open
+
+# Run with release optimizations
+cargo run --release
+
+# Profile (requires flamegraph)
+cargo flamegraph
+```
+
+---
+
+## Performance Tips
+
+### When to Use Parallel (rayon)
+- ✅ CPU-bound operations
+- ✅ Large collections (>1000 items)
+- ✅ Independent computations
+- ✅ Operations take >1ms each
+
+### When to Use Async (tokio)
+- ✅ I/O-bound operations
+- ✅ Network requests
+- ✅ File operations
+- ✅ Database queries
+
+### Avoid
+- ❌ Mixing rayon + tokio (blocking!)
+- ❌ Small collections (<100 items) with rayon
+- ❌ Unnecessary allocations (use iterators)
+- ❌ Clone unless necessary (use references)
+
+---
+
+## Dependency Management
+
+```toml
+# Cargo.toml - Minimal dependencies
+[dependencies]
+tokio = { version = "1.35", features = ["full"] }
+rayon = "1.8"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "1.0"
+futures = "0.3"
+
+[dev-dependencies]
+criterion = "0.5"
+quickcheck = "1.0"
+
+[[bench]]
+name = "benchmark"
+harness = false
+```
+
+---
+
+**This .cursorrules file demonstrates**:
+- Integration with global rules (CURSOR.md)
+- Language-specific rules (Rust FP guide)
+- Zero-cost abstractions emphasized
+- Railway-oriented programming (? operator)
+- Parallel operations (rayon)
+- Async operations (tokio)
+- Testing strategy (unit, integration, property, benchmarks)
+- Performance best practices
+- Before-commit checklist
+
+**See Also**:
+- [CURSOR.md](../../CURSOR.md) - Mandatory universal rules
+- [rust-fp-style-guide.md](../../rust-fp-style-guide.md) - Rust FP patterns
+- [SETUP_GUIDE.md](../../SETUP_GUIDE.md) - Initial setup instructions
+- [DATA_STRUCTURE_PATTERNS.md](../../DATA_STRUCTURE_PATTERNS.md) - Foldable/Traversable quick ref
+
+---
+
+**Rust Advantages for This Project**:
+- 🦀 Zero-cost abstractions (FP = imperative performance)
+- 🦀 Memory safety (no null, no races, no UAF)
+- 🦀 Best performance (fastest of all 5 languages)
+- 🦀 Fearless concurrency (compiler-enforced safety)
+- 🦀 Native Result/Option (excellent error handling)
+- 🦀 Native collect() (best Traversable support!)
+
