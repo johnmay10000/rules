@@ -38,10 +38,13 @@ This document defines **mandatory** and **recommended** rules that apply to ALL 
 6. [Code Organization](#6-code-organization-recommended)
 7. [Type Safety](#7-type-safety-recommended)
 
+### DATA STRUCTURE PATTERNS
+8. [Data Structure Guidelines](#8-data-structure-guidelines-recommended)
+
 ### INTEGRATION
-8. [Cursor Integration](#8-cursor-integration)
-9. [Language-Specific Rules](#9-language-specific-rules)
-10. [Platform-Specific Rules](#10-platform-specific-rules)
+9. [Cursor Integration](#9-cursor-integration)
+10. [Language-Specific Rules](#10-language-specific-rules)
+11. [Platform-Specific Rules](#11-platform-specific-rules)
 
 ---
 
@@ -892,9 +895,276 @@ def validate_user(data: dict) -> Result[User, ValidationError]:
 
 ---
 
-## 8. CURSOR INTEGRATION
+## 8. DATA STRUCTURE GUIDELINES (RECOMMENDED)
 
-### 8.1 Setup Methods
+### 8.1 Overview
+
+When designing data structures, data access patterns, updates, and dataflow through modules, consider **Foldable** and **Traversable** patterns. These functional patterns provide clear, composable solutions for common operations.
+
+**Full Guide**: [guides/traversable-foldable-guide.md](guides/traversable-foldable-guide.md)  
+**Quick Reference**: [DATA_STRUCTURE_PATTERNS.md](DATA_STRUCTURE_PATTERNS.md)
+
+### 8.2 Foldable Patterns
+
+**Use Foldable when aggregating or reducing collections:**
+
+✅ **When to Use**:
+- Aggregating collections (sum, product, concatenate)
+- Converting between collection types
+- Checking properties (any, all, contains)
+- Building accumulations
+- Working with custom data structures
+
+**Implementation**:
+
+**Python**: `reduce()`, custom `foldr`/`foldl`
+```python
+from functools import reduce
+
+numbers = [1, 2, 3, 4, 5]
+sum_result = reduce(lambda acc, n: acc + n, numbers, 0)  # 15
+```
+
+**TypeScript**: `Array.reduce()`, fp-ts `Foldable`
+```typescript
+const numbers = [1, 2, 3, 4, 5]
+const sum = numbers.reduce((acc, n) => acc + n, 0)  // 15
+
+// Or with fp-ts
+import * as A from 'fp-ts/Array'
+const sum = A.reduce(0, (acc: number, n: number) => acc + n)(numbers)
+```
+
+**Kotlin**: `fold()`, `reduce()`, Arrow `Foldable`
+```kotlin
+val numbers = listOf(1, 2, 3, 4, 5)
+val sum = numbers.fold(0) { acc, n -> acc + n }  // 15
+```
+
+**Swift**: `reduce()`, custom `Foldable` protocol
+```swift
+let numbers = [1, 2, 3, 4, 5]
+let sum = numbers.reduce(0, +)  // 15
+```
+
+### 8.3 Traversable Patterns
+
+**Use Traversable when transforming collections with effects:**
+
+✅ **When to Use**:
+- Validating collections with early exit
+- Performing effects on collections (IO, async operations)
+- Maintaining structure while changing contents
+- Need "all-or-nothing" semantics
+- Parallel operations on collections
+
+**Implementation**:
+
+**Python**: Custom `traverse()` with `Result`
+```python
+def traverse(items, f):
+    results = []
+    for item in items:
+        result = f(item)
+        if isinstance(result, Failure):
+            return result  # Early exit!
+        results.append(result.unwrap())
+    return Success(results)
+
+# Usage
+validated = traverse(numbers, validate_positive)
+```
+
+**TypeScript**: fp-ts `traverse()`, Effect
+```typescript
+import * as E from 'fp-ts/Either'
+import * as A from 'fp-ts/Array'
+import { pipe } from 'fp-ts/function'
+
+const validated = pipe(
+  numbers,
+  A.traverse(E.Applicative)(validatePositive)
+)
+// Early exit on first error
+```
+
+**Kotlin**: Arrow `traverse()` with Either/IO
+```kotlin
+import arrow.core.*
+import arrow.core.extensions.list.traverse.traverse
+import arrow.core.extensions.either.applicative.applicative
+
+fun validatePositive(n: Int): Either<String, Int> =
+    if (n > 0) Either.Right(n) else Either.Left("Negative: $n")
+
+val result: Either<String, List<Int>> =
+    numbers.traverse(Either.applicative()) { validatePositive(it) }
+```
+
+**Swift**: Custom `traverse()` with Result, async/await
+```swift
+extension Array {
+    func traverse<Success, Failure: Error>(
+        _ transform: (Element) -> Result<Success, Failure>
+    ) -> Result<[Success], Failure> {
+        var results: [Success] = []
+        for element in self {
+            switch transform(element) {
+            case .success(let value):
+                results.append(value)
+            case .failure(let error):
+                return .failure(error)  // Early exit!
+            }
+        }
+        return .success(results)
+    }
+}
+
+let validated = numbers.traverse(validatePositive)
+```
+
+### 8.4 Parallel Operations
+
+**For async/IO-bound operations on collections:**
+
+**Swift** (⭐⭐⭐⭐⭐ **Best async/await support**):
+```swift
+// TaskGroup for parallel operations
+let results = await ids.traverseParallel { id in
+    try await fetchUser(id)
+}
+// All operations run in parallel
+```
+
+**Kotlin** (⭐⭐⭐⭐ Excellent):
+```kotlin
+// parTraverse with coroutines
+val results = ids.parTraverse { id ->
+    fetchUser(id)
+}
+```
+
+**TypeScript** (⭐⭐⭐⭐ Excellent):
+```typescript
+// Effect structured concurrency
+const results = await Effect.all(
+  ids.map(id => fetchUser(id)),
+  { concurrency: "unbounded" }
+)
+```
+
+**Python** (⭐⭐⭐ Good):
+```python
+# asyncio.gather
+results = await asyncio.gather(*[fetch_user(id) for id in ids])
+```
+
+### 8.5 Common Patterns
+
+#### Pattern 1: Form Validation
+
+**Problem**: Validate all fields, fail fast on first error
+
+```python
+# Python
+def validate_form(name, email, age):
+    name_result = validate_name(name)
+    if isinstance(name_result, Failure):
+        return name_result
+    
+    email_result = validate_email(email)
+    if isinstance(email_result, Failure):
+        return email_result
+    
+    age_result = validate_age(age)
+    if isinstance(age_result, Failure):
+        return age_result
+    
+    return Success(User(name, email, age))
+```
+
+```swift
+// Swift
+func validateForm(name: String, email: String, age: Int) -> Result<User, Error> {
+    validateName(name).flatMap { validName in
+        validateEmail(email).flatMap { validEmail in
+            validateAge(age).map { validAge in
+                User(name: validName, email: validEmail, age: validAge)
+            }
+        }
+    }
+}
+```
+
+#### Pattern 2: Parallel API Calls
+
+**Problem**: Fetch multiple resources efficiently
+
+```swift
+// Swift - Best async/await
+let posts = await postIds.traverseParallel { id in
+    try await fetchPost(id: id)
+}
+// All parallel, ~100ms if each call is 100ms
+```
+
+```kotlin
+// Kotlin - Arrow parTraverse
+val posts = postIds.parTraverse { id ->
+    fetchPost(id)
+}
+```
+
+#### Pattern 3: ETL Pipeline
+
+**Problem**: Parse, validate, enrich data with error handling
+
+```kotlin
+suspend fun etlPipeline(rawData: List<RawRecord>): Either<Error, List<EnrichedRecord>> =
+    rawData
+        .traverse(Either.applicative()) { parse(it) }
+        .flatMap { parsed ->
+            parsed.traverse(Either.applicative()) { validate(it) }
+        }
+        .flatMap { validated ->
+            validated.parTraverse { enrich(it) }
+                .traverse(Either.applicative()) { it }
+        }
+```
+
+### 8.6 Decision Tree
+
+```
+Need to work with collections?
+    ↓
+Aggregate/reduce? (sum, product, concat)
+    ↓
+    YES → Use FOLDABLE (reduce/fold)
+    
+Transform with effects? (validation, IO, async)
+    ↓
+    YES → Use TRAVERSABLE (traverse)
+    
+Parallel operations? (API calls, I/O)
+    ↓
+    YES → Use PARALLEL TRAVERSE
+          Swift: TaskGroup (BEST!)
+          Kotlin: parTraverse
+          TypeScript: Effect parallel
+          Python: asyncio.gather
+```
+
+### 8.7 References
+
+- **Full Guide**: [guides/traversable-foldable-guide.md](guides/traversable-foldable-guide.md) - Comprehensive 3,900+ line guide covering all 4 languages
+- **Quick Reference**: [DATA_STRUCTURE_PATTERNS.md](DATA_STRUCTURE_PATTERNS.md) - Fast lookup table and common patterns
+- **Language Guides**: See language-specific guides for integration details
+
+---
+
+## 9. CURSOR INTEGRATION
+
+### 9.1 Setup Methods
 
 **Two Portable Approaches**:
 
@@ -933,7 +1203,7 @@ See [SETUP_GUIDE.md](SETUP_GUIDE.md) for detailed instructions.
 
 ---
 
-### 8.2 Auto-Detection
+### 9.2 Auto-Detection
 
 **Smart templates automatically detect your tech stack**:
 
@@ -954,7 +1224,7 @@ cp ${CURSOR_RULES_PATH}/templates/.cursorrules_smart_template_envvar .cursorrule
 
 ---
 
-## 9. LANGUAGE-SPECIFIC RULES
+## 10. LANGUAGE-SPECIFIC RULES
 
 **This document contains universal rules**. For language-specific patterns:
 
@@ -977,7 +1247,7 @@ cp ${CURSOR_RULES_PATH}/templates/.cursorrules_smart_template_envvar .cursorrule
 
 ---
 
-## 10. PLATFORM-SPECIFIC RULES
+## 11. PLATFORM-SPECIFIC RULES
 
 **GCP (Google Cloud Functions)**: See [`CURSOR_CLOUD_GCP.md`](CURSOR_CLOUD_GCP.md)
 - Import rules (no `__init__.py`)
