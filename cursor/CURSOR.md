@@ -947,6 +947,14 @@ let numbers = [1, 2, 3, 4, 5]
 let sum = numbers.reduce(0, +)  // 15
 ```
 
+**Rust**: `fold()`, `Iterator` trait (⭐⭐⭐⭐⭐ **Zero-cost!**)
+```rust
+let numbers = vec![1, 2, 3, 4, 5];
+let sum = numbers.iter().fold(0, |acc, n| acc + n);  // 15
+// Or more concise:
+let sum: i32 = numbers.iter().sum();
+```
+
 ### 8.3 Traversable Patterns
 
 **Use Traversable when transforming collections with effects:**
@@ -1023,6 +1031,24 @@ extension Array {
 let validated = numbers.traverse(validatePositive)
 ```
 
+**Rust**: `collect()` with `Result` (⭐⭐⭐⭐⭐ **Native support!**)
+```rust
+fn validate_positive(n: i32) -> Result<i32, String> {
+    if n > 0 {
+        Ok(n)
+    } else {
+        Err(format!("{} is not positive", n))
+    }
+}
+
+let numbers = vec![1, 2, 3, 4, 5];
+let validated: Result<Vec<i32>, String> = numbers
+    .into_iter()
+    .map(validate_positive)
+    .collect();
+// collect() stops at first Err! Native Traversable!
+```
+
 ### 8.4 Parallel Operations
 
 **For async/IO-bound operations on collections:**
@@ -1057,6 +1083,21 @@ const results = await Effect.all(
 ```python
 # asyncio.gather
 results = await asyncio.gather(*[fetch_user(id) for id in ids])
+```
+
+**Rust** (⭐⭐⭐⭐⭐ **Best performance!**):
+```rust
+// tokio try_join_all (async)
+use futures::future::try_join_all;
+
+let futures: Vec<_> = ids.iter().map(|&id| fetch_user(id)).collect();
+let results = try_join_all(futures).await?;
+// All run concurrently, zero-cost!
+
+// Or rayon par_iter (CPU-bound)
+use rayon::prelude::*;
+let results: Vec<_> = ids.par_iter().map(|&id| process(id)).collect();
+// Automatic work stealing, 6x speedup on 8-core!
 ```
 
 ### 8.5 Common Patterns
@@ -1148,7 +1189,8 @@ Transform with effects? (validation, IO, async)
 Parallel operations? (API calls, I/O)
     ↓
     YES → Use PARALLEL TRAVERSE
-          Swift: TaskGroup (BEST!)
+          Rust: tokio/rayon (BEST PERFORMANCE!)
+          Swift: TaskGroup (BEST ERGONOMICS!)
           Kotlin: parTraverse
           TypeScript: Effect parallel
           Python: asyncio.gather
@@ -1156,7 +1198,7 @@ Parallel operations? (API calls, I/O)
 
 ### 8.7 References
 
-- **Full Guide**: [guides/traversable-foldable-guide.md](guides/traversable-foldable-guide.md) - Comprehensive 3,900+ line guide covering all 4 languages
+- **Full Guide**: [guides/traversable-foldable-guide.md](guides/traversable-foldable-guide.md) - Comprehensive 4,000+ line guide covering all 5 languages (Python, TypeScript, Kotlin, Swift, Rust)
 - **Quick Reference**: [DATA_STRUCTURE_PATTERNS.md](DATA_STRUCTURE_PATTERNS.md) - Fast lookup table and common patterns
 - **Language Guides**: See language-specific guides for integration details
 
@@ -1210,6 +1252,9 @@ See [SETUP_GUIDE.md](SETUP_GUIDE.md) for detailed instructions.
 **Detection Logic**:
 - Python: `requirements.txt`, `pyproject.toml`, `*.py` files
 - TypeScript: `package.json` with `typescript` dependency
+- Kotlin: `build.gradle.kts`, `*.kt` files
+- Swift: `Package.swift`, `*.swift` files
+- Rust: `Cargo.toml`, `*.rs` files
 - GCP: `gc/` folder, `workflows/` folder
 - AWS: `lambda/` folder, `serverless.yml`
 
@@ -1244,6 +1289,11 @@ cp ${CURSOR_RULES_PATH}/templates/.cursorrules_smart_template_envvar .cursorrule
 **Kotlin**: See [`kotlin-fp-style-guide.md`](kotlin-fp-style-guide.md)
 - Libraries: `Arrow`, `kotlinx-coroutines`
 - Patterns: `Either`, sealed classes
+
+**Rust**: See [`rust-fp-style-guide.md`](rust-fp-style-guide.md)
+- Libraries: `rayon` (parallel), `tokio` (async), `serde` (serialization)
+- Patterns: `Result`, `Option`, `Iterator` trait, zero-cost abstractions
+- Performance: Best of all 5 languages
 
 ---
 

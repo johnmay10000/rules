@@ -3,10 +3,10 @@
 **Universal functional programming rules and guidelines for Cursor AI**
 
 [![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)]()
-[![Languages](https://img.shields.io/badge/languages-Python%20%7C%20TypeScript%20%7C%20Swift%20%7C%20Kotlin-green.svg)]()
+[![Languages](https://img.shields.io/badge/languages-Python%20%7C%20TypeScript%20%7C%20Kotlin%20%7C%20Swift%20%7C%20Rust-green.svg)]()
 [![Platforms](https://img.shields.io/badge/platforms-GCP%20%7C%20AWS%20%7C%20iOS%20%7C%20Android-orange.svg)]()
 
-> **Cross-language functional programming patterns, mandatory development practices, and intelligent auto-detection for Cursor AI.**
+> **Cross-language functional programming patterns (5 languages), mandatory development practices, and intelligent auto-detection for Cursor AI.**
 
 ---
 
@@ -15,11 +15,11 @@
 A **portable, production-tested** global rule set for Cursor that enforces:
 - ✅ Mandatory universal practices (Git, docs, testing, file size)
 - ✅ Functional programming patterns (Result types, railway-oriented programming)
-- ✅ Language-specific guidelines (Python, TypeScript, Swift, Kotlin)
+- ✅ Language-specific guidelines (Python, TypeScript, Kotlin, Swift, Rust)
 - ✅ Platform-specific rules (GCP, AWS)
 - ✅ Auto-detection (detects your stack automatically)
 
-**One setup, works everywhere.** Use the same FP patterns across all languages.
+**One setup, works everywhere.** Use the same FP patterns across all 5 languages.
 
 ---
 
@@ -53,7 +53,7 @@ See [SETUP_GUIDE.md](SETUP_GUIDE.md) for detailed instructions.
 
 ## Language-Specific Rules
 @${CURSOR_RULES_PATH}/cursor/python-fp-style-guide.md
-# Or: cursor/typescript-fp-style-guide.md, cursor/swift-fp-style-guide.md, cursor/kotlin-fp-style-guide.md
+# Or: cursor/typescript-fp-style-guide.md, cursor/kotlin-fp-style-guide.md, cursor/swift-fp-style-guide.md, cursor/rust-fp-style-guide.md
 
 ## Project-Specific Overrides
 [Your project-specific rules here]
@@ -130,6 +130,12 @@ Cursor now enforces:
 - For Android, Ktor, multiplatform
 - Libraries: Arrow
 - Patterns: Either, sealed classes, coroutines
+
+**[cursor/rust-fp-style-guide.md](cursor/rust-fp-style-guide.md)** 🦀 **NEW!**
+- For systems programming, performance-critical code
+- Libraries: rayon (parallel), tokio (async), serde
+- Patterns: Result, Option, Iterator, zero-cost abstractions
+- **Best performance of all 5 languages!**
 
 ---
 
@@ -335,8 +341,9 @@ From [cursor/CURSOR.md](cursor/CURSOR.md):
 3. Choose your language guide (30 min)
    - [Python](cursor/python-fp-style-guide.md)
    - [TypeScript](cursor/typescript-fp-style-guide.md)
-   - [Swift](cursor/swift-fp-style-guide.md)
    - [Kotlin](cursor/kotlin-fp-style-guide.md)
+   - [Swift](cursor/swift-fp-style-guide.md)
+   - [Rust](cursor/rust-fp-style-guide.md) ⭐ NEW!
 
 4. Try an example (15 min)
    - Copy example `.cursorrules`
@@ -404,8 +411,9 @@ rules/
 │   │
 │   ├── python-fp-style-guide.md        # 🐍 Python guide
 │   ├── typescript-fp-style-guide.md    # 📘 TypeScript guide
-│   ├── swift-fp-style-guide.md         # 🍎 Swift guide
 │   ├── kotlin-fp-style-guide.md        # 🤖 Kotlin guide
+│   ├── swift-fp-style-guide.md         # 🍎 Swift guide
+│   ├── rust-fp-style-guide.md          # 🦀 Rust guide ⭐ NEW
 │   │
 │   ├── templates/                      # 📋 Smart templates
 │   │   ├── .cursorrules_smart_template_envvar
@@ -468,8 +476,9 @@ See LICENSE file for details.
 **Guides**:
 - [Python](cursor/python-fp-style-guide.md)
 - [TypeScript](cursor/typescript-fp-style-guide.md)
-- [Swift](cursor/swift-fp-style-guide.md)
 - [Kotlin](cursor/kotlin-fp-style-guide.md)
+- [Swift](cursor/swift-fp-style-guide.md)
+- [Rust](cursor/rust-fp-style-guide.md) ⭐ NEW!
 
 **Deep Dives**:
 - [FP Principles](cursor/CURSOR_FP_PRINCIPLES.md)

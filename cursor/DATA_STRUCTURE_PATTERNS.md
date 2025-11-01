@@ -1,8 +1,8 @@
 # Data Structure Patterns: Quick Reference Guide
 
-**Purpose**: Quick lookup for Foldable/Traversable patterns across Python, TypeScript, Kotlin, and Swift.
+**Purpose**: Quick lookup for Foldable/Traversable patterns across Python, TypeScript, Kotlin, Swift, and Rust.
 
-**Full Guide**: See [traversable-foldable-guide.md](../traversable-foldable-guide.md) for comprehensive details.
+**Full Guide**: See [guides/traversable-foldable-guide.md](guides/traversable-foldable-guide.md) for comprehensive details (4,000+ lines covering all 5 languages).
 
 ---
 
@@ -38,6 +38,7 @@ Need to aggregate/reduce? (sum, product, concat)
     │     - TypeScript: Array.reduce, fp-ts
     │     - Kotlin: fold/reduce, Arrow
     │     - Swift: reduce, reduce(into:)
+    │     - Rust: fold, sum (ZERO-COST!)
     │
 Need to transform with effects? (validation, IO, async)
     ↓
@@ -46,6 +47,7 @@ Need to transform with effects? (validation, IO, async)
     │     - TypeScript: fp-ts traverse, Effect
     │     - Kotlin: Arrow traverse with Either/IO
     │     - Swift: custom traverse with Result/async
+    │     - Rust: collect() with Result/Option (NATIVE!)
     │
 Need validation with early exit?
     ↓
@@ -56,10 +58,11 @@ Need validation with early exit?
 Need parallel async operations?
     ↓
     YES → Use PARALLEL TRAVERSE
-          - Python: asyncio + custom
-          - TypeScript: Effect parallel
+          - Rust: tokio/rayon (FASTEST!)
+          - Swift: TaskGroup (BEST ERGONOMICS!)
           - Kotlin: Arrow parTraverse
-          - Swift: TaskGroup (BEST!)
+          - TypeScript: Effect parallel
+          - Python: asyncio + custom
 ```
 
 ---
@@ -74,6 +77,7 @@ Need parallel async operations?
 | **TypeScript** | `array.reduce(f, initial)` | `[1,2,3].reduce((acc, x) => acc + x, 0)` |
 | **Kotlin** | `list.fold(initial) { acc, x -> ... }` | `listOf(1,2,3).fold(0) { acc, x -> acc + x }` |
 | **Swift** | `array.reduce(initial, f)` | `[1,2,3].reduce(0, +)` |
+| **Rust** 🦀 | `iter.fold(initial, f)` | `vec![1,2,3].iter().fold(0, \|acc, x\| acc + x)` |
 
 ### Traversable (Transform with Effects)
 
@@ -83,15 +87,17 @@ Need parallel async operations?
 | **TypeScript** | fp-ts/Effect | `A.traverse(E.Applicative)(validate)(items)` |
 | **Kotlin** | Arrow | `items.traverse(Either.applicative()) { validate(it) }` |
 | **Swift** | Extension | `items.traverse(validate)` |
+| **Rust** 🦀 | **Native collect()** | `items.into_iter().map(validate).collect::<Result<Vec<_>, _>>()` |
 
 ### Parallel Operations
 
 | Language | Syntax | Performance |
 |----------|--------|-------------|
-| **Python** | `asyncio.gather(*[f(x) for x in items])` | ⭐⭐⭐ Good |
-| **TypeScript** | `Effect.all(items.map(f), { concurrency: "unbounded" })` | ⭐⭐⭐⭐ Excellent |
+| **Rust** 🦀 | `items.par_iter().map(f).collect()` (rayon) | ⭐⭐⭐⭐⭐ **Fastest!** |
+| **Swift** | `items.traverseParallel(f)` with TaskGroup | ⭐⭐⭐⭐⭐ **Best Ergonomics!** |
 | **Kotlin** | `items.parTraverse { f(it) }` | ⭐⭐⭐⭐ Excellent |
-| **Swift** | `items.traverseParallel(f)` with TaskGroup | ⭐⭐⭐⭐⭐ **Best!** |
+| **TypeScript** | `Effect.all(items.map(f), { concurrency: "unbounded" })` | ⭐⭐⭐⭐ Excellent |
+| **Python** | `asyncio.gather(*[f(x) for x in items])` | ⭐⭐⭐ Good |
 
 ---
 
@@ -131,6 +137,15 @@ val validated = items.traverse(Either.applicative()) { validateItem(it) }
 let validated = items.traverse(validateItem)
 ```
 
+```rust
+// Rust (NATIVE!)
+let validated: Result<Vec<_>, _> = items
+    .into_iter()
+    .map(|item| validate_item(item))
+    .collect();
+// collect() stops at first Err! Zero-cost!
+```
+
 ---
 
 ### Use Case 2: Aggregate Collection
@@ -158,6 +173,13 @@ val total = numbers.fold(0) { acc, x -> acc + x }
 ```swift
 // Swift
 let total = numbers.reduce(0, +)
+```
+
+```rust
+// Rust
+let total = numbers.iter().fold(0, |acc, x| acc + x);
+// Or more concise:
+let total: i32 = numbers.iter().sum();
 ```
 
 ---
@@ -188,9 +210,18 @@ val results = ids.parTraverse { fetch(it) }
 ```
 
 ```swift
-// Swift (BEST!)
+// Swift (BEST ERGONOMICS!)
 let results = await ids.traverseParallel { await fetch($0) }
-// Uses TaskGroup - fastest of all 4 languages
+// Uses TaskGroup
+```
+
+```rust
+// Rust (BEST PERFORMANCE!)
+use futures::future::try_join_all;
+
+let futures: Vec<_> = ids.iter().map(|&id| fetch(id)).collect();
+let results = try_join_all(futures).await?;
+// All parallel, zero-cost abstractions!
 ```
 
 ---
@@ -250,6 +281,21 @@ func validateForm(name: String, email: String, age: Int) -> Result<User, Error> 
 }
 ```
 
+```rust
+// Rust (? operator for railway-oriented programming!)
+fn validate_form(name: &str, email: &str, age: u32) -> Result<User, ValidationError> {
+    let valid_name = validate_name(name)?;    // Exit on error
+    let valid_email = validate_email(email)?;  // Exit on error
+    let valid_age = validate_age(age)?;        // Exit on error
+    
+    Ok(User {
+        name: valid_name,
+        email: valid_email,
+        age: valid_age,
+    })
+}
+```
+
 ---
 
 ## Language-Specific Recommendations
@@ -278,9 +324,22 @@ func validateForm(name: String, email: String, age: Int) -> Result<User, Error> 
 ### Swift
 - **Foldable**: Use native `reduce()` ⭐
 - **Traversable**: Custom extensions with Result
-- **Parallel**: Use `TaskGroup` ⭐⭐⭐⭐⭐ **BEST!**
+- **Parallel**: Use `TaskGroup` ⭐⭐⭐⭐⭐ **BEST ERGONOMICS!**
 - **Libraries**: Native first, Bow for advanced FP
-- **Best for**: iOS/macOS, performance, SwiftUI
+- **Best for**: iOS/macOS, SwiftUI, great async/await
+
+### Rust 🦀
+- **Foldable**: Use `Iterator` trait (fold, sum, reduce) ⭐⭐⭐⭐⭐
+- **Traversable**: Use `collect()` with Result/Option ⭐⭐⭐⭐⭐ **NATIVE!**
+- **Parallel**: Use `rayon` (par_iter) or `tokio` (async) ⭐⭐⭐⭐⭐ **FASTEST!**
+- **Libraries**: std (zero dependencies!), rayon, tokio, futures
+- **Best for**: Systems programming, performance-critical code, zero-cost FP
+
+**Rust Strengths**:
+- ⭐⭐⭐⭐⭐ Zero-cost abstractions (FP without overhead)
+- ⭐⭐⭐⭐⭐ Best performance (fastest of all 5 languages)
+- ⭐⭐⭐⭐⭐ Memory safety (ownership + borrow checker)
+- ⭐⭐⭐⭐⭐ Native Traversable (collect! with Result/Option)
 
 ---
 
@@ -303,13 +362,18 @@ func validateForm(name: String, email: String, age: Int) -> Result<User, Error> 
 ### Performance Ranking
 
 **Parallel Operations** (fastest to slowest):
-1. 🥇 **Swift** - TaskGroup (native, optimal)
-2. 🥈 **Kotlin** - parTraverse (coroutines)
-3. 🥉 **TypeScript** - Effect (structured concurrency)
-4. **Python** - asyncio.gather (single-threaded)
+1. 🥇 **Rust** - rayon/tokio (zero-cost, 6x speedup, no GC) ⭐⭐⭐⭐⭐
+2. 🥈 **Swift** - TaskGroup (native, great ergonomics) ⭐⭐⭐⭐⭐
+3. 🥉 **Kotlin** - parTraverse (coroutines, JVM overhead)
+4. **TypeScript** - Effect (structured concurrency, V8 JIT)
+5. **Python** - asyncio.gather (single-threaded, slowest)
 
-**Sequential Operations** (all roughly equal):
-- All languages have efficient sequential reduce/fold
+**Sequential Operations**:
+1. 🥇 **Rust** - Iterator (zero-cost, fastest)
+2. 🥈 **Swift** - reduce (no GC, fast)
+3. 🥉 **Kotlin** - fold (JVM overhead)
+4. **TypeScript** - Array.reduce (V8 JIT)
+5. **Python** - reduce (slowest)
 
 ---
 

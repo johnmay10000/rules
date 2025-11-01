@@ -178,8 +178,9 @@ rules/                                  # Rules repository
 ├── SETUP_GUIDE.md                     # Machine setup ⭐
 ├── python-fp-style-guide.md           # Python FP guide
 ├── typescript-fp-style-guide.md       # TypeScript FP guide
-├── swift-fp-style-guide.md            # Swift FP guide
 ├── kotlin-fp-style-guide.md           # Kotlin FP guide
+├── swift-fp-style-guide.md            # Swift FP guide
+├── rust-fp-style-guide.md             # Rust FP guide ⭐ NEW
 ├── templates/
 │   ├── .cursorrules_smart_template_envvar      # Env var template ⭐
 │   ├── .cursorrules_smart_template_submodule   # Submodule template ⭐
@@ -323,7 +324,16 @@ The smart templates automatically detect your project type and suggest rules to 
 2. **TypeScript Project**: If `package.json` with `"typescript"` dependency exists
    → Load `typescript-fp-style-guide.md`
 
-3. **GCP Project**: If `gc/` folder or `workflows/` folder exists
+3. **Kotlin Project**: If `build.gradle.kts` or `*.kt` files exist
+   → Load `kotlin-fp-style-guide.md`
+
+4. **Swift Project**: If `Package.swift` or `*.swift` files exist
+   → Load `swift-fp-style-guide.md`
+
+5. **Rust Project**: If `Cargo.toml` or `*.rs` files exist
+   → Load `rust-fp-style-guide.md`
+
+6. **GCP Project**: If `gc/` folder or `workflows/` folder exists
    → Load `CURSOR_CLOUD_GCP.md`
 
 4. **AWS Project**: If `lambda/` folder or `serverless.yml` exists
@@ -651,8 +661,8 @@ source ~/.bashrc
 
 **Files**:
 - `CURSOR.md` (core rules)
-- `python-fp-style-guide.md` (language guides)
-- `CURSOR_CLOUD_GCP.md` (platform guides)
+- `python-fp-style-guide.md`, `typescript-fp-style-guide.md`, `kotlin-fp-style-guide.md`, `swift-fp-style-guide.md`, `rust-fp-style-guide.md` (5 language guides)
+- `CURSOR_CLOUD_GCP.md`, `CURSOR_CLOUD_AWS.md` (platform guides)
 
 ---
 
