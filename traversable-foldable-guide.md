@@ -1744,6 +1744,828 @@ dependencies {
 
 ---
 
+## Swift Implementation
+
+### Overview
+
+Swift provides excellent native support for Foldable patterns through its `reduce()` method and `Sequence` protocol. For Traversable, Swift's native `Result` type and `async/await` provide powerful, ergonomic solutions. The **Bow library** offers full typeclass implementations for advanced use cases.
+
+**Key Features:**
+- ✅ Excellent native `reduce()` for Foldable
+- ✅ **Best async/await** of all 4 languages (TaskGroup)
+- ✅ Native `Result` type for error handling
+- ✅ Protocol-oriented programming
+- ✅ Optional Bow library for full typeclasses
+- ✅ Great performance
+
+**When to Use:**
+- iOS/macOS development
+- High-performance requirements
+- SwiftUI integration
+- Native async operations
+- Simple to moderate FP needs
+
+**Recommendation**: **Start with native Swift** (covers 95% of use cases), consider Bow for advanced FP abstractions.
+
+---
+
+### Type System Capabilities
+
+#### Swift's Type System
+
+Swift has a powerful type system with generics, protocols, and associated types, but **no native higher-kinded types (HKT)**:
+
+```swift
+// Swift's generic protocols with associated types
+protocol Container {
+    associatedtype Element
+    func map<T>(_ transform: (Element) -> T) -> [T]
+}
+
+// Works well for concrete types
+extension Array: Container {
+    // Element is inferred as Array.Element
+}
+```
+
+**Strengths**:
+- ✅ Excellent type inference
+- ✅ Protocol-oriented programming
+- ✅ Generics with constraints
+- ✅ Associated types
+- ✅ No HKT encoding boilerplate
+
+**Trade-offs**:
+- ⚠️ No HKT (can't abstract over type constructors)
+- ⚠️ Protocol-based workarounds instead
+- ✅ But simpler and more ergonomic for most cases
+
+---
+
+### Foldable in Swift (Native)
+
+#### Native reduce()
+
+Swift's standard library provides excellent fold operations:
+
+```swift
+let numbers = [1, 2, 3, 4, 5]
+
+// reduce (left fold)
+let sum = numbers.reduce(0, +)
+// Result: 15
+
+let product = numbers.reduce(1, *)
+// Result: 120
+
+// reduce with closure
+let concatenated = ["Hello", "World", "Swift"].reduce("") { $0 + " " + $1 }
+// Result: " Hello World Swift"
+
+// Complex accumulation
+let evens = numbers.reduce([]) { acc, n in
+    n % 2 == 0 ? acc + [n] : acc
+}
+// Result: [2, 4]
+```
+
+#### reduce(into:) - Efficient Mutation
+
+For better performance when building collections:
+
+```swift
+let numbers = [1, 2, 3, 4, 5]
+
+// Efficient array building (mutates accumulator)
+let doubled = numbers.reduce(into: []) { acc, n in
+    acc.append(n * 2)
+}
+// Result: [2, 4, 6, 8, 10]
+
+// Dictionary accumulation
+let pairs = [(1, "a"), (2, "b"), (3, "c")]
+let dict = pairs.reduce(into: [:]) { acc, pair in
+    acc[pair.0] = pair.1
+}
+// Result: [1: "a", 2: "b", 3: "c"]
+
+// Set building
+let uniqueNumbers = [1, 2, 2, 3, 3, 4].reduce(into: Set<Int>()) { acc, n in
+    acc.insert(n)
+}
+// Result: {1, 2, 3, 4}
+```
+
+#### Custom Foldable Protocol
+
+We can create our own Foldable protocol for generic folding:
+
+```swift
+protocol Foldable {
+    associatedtype Element
+    
+    /// Right-associative fold
+    func foldr<B>(_ f: @escaping (Element, B) -> B, _ initial: B) -> B
+    
+    /// Left-associative fold (native reduce)
+    func foldl<B>(_ f: @escaping (B, Element) -> B, _ initial: B) -> B
+}
+
+extension Array: Foldable {
+    func foldr<B>(_ f: @escaping (Element, B) -> B, _ initial: B) -> B {
+        // Implement by reversing and reducing
+        reversed().reduce(initial) { f($1, $0) }
+    }
+    
+    func foldl<B>(_ f: @escaping (B, Element) -> B, _ initial: B) -> B {
+        reduce(initial, f)
+    }
+}
+
+// Usage
+let numbers = [1, 2, 3, 4, 5]
+let sum = numbers.foldl(+, 0)  // 15
+let product = numbers.foldr(*, 1)  // 120
+```
+
+#### Monoid Support
+
+Adding Monoid support for generic folding:
+
+```swift
+protocol Monoid {
+    associatedtype Value
+    static var empty: Value { get }
+    static func combine(_ a: Value, _ b: Value) -> Value
+}
+
+struct SumMonoid: Monoid {
+    typealias Value = Int
+    static var empty: Int { 0 }
+    static func combine(_ a: Int, _ b: Int) -> Int { a + b }
+}
+
+struct ProductMonoid: Monoid {
+    typealias Value = Int
+    static var empty: Int { 1 }
+    static func combine(_ a: Int, _ b: Int) -> Int { a * b }
+}
+
+struct StringMonoid: Monoid {
+    typealias Value = String
+    static var empty: String { "" }
+    static func combine(_ a: String, _ b: String) -> String { a + b }
+}
+
+// Extension to use monoids
+extension Foldable {
+    func fold<M: Monoid>(_ monoid: M.Type) -> M.Value where M.Value == Element {
+        foldl({ M.combine($0, $1) }, M.empty)
+    }
+}
+
+// Usage
+let numbers = [1, 2, 3, 4, 5]
+let sum = numbers.fold(SumMonoid.self)  // 15
+let product = numbers.fold(ProductMonoid.self)  // 120
+```
+
+---
+
+### Custom Foldable: Tree
+
+Implementing Foldable for a binary tree:
+
+```swift
+indirect enum Tree<A>: Foldable {
+    case leaf(A)
+    case branch(Tree<A>, Tree<A>)
+    
+    typealias Element = A
+    
+    func foldr<B>(_ f: @escaping (A, B) -> B, _ initial: B) -> B {
+        switch self {
+        case .leaf(let value):
+            return f(value, initial)
+        case .branch(let left, let right):
+            // In-order: left, then right
+            let rightResult = right.foldr(f, initial)
+            return left.foldr(f, rightResult)
+        }
+    }
+    
+    func foldl<B>(_ f: @escaping (B, A) -> B, _ initial: B) -> B {
+        switch self {
+        case .leaf(let value):
+            return f(initial, value)
+        case .branch(let left, let right):
+            // In-order: left, then right
+            let leftResult = left.foldl(f, initial)
+            return right.foldl(f, leftResult)
+        }
+    }
+}
+
+// Usage
+let tree: Tree<Int> = .branch(
+    .leaf(1),
+    .branch(.leaf(2), .leaf(3))
+)
+
+let sum = tree.foldl(+, 0)  // 6
+let product = tree.foldr(*, 1)  // 6
+let list = tree.foldr({ [$0] + $1 }, [])  // [1, 2, 3]
+```
+
+---
+
+### Traversable in Swift (Native)
+
+#### Traverse with Result
+
+Implementing traverse for validation with early exit:
+
+```swift
+extension Array {
+    /// Traverse with Result - validates all elements
+    func traverse<Success, Failure: Error>(
+        _ transform: (Element) -> Result<Success, Failure>
+    ) -> Result<[Success], Failure> {
+        var results: [Success] = []
+        results.reserveCapacity(count)
+        
+        for element in self {
+            switch transform(element) {
+            case .success(let value):
+                results.append(value)
+            case .failure(let error):
+                return .failure(error)  // Early exit!
+            }
+        }
+        
+        return .success(results)
+    }
+    
+    /// Sequence - flips structure: [Result<A, E>] -> Result<[A], E>
+    func sequence<Success, Failure: Error>() -> Result<[Success], Failure>
+        where Element == Result<Success, Failure> {
+        traverse { $0 }
+    }
+}
+
+// Usage
+enum ValidationError: Error {
+    case negative(Int)
+    case zero
+    case tooLarge(Int)
+}
+
+func validatePositive(_ n: Int) -> Result<Int, ValidationError> {
+    if n > 0 {
+        return .success(n)
+    } else if n == 0 {
+        return .failure(.zero)
+    } else {
+        return .failure(.negative(n))
+    }
+}
+
+let numbers = [1, 2, 3, 4, 5]
+let validated = numbers.traverse(validatePositive)
+// Result: .success([1, 2, 3, 4, 5])
+
+let badNumbers = [1, -2, 3]
+let badValidated = badNumbers.traverse(validatePositive)
+// Result: .failure(.negative(-2)) - stops at first error!
+```
+
+#### Traverse with Optional
+
+```swift
+extension Array {
+    /// Traverse with Optional - all must succeed
+    func traverse<T>(_ transform: (Element) -> T?) -> [T]? {
+        var results: [T] = []
+        results.reserveCapacity(count)
+        
+        for element in self {
+            guard let value = transform(element) else {
+                return nil  // Early exit on None
+            }
+            results.append(value)
+        }
+        
+        return results
+    }
+    
+    /// Sequence: [T?] -> [T]?
+    func sequence<T>() -> [T]? where Element == T? {
+        traverse { $0 }
+    }
+}
+
+// Usage
+func safeDivide(_ n: Int) -> Double? {
+    n != 0 ? 100.0 / n : nil
+}
+
+let numbers = [1, 2, 5, 10]
+let divisions = numbers.traverse(safeDivide)
+// Result: [100.0, 50.0, 20.0, 10.0]
+
+let withZero = [1, 0, 5]
+let badDivisions = withZero.traverse(safeDivide)
+// Result: nil (early exit on zero)
+```
+
+#### Traverse with async/await (Sequential)
+
+```swift
+extension Array {
+    /// Traverse with async operations (sequential)
+    func traverse<T>(_ transform: (Element) async throws -> T) async rethrows -> [T] {
+        var results: [T] = []
+        results.reserveCapacity(count)
+        
+        for element in self {
+            let value = try await transform(element)
+            results.append(value)
+        }
+        
+        return results
+    }
+}
+
+// Usage
+func fetchUser(id: Int) async throws -> User {
+    // Simulate API call
+    try await Task.sleep(nanoseconds: 100_000_000)
+    return User(id: id, name: "User \(id)")
+}
+
+let userIds = [1, 2, 3, 4, 5]
+
+// Sequential traverse
+let users = await userIds.traverse(fetchUser)
+// Takes ~500ms (5 * 100ms)
+```
+
+#### Parallel Traverse with TaskGroup
+
+**Swift's killer feature** - best async/await of all 4 languages:
+
+```swift
+extension Array {
+    /// Traverse with async operations (parallel) - FAST!
+    func traverseParallel<T>(
+        _ transform: @escaping (Element) async throws -> T
+    ) async rethrows -> [T] {
+        try await withThrowingTaskGroup(of: (Int, T).self) { group in
+            // Add all tasks to group
+            for (index, element) in enumerated() {
+                group.addTask {
+                    (index, try await transform(element))
+                }
+            }
+            
+            // Collect results
+            var results: [(Int, T)] = []
+            results.reserveCapacity(count)
+            
+            for try await result in group {
+                results.append(result)
+            }
+            
+            // Sort by original index and extract values
+            return results.sorted(by: { $0.0 < $1.0 }).map(\.1)
+        }
+    }
+}
+
+// Usage
+let userIds = [1, 2, 3, 4, 5]
+
+// Parallel traverse - ALL AT ONCE!
+let usersParallel = await userIds.traverseParallel(fetchUser)
+// Takes ~100ms (all parallel!)
+
+// Sequential vs Parallel comparison
+let start = Date()
+let seq = await userIds.traverse(fetchUser)
+let seqTime = Date().timeIntervalSince(start)  // ~500ms
+
+let start2 = Date()
+let par = await userIds.traverseParallel(fetchUser)
+let parTime = Date().timeIntervalSince(start2)  // ~100ms
+
+print("Sequential: \(seqTime * 1000)ms")  // ~500ms
+print("Parallel: \(parTime * 1000)ms")    // ~100ms
+print("Speedup: \(seqTime / parTime)x")   // ~5x
+```
+
+---
+
+### Bow Library (Optional)
+
+For those who need full typeclass abstractions, Bow provides Haskell-style typeclasses:
+
+#### Installation
+
+```swift
+// Package.swift
+dependencies: [
+    .package(url: "https://github.com/bow-swift/bow.git", from: "3.0.0")
+]
+```
+
+#### Bow's Kind<F, A> Encoding
+
+Like Arrow, Bow uses HKT encoding:
+
+```swift
+import Bow
+
+public final class ForArray: Kind {}
+public typealias ArrayOf<A> = Kind<ForArray, A>
+
+// Conversion
+extension Array {
+    func toKind() -> ArrayOf<Element> {
+        self as! ArrayOf<Element>
+    }
+}
+
+func fromKind<A>(_ kind: ArrayOf<A>) -> [A] {
+    kind as! [A]
+}
+```
+
+#### Bow's Foldable
+
+```swift
+import Bow
+
+extension Array: Foldable {
+    public static func foldLeft<A, B>(
+        _ fa: ArrayOf<A>,
+        _ b: B,
+        _ f: @escaping (B, A) -> B
+    ) -> B {
+        fromKind(fa).reduce(b, f)
+    }
+    
+    public static func foldRight<A, B>(
+        _ fa: ArrayOf<A>,
+        _ b: Eval<B>,
+        _ f: @escaping (A, Eval<B>) -> Eval<B>
+    ) -> Eval<B> {
+        fromKind(fa).reversed().reduce(b) { f($1, $0) }
+    }
+}
+```
+
+#### Bow's Traverse
+
+```swift
+import Bow
+
+let numbers: ArrayOf<Int> = [1, 2, 3].toKind()
+
+func validate(_ n: Int) -> Either<String, Int> {
+    n > 0 ? .right(n) : .left("Negative: \(n)")
+}
+
+let validated: Either<String, ArrayOf<Int>> =
+    numbers.traverse(validate)
+// Result: .right([1, 2, 3])
+```
+
+#### When to Use Bow
+
+**Use Bow when:**
+- ✅ Need full typeclass abstraction
+- ✅ Working across multiple container types
+- ✅ Team experienced with Haskell/FP
+- ✅ Complex monad compositions
+
+**Use Native Swift when:**
+- ✅ Simple reduce/fold operations (95% of cases)
+- ✅ Standard collections
+- ✅ async/await patterns
+- ✅ SwiftUI integration
+- ✅ Performance critical
+- ✅ Team unfamiliar with FP
+
+---
+
+### Real-World Patterns
+
+#### Pattern 1: SwiftUI Form Validation
+
+```swift
+import SwiftUI
+
+struct User {
+    let name: String
+    let email: String
+    let age: Int
+}
+
+enum ValidationError: Error {
+    case invalidName
+    case invalidEmail
+    case invalidAge
+    
+    var message: String {
+        switch self {
+        case .invalidName: return "Name cannot be empty"
+        case .invalidEmail: return "Email must contain @"
+        case .invalidAge: return "Age must be 13-120"
+        }
+    }
+}
+
+func validateName(_ name: String) -> Result<String, ValidationError> {
+    name.isEmpty ? .failure(.invalidName) : .success(name)
+}
+
+func validateEmail(_ email: String) -> Result<String, ValidationError> {
+    email.contains("@") ? .success(email) : .failure(.invalidEmail)
+}
+
+func validateAge(_ age: Int) -> Result<Int, ValidationError> {
+    (13...120).contains(age) ? .success(age) : .failure(.invalidAge)
+}
+
+class FormViewModel: ObservableObject {
+    @Published var name: String = ""
+    @Published var email: String = ""
+    @Published var age: String = ""
+    @Published var validationResult: Result<User, ValidationError>?
+    
+    func validate() {
+        let ageInt = Int(age) ?? 0
+        
+        // Validate all fields
+        let nameResult = validateName(name)
+        let emailResult = validateEmail(email)
+        let ageResult = validateAge(ageInt)
+        
+        // Combine results (all must succeed)
+        validationResult = nameResult.flatMap { validName in
+            emailResult.flatMap { validEmail in
+                ageResult.map { validAge in
+                    User(name: validName, email: validEmail, age: validAge)
+                }
+            }
+        }
+    }
+}
+
+struct FormView: View {
+    @StateObject var viewModel = FormViewModel()
+    
+    var body: some View {
+        Form {
+            TextField("Name", text: $viewModel.name)
+            TextField("Email", text: $viewModel.email)
+            TextField("Age", text: $viewModel.age)
+            
+            Button("Validate") {
+                viewModel.validate()
+            }
+            
+            if let result = viewModel.validationResult {
+                switch result {
+                case .success(let user):
+                    Text("✅ Valid: \(user.name), \(user.email), \(user.age)")
+                        .foregroundColor(.green)
+                case .failure(let error):
+                    Text("❌ \(error.message)")
+                        .foregroundColor(.red)
+                }
+            }
+        }
+    }
+}
+```
+
+#### Pattern 2: Parallel API Calls
+
+```swift
+struct Post {
+    let id: Int
+    let title: String
+    let body: String
+}
+
+func fetchPost(id: Int) async throws -> Post {
+    let url = URL(string: "https://api.example.com/posts/\(id)")!
+    let (data, _) = try await URLSession.shared.data(from: url)
+    return try JSONDecoder().decode(Post.self, from: data)
+}
+
+let postIds = [1, 2, 3, 4, 5]
+
+// Sequential (slow)
+let postsSequential = await postIds.traverse { id in
+    try await fetchPost(id: id)
+}
+// Takes: ~500ms if each call is 100ms
+
+// Parallel (FAST!)
+let postsParallel = await postIds.traverseParallel { id in
+    try await fetchPost(id: id)
+}
+// Takes: ~100ms (all parallel!)
+
+// With error handling
+func fetchPostSafe(id: Int) async -> Result<Post, Error> {
+    do {
+        let post = try await fetchPost(id: id)
+        return .success(post)
+    } catch {
+        return .failure(error)
+    }
+}
+
+let results = await postIds.traverseParallel(fetchPostSafe)
+// Result: [Result<Post, Error>]
+
+// Filter successful results
+let successfulPosts = results.compactMap { result in
+    try? result.get()
+}
+```
+
+#### Pattern 3: Data Processing Pipeline
+
+```swift
+struct RawData {
+    let csv: String
+}
+
+struct ParsedData {
+    let fields: [String]
+}
+
+struct ValidatedData {
+    let id: Int
+    let name: String
+    let value: Double
+}
+
+struct EnrichedData {
+    let validated: ValidatedData
+    let metadata: [String: String]
+}
+
+enum PipelineError: Error {
+    case parseError(String)
+    case validationError(String)
+    case enrichmentError(String)
+}
+
+func parse(_ raw: RawData) -> Result<ParsedData, PipelineError> {
+    let fields = raw.csv.split(separator: ",").map(String.init)
+    guard fields.count >= 3 else {
+        return .failure(.parseError("Invalid CSV format"))
+    }
+    return .success(ParsedData(fields: fields))
+}
+
+func validate(_ parsed: ParsedData) -> Result<ValidatedData, PipelineError> {
+    guard parsed.fields.count >= 3,
+          let id = Int(parsed.fields[0]),
+          let value = Double(parsed.fields[2]) else {
+        return .failure(.validationError("Invalid data format"))
+    }
+    
+    let name = parsed.fields[1]
+    guard !name.isEmpty else {
+        return .failure(.validationError("Name cannot be empty"))
+    }
+    
+    return .success(ValidatedData(id: id, name: name, value: value))
+}
+
+func enrich(_ validated: ValidatedData) async -> Result<EnrichedData, PipelineError> {
+    do {
+        // Simulate external API call
+        try await Task.sleep(nanoseconds: 50_000_000)
+        let metadata = ["source": "api", "timestamp": "\(Date())"]
+        return .success(EnrichedData(validated: validated, metadata: metadata))
+    } catch {
+        return .failure(.enrichmentError("Enrichment failed"))
+    }
+}
+
+// Complete pipeline
+func processPipeline(_ rawData: [RawData]) async -> Result<[EnrichedData], PipelineError> {
+    // Parse all
+    let parsed = rawData.traverse(parse)
+    
+    // Validate all
+    let validated = parsed.flatMap { $0.traverse(validate) }
+    
+    // Enrich all (parallel!)
+    switch validated {
+    case .success(let data):
+        let enriched = await data.traverseParallel(enrich)
+        return enriched.sequence()
+    case .failure(let error):
+        return .failure(error)
+    }
+}
+
+// Usage
+let rawRecords = [
+    RawData(csv: "1,Alice,100.5"),
+    RawData(csv: "2,Bob,200.0"),
+    RawData(csv: "3,Charlie,150.75")
+]
+
+let result = await processPipeline(rawRecords)
+// Result: .success([EnrichedData...])
+```
+
+---
+
+### Native vs Bow Comparison
+
+| Aspect | Native Swift | Bow Library |
+|--------|--------------|-------------|
+| **Ease of Use** | ⭐⭐⭐⭐⭐ Easy | ⭐⭐ Complex |
+| **Performance** | ⭐⭐⭐⭐⭐ Excellent | ⭐⭐⭐⭐ Good |
+| **Type Safety** | ⭐⭐⭐⭐ Good | ⭐⭐⭐⭐⭐ Excellent |
+| **Abstraction** | ⭐⭐⭐ Limited | ⭐⭐⭐⭐⭐ Full HKT |
+| **Learning Curve** | ⭐⭐⭐⭐⭐ Easy | ⭐⭐ Steep |
+| **Community** | ⭐⭐⭐⭐⭐ Huge | ⭐⭐⭐ Small |
+| **async/await** | ⭐⭐⭐⭐⭐ Best! | ⭐⭐⭐ Limited |
+| **SwiftUI** | ⭐⭐⭐⭐⭐ Perfect | ⭐⭐⭐ OK |
+
+**Recommendation**: **Native Swift covers 95% of use cases**. Only use Bow if you need full typeclass abstractions for complex FP scenarios.
+
+---
+
+### Dependencies
+
+**Native Swift** (Recommended):
+```swift
+// No dependencies needed!
+// Everything is in the standard library
+```
+
+**Bow** (Optional):
+```swift
+// Package.swift
+dependencies: [
+    .package(url: "https://github.com/bow-swift/bow.git", from: "3.0.0")
+]
+
+targets: [
+    .target(
+        name: "MyApp",
+        dependencies: [
+            .product(name: "Bow", package: "bow")
+        ]
+    )
+]
+```
+
+---
+
+### When to Use
+
+**Use Native Swift Foldable when:**
+- ✅ Simple reduce/fold operations (95% of cases)
+- ✅ Standard collections (Array, Set, Dictionary)
+- ✅ Building collections efficiently
+- ✅ SwiftUI integration
+- ✅ Performance critical
+
+**Use Native Swift Traversable when:**
+- ✅ Validation with Result
+- ✅ Optional value handling
+- ✅ Async/await operations (BEST async support!)
+- ✅ Parallel operations with TaskGroup
+- ✅ SwiftUI form validation
+
+**Use Bow Library when:**
+- ✅ Need full typeclass abstraction
+- ✅ Working across multiple container types
+- ✅ Team experienced with Haskell/FP
+- ✅ Complex monad compositions
+- ✅ Need HKT-based polymorphism
+
+**Avoid Bow when:**
+- ❌ Simple use cases
+- ❌ Team unfamiliar with FP
+- ❌ Performance critical (native is faster)
+- ❌ SwiftUI-heavy (native is better integrated)
+
+---
+
 ## Practical Examples
 
 ### Example 1: Validating User Input (TypeScript)
