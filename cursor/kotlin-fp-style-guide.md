@@ -1116,6 +1116,141 @@ val result = either {
 
 ---
 
+## Data Structure Patterns (Kotlin)
+
+**For Foldable and Traversable patterns in Kotlin**, see:
+
+- **Quick Reference**: [DATA_STRUCTURE_PATTERNS.md](DATA_STRUCTURE_PATTERNS.md#kotlin) - Fast lookup for common patterns
+- **Full Guide**: [guides/traversable-foldable-guide.md](guides/traversable-foldable-guide.md#kotlin-implementation) - Comprehensive guide with examples
+- **CURSOR.md Section 8**: [Data Structure Guidelines](CURSOR.md#8-data-structure-guidelines-recommended)
+
+### When to Use
+
+✅ **Use Foldable** (fold/reduce) when:
+- Aggregating collections: sum, product, concat
+- Converting between collection types
+- Building accumulations
+
+✅ **Use Traversable** (traverse) when:
+- Validating collections with early exit
+- Performing effects on collections (IO, async)
+- Need "all-or-nothing" semantics
+- Parallel operations on collections
+
+### Kotlin Implementation
+
+**Foldable** (native):
+```kotlin
+// Sum numbers
+val total = numbers.fold(0) { acc, n -> acc + n }
+
+// Or using reduce
+val total = numbers.reduce { acc, n -> acc + n }
+```
+
+**Foldable** (Arrow):
+```kotlin
+import arrow.core.*
+import arrow.core.extensions.list.foldable.foldable
+
+val total = numbers.foldable().foldLeft(0) { acc, n -> acc + n }
+```
+
+**Traversable** (Arrow):
+```kotlin
+import arrow.core.*
+
+// Validate collection with early exit
+fun validatePositive(n: Int): Either<String, Int> =
+    if (n > 0) Either.Right(n) else Either.Left("Negative: $n")
+
+val result: Either<String, List<Int>> =
+    numbers.traverse(Either.applicative()) { validatePositive(it) }
+// Stops at first error!
+```
+
+**Parallel Traverse** (Arrow + coroutines):
+```kotlin
+import arrow.fx.coroutines.parTraverse
+
+// Parallel execution
+suspend fun fetchUsers(ids: List<Int>): Either<ApiError, List<User>> =
+    ids.parTraverse { id ->
+        fetchUser(id)
+    }
+// All operations run in parallel with coroutines!
+```
+
+### Common Patterns
+
+**Form Validation** (all fields must pass):
+```kotlin
+data class FormData(val name: String, val email: String, val age: Int)
+data class ValidatedUser(val name: String, val email: String, val age: Int)
+
+fun validateForm(data: FormData): Either<ValidationError, ValidatedUser> =
+    validateName(data.name).flatMap { validName ->
+        validateEmail(data.email).flatMap { validEmail ->
+            validateAge(data.age).map { validAge ->
+                ValidatedUser(validName, validEmail, validAge)
+            }
+        }
+    }
+
+// Or with Arrow's either block
+fun validateForm(data: FormData): Either<ValidationError, ValidatedUser> = either {
+    val name = validateName(data.name).bind()
+    val email = validateEmail(data.email).bind()
+    val age = validateAge(data.age).bind()
+    ValidatedUser(name, email, age)
+}
+```
+
+**ETL Pipeline** (parse → validate → enrich):
+```kotlin
+suspend fun etlPipeline(rawData: List<RawRecord>): Either<Error, List<EnrichedRecord>> =
+    rawData
+        .traverse(Either.applicative()) { parse(it) }
+        .flatMap { parsed ->
+            parsed.traverse(Either.applicative()) { validate(it) }
+        }
+        .flatMap { validated ->
+            validated.parTraverse { enrich(it) }
+                .traverse(Either.applicative()) { it }
+        }
+```
+
+**Parallel API Calls**:
+```kotlin
+// Fetch multiple users in parallel
+suspend fun fetchAllUsers(ids: List<Int>): Either<ApiError, List<User>> =
+    ids.parTraverse { id ->
+        fetchUser(id)
+    }
+// 100ms total if each call is 100ms (vs 500ms sequential)
+// Uses Kotlin coroutines for efficient parallelism
+```
+
+### Arrow Library (Required for Traverse)
+
+```kotlin
+// build.gradle.kts
+dependencies {
+    implementation("io.arrow-kt:arrow-core:1.2.0")
+    implementation("io.arrow-kt:arrow-fx-coroutines:1.2.0")
+}
+```
+
+**Why Arrow?**
+- ⭐⭐⭐⭐⭐ Full Foldable + Traversable typeclass support
+- ⭐⭐⭐⭐⭐ Excellent coroutine integration (parTraverse)
+- ⭐⭐⭐⭐⭐ HKT encoding via Kind<F, A>
+- ⭐⭐⭐⭐⭐ Production-ready, standard FP library for Kotlin
+
+See the [full guide](guides/traversable-foldable-guide.md#kotlin-implementation) for comprehensive examples and patterns.
+
+---
+
 ## Mandatory Rules Reference
 
 From [CURSOR.md](CURSOR.md):

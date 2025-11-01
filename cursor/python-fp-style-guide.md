@@ -659,6 +659,108 @@ result = (
 
 ---
 
+## Data Structure Patterns (Python)
+
+**For Foldable and Traversable patterns in Python**, see:
+
+- **Quick Reference**: [DATA_STRUCTURE_PATTERNS.md](DATA_STRUCTURE_PATTERNS.md#python) - Fast lookup for common patterns
+- **Full Guide**: [guides/traversable-foldable-guide.md](guides/traversable-foldable-guide.md#python-implementation) - Comprehensive guide with examples
+- **CURSOR.md Section 8**: [Data Structure Guidelines](CURSOR.md#8-data-structure-guidelines-recommended)
+
+### When to Use
+
+✅ **Use Foldable** (reduce/fold) when:
+- Aggregating collections: sum, product, concat
+- Converting between collection types
+- Building accumulations
+
+✅ **Use Traversable** (traverse) when:
+- Validating collections with early exit
+- Performing effects on collections (IO, async)
+- Need "all-or-nothing" semantics
+- Parallel operations on collections
+
+### Python Implementation
+
+**Foldable**:
+```python
+from functools import reduce
+
+# Sum numbers
+total = reduce(lambda acc, n: acc + n, numbers, 0)
+
+# Or with toolz
+from toolz import reduce
+total = reduce(add, numbers, 0)
+```
+
+**Traversable**:
+```python
+from returns.result import Result, Success, Failure
+
+def traverse(items, f):
+    """Apply f to each item, short-circuit on first failure"""
+    results = []
+    for item in items:
+        result = f(item)
+        if isinstance(result, Failure):
+            return result  # Early exit!
+        results.append(result.unwrap())
+    return Success(results)
+
+# Usage
+validated = traverse(numbers, validate_positive)
+```
+
+**Parallel Traverse**:
+```python
+import asyncio
+
+async def parallel_traverse(items, async_f):
+    """Execute async operations in parallel"""
+    return await asyncio.gather(*[async_f(item) for item in items])
+
+# Usage
+users = await parallel_traverse(user_ids, fetch_user)
+```
+
+### Common Patterns
+
+**Form Validation** (all fields must pass):
+```python
+def validate_form(name: str, email: str, age: int) -> Result[User, ValidationError]:
+    name_result = validate_name(name)
+    if isinstance(name_result, Failure):
+        return name_result
+    
+    email_result = validate_email(email)
+    if isinstance(email_result, Failure):
+        return email_result
+    
+    age_result = validate_age(age)
+    if isinstance(age_result, Failure):
+        return age_result
+    
+    return Success(User(name, email, age))
+```
+
+**ETL Pipeline** (parse → validate → enrich):
+```python
+from returns.pipeline import flow
+
+def etl_pipeline(raw_data: list[RawRecord]) -> Result[list[EnrichedRecord], Error]:
+    return flow(
+        raw_data,
+        lambda data: traverse(data, parse_record),
+        lambda parsed: parsed.bind(lambda p: traverse(p, validate_record)),
+        lambda validated: validated.bind(lambda v: traverse(v, enrich_record))
+    )
+```
+
+See the [full guide](guides/traversable-foldable-guide.md#python-implementation) for comprehensive examples and patterns.
+
+---
+
 ## Mandatory Rules Reference
 
 From [CURSOR.md](CURSOR.md):

@@ -1129,6 +1129,192 @@ let result = data
 
 ---
 
+## Data Structure Patterns (Swift)
+
+**For Foldable and Traversable patterns in Swift**, see:
+
+- **Quick Reference**: [DATA_STRUCTURE_PATTERNS.md](DATA_STRUCTURE_PATTERNS.md#swift) - Fast lookup for common patterns
+- **Full Guide**: [guides/traversable-foldable-guide.md](guides/traversable-foldable-guide.md#swift-implementation) - Comprehensive guide with examples
+- **CURSOR.md Section 8**: [Data Structure Guidelines](CURSOR.md#8-data-structure-guidelines-recommended)
+
+### When to Use
+
+✅ **Use Foldable** (reduce) when:
+- Aggregating collections: sum, product, concat
+- Converting between collection types
+- Building accumulations
+
+✅ **Use Traversable** (traverse) when:
+- Validating collections with early exit
+- Performing effects on collections (IO, async)
+- Need "all-or-nothing" semantics
+- Parallel operations on collections
+
+### Swift Implementation
+
+**Foldable** (native):
+```swift
+// Sum numbers
+let total = numbers.reduce(0, +)
+
+// Or with closure
+let total = numbers.reduce(0) { acc, n in acc + n }
+
+// Fold right
+let total = numbers.reversed().reduce(0) { f($1, $0) }
+```
+
+**Traversable** (custom extension):
+```swift
+extension Array {
+    func traverse<Success, Failure: Error>(
+        _ transform: (Element) -> Result<Success, Failure>
+    ) -> Result<[Success], Failure> {
+        var results: [Success] = []
+        for element in self {
+            switch transform(element) {
+            case .success(let value):
+                results.append(value)
+            case .failure(let error):
+                return .failure(error)  // Early exit!
+            }
+        }
+        return .success(results)
+    }
+}
+
+// Usage
+let validated = numbers.traverse(validatePositive)
+```
+
+**Parallel Traverse** (⭐⭐⭐⭐⭐ **BEST async/await**):
+```swift
+extension Array {
+    func traverseParallel<T>(
+        _ transform: @escaping (Element) async throws -> T
+    ) async rethrows -> [T] {
+        try await withThrowingTaskGroup(of: (Int, T).self) { group in
+            for (index, element) in enumerated() {
+                group.addTask { (index, try await transform(element)) }
+            }
+            var results: [(Int, T)] = []
+            results.reserveCapacity(count)
+            for try await result in group { results.append(result) }
+            return results.sorted(by: { $0.0 < $1.0 }).map(\.1)
+        }
+    }
+}
+
+// Usage
+let users = await userIds.traverseParallel { id in
+    try await fetchUser(id: id)
+}
+// All operations run in parallel with TaskGroup!
+// 100ms total if each call is 100ms (vs 500ms sequential)
+```
+
+### Common Patterns
+
+**Form Validation** (all fields must pass):
+```swift
+struct FormData {
+    let name: String
+    let email: String
+    let age: Int
+}
+
+struct ValidatedUser {
+    let name: String
+    let email: String
+    let age: Int
+}
+
+func validateForm(_ data: FormData) -> Result<ValidatedUser, ValidationError> {
+    validateName(data.name).flatMap { validName in
+        validateEmail(data.email).flatMap { validEmail in
+            validateAge(data.age).map { validAge in
+                ValidatedUser(name: validName, email: validEmail, age: validAge)
+            }
+        }
+    }
+}
+```
+
+**SwiftUI Form Validation** (real-world):
+```swift
+@MainActor
+class FormViewModel: ObservableObject {
+    @Published var name = ""
+    @Published var email = ""
+    @Published var age = ""
+    @Published var error: String?
+    
+    func submit() async {
+        let result = await [name, email, age]
+            .traverseParallel { field in
+                try await validateField(field)
+            }
+        
+        switch result {
+        case .success(let validated):
+            // All fields valid, proceed
+            await saveUser(validated)
+        case .failure(let error):
+            self.error = error.localizedDescription
+        }
+    }
+}
+```
+
+**Parallel API Calls**:
+```swift
+// Fetch multiple posts in parallel
+let posts = await postIds.traverseParallel { id in
+    try await fetchPost(id: id)
+}
+// ⭐⭐⭐⭐⭐ Swift has THE BEST async/await!
+// - Native TaskGroup
+- Structured concurrency
+// - Optimal performance
+// - No dependencies needed!
+```
+
+**ETL Pipeline** (parse → validate → enrich):
+```swift
+func etlPipeline(rawData: [RawRecord]) async -> Result<[EnrichedRecord], Error> {
+    let parsed = rawData.traverse(parseRecord)
+    guard case .success(let validParsed) = parsed else {
+        return parsed.map { _ in [] } // Type conversion
+    }
+    
+    let validated = await validParsed.traverseParallel(validateRecord)
+    guard case .success(let validValidated) = validated else {
+        return validated.map { _ in [] }
+    }
+    
+    let enriched = await validValidated.traverseParallel(enrichRecord)
+    return enriched
+}
+```
+
+### Why Swift Excels
+
+**Native-First Approach** (95% of use cases):
+- ⭐⭐⭐⭐⭐ Best async/await (TaskGroup)
+- ⭐⭐⭐⭐⭐ Excellent native `reduce()`
+- ⭐⭐⭐⭐⭐ Native `Result` type
+- ⭐⭐⭐⭐⭐ No dependencies needed
+- ⭐⭐⭐⭐⭐ Perfect SwiftUI integration
+
+**Optional: Bow Library** (advanced FP):
+- Only needed for full typeclasses + HKT
+- Native Swift covers most patterns
+- See [full guide](guides/traversable-foldable-guide.md#swift-implementation) for Bow examples
+
+See the [full guide](guides/traversable-foldable-guide.md#swift-implementation) for comprehensive examples and patterns.
+
+---
+
 ## Mandatory Rules Reference
 
 From [CURSOR.md](CURSOR.md):

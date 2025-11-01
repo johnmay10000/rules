@@ -1130,6 +1130,127 @@ const result = pipe(
 
 ---
 
+## Data Structure Patterns (TypeScript)
+
+**For Foldable and Traversable patterns in TypeScript**, see:
+
+- **Quick Reference**: [DATA_STRUCTURE_PATTERNS.md](DATA_STRUCTURE_PATTERNS.md#typescript) - Fast lookup for common patterns
+- **Full Guide**: [guides/traversable-foldable-guide.md](guides/traversable-foldable-guide.md#typescript-implementation) - Comprehensive guide with examples
+- **CURSOR.md Section 8**: [Data Structure Guidelines](CURSOR.md#8-data-structure-guidelines-recommended)
+
+### When to Use
+
+✅ **Use Foldable** (reduce/fold) when:
+- Aggregating collections: sum, product, concat
+- Converting between collection types
+- Building accumulations
+
+✅ **Use Traversable** (traverse) when:
+- Validating collections with early exit
+- Performing effects on collections (IO, async)
+- Need "all-or-nothing" semantics
+- Parallel operations on collections
+
+### TypeScript Implementation
+
+**Foldable** (fp-ts):
+```typescript
+import * as A from 'fp-ts/Array'
+
+// Sum numbers
+const total = A.reduce(0, (acc: number, n: number) => acc + n)(numbers)
+
+// Or native
+const total = numbers.reduce((acc, n) => acc + n, 0)
+```
+
+**Traversable** (fp-ts):
+```typescript
+import * as E from 'fp-ts/Either'
+import * as A from 'fp-ts/Array'
+import { pipe } from 'fp-ts/function'
+
+// Validate collection with early exit
+const validated = pipe(
+  numbers,
+  A.traverse(E.Applicative)(validatePositive)
+)
+// Type: Either<Error, number[]>
+// Stops at first error!
+```
+
+**Traversable** (Effect):
+```typescript
+import * as Effect from 'effect/Effect'
+
+// Modern approach
+const validated = Effect.all(
+  numbers.map(validatePositive),
+  { concurrency: 'sequential' }
+)
+```
+
+**Parallel Traverse** (Effect):
+```typescript
+// Parallel execution
+const results = await Effect.all(
+  ids.map(id => fetchUser(id)),
+  { concurrency: 'unbounded' }
+)
+// All operations run in parallel!
+```
+
+### Common Patterns
+
+**Form Validation** (all fields must pass):
+```typescript
+import * as E from 'fp-ts/Either'
+import { sequenceS } from 'fp-ts/Apply'
+
+interface FormData {
+  name: string
+  email: string
+  age: number
+}
+
+const validateForm = (data: FormData): E.Either<ValidationError, ValidatedUser> =>
+  pipe(
+    sequenceS(E.Apply)({
+      name: validateName(data.name),
+      email: validateEmail(data.email),
+      age: validateAge(data.age)
+    }),
+    E.map(({ name, email, age }) => ({ name, email, age }))
+  )
+```
+
+**ETL Pipeline** (parse → validate → enrich):
+```typescript
+const etlPipeline = (rawData: RawRecord[]): Effect.Effect<EnrichedRecord[], EtlError> =>
+  pipe(
+    rawData,
+    Effect.forEach(parseRecord),
+    Effect.flatMap(parsed => Effect.forEach(parsed, validateRecord)),
+    Effect.flatMap(validated => Effect.forEach(validated, enrichRecord))
+  )
+```
+
+**Parallel API Calls**:
+```typescript
+// Fetch multiple users in parallel
+const users = await Effect.runPromise(
+  Effect.all(
+    userIds.map(id => fetchUser(id)),
+    { concurrency: 'unbounded' }
+  )
+)
+// 100ms total if each call is 100ms (vs 500ms sequential)
+```
+
+See the [full guide](guides/traversable-foldable-guide.md#typescript-implementation) for comprehensive examples and patterns.
+
+---
+
 ## Mandatory Rules Reference
 
 From [CURSOR.md](CURSOR.md):
