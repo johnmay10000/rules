@@ -1,13 +1,14 @@
 # Traversable and Foldable: Universal Data Structure Patterns
-## Bringing Haskell Typeclasses to Python, TypeScript, Kotlin, and Swift
+## Bringing Haskell Typeclasses to Python, TypeScript, Kotlin, Swift, and Rust
 
-This document explores how to implement Haskell's `Traversable` and `Foldable` typeclasses across four modern languages, providing practical patterns for data structure design, access, updates, and dataflow.
+This document explores how to implement Haskell's `Traversable` and `Foldable` typeclasses across five modern languages, providing practical patterns for data structure design, access, updates, and dataflow.
 
 **Languages Covered:**
 - **Python** - Protocols and `returns` library
 - **TypeScript** - fp-ts and Effect
 - **Kotlin** - Arrow library with full typeclass support
 - **Swift** - Native protocols and Bow library
+- **Rust** - Zero-cost abstractions with Iterator and collect ⭐ NEW
 
 ---
 
@@ -17,14 +18,15 @@ This document explores how to implement Haskell's `Traversable` and `Foldable` t
 2. [Type System Comparison](#type-system-comparison)
 3. [Python Implementation](#python-implementation)
 4. [TypeScript Implementation](#typescript-implementation)
-5. [Kotlin Implementation](#kotlin-implementation) ⭐ NEW
-6. [Swift Implementation](#swift-implementation) ⭐ NEW
-7. [Cross-Language Comparison](#cross-language-comparison) ⭐ NEW
-8. [Practical Examples](#practical-examples)
-9. [Limitations and Workarounds](#limitations-and-workarounds)
-10. [Real-World Usage Patterns](#real-world-usage-patterns)
-11. [Library Support](#library-support)
-12. [When to Use This Guide](#when-to-use-this-guide) ⭐ NEW
+5. [Kotlin Implementation](#kotlin-implementation)
+6. [Swift Implementation](#swift-implementation)
+7. [Rust Implementation](#rust-implementation) ⭐ NEW
+8. [Cross-Language Comparison](#cross-language-comparison)
+9. [Practical Examples](#practical-examples)
+10. [Limitations and Workarounds](#limitations-and-workarounds)
+11. [Real-World Usage Patterns](#real-world-usage-patterns)
+12. [Library Support](#library-support)
+13. [When to Use This Guide](#when-to-use-this-guide)
 
 ---
 
@@ -2566,6 +2568,887 @@ targets: [
 
 ---
 
+## Rust Implementation
+
+### Overview
+
+Rust provides **excellent native support** for both Foldable and Traversable patterns through its `Iterator` trait and `collect()` method. With **zero-cost abstractions**, Rust's FP patterns compile to optimal machine code with no runtime overhead.
+
+**Key Strengths:**
+- ⭐⭐⭐⭐⭐ **Best Performance** - Fastest of all 5 languages
+- ⭐⭐⭐⭐⭐ **Zero-Cost Abstractions** - FP without overhead
+- ⭐⭐⭐⭐⭐ **Memory Safety** - Ownership + borrow checker
+- ⭐⭐⭐⭐⭐ **Native Foldable** - Iterator trait (fold, reduce, sum)
+- ⭐⭐⭐⭐⭐ **Native Traversable** - collect() with Result/Option
+
+**Libraries:**
+- **Standard Library** - Iterator, Result, Option (zero dependencies!)
+- **rayon** - Parallel iterators (data parallelism)
+- **tokio** - Async runtime (concurrent operations)
+- **futures** - Async utilities (Stream, join_all)
+
+---
+
+### Type System Comparison
+
+Rust's type system is **strong, static, and affine**:
+
+```rust
+// No HKT in the traditional sense, but Iterator trait provides similar power
+trait Iterator {
+    type Item;  // Associated type (simpler than HKT)
+    
+    fn fold<B, F>(self, init: B, f: F) -> B
+    where
+        F: FnMut(B, Self::Item) -> B;
+        
+    fn collect<B: FromIterator<Self::Item>>(self) -> B;
+}
+
+// Result and Option are built-in sum types
+enum Result<T, E> {
+    Ok(T),
+    Err(E),
+}
+
+enum Option<T> {
+    Some(T),
+    None,
+}
+```
+
+**Key Features:**
+- **Associated Types** instead of HKT (simpler, more ergonomic)
+- **Ownership System** (unique to Rust, enforces memory safety)
+- **Zero-Cost** - All abstractions compile away
+- **Trait-Based** - Ad-hoc polymorphism via traits
+
+---
+
+### Foldable in Rust
+
+Rust's `Iterator` trait provides excellent Foldable support:
+
+#### Basic Foldable Operations
+
+```rust
+let numbers = vec![1, 2, 3, 4, 5];
+
+// fold (foldl in Haskell)
+let sum = numbers.iter().fold(0, |acc, x| acc + x);
+// 15
+
+// Or using specialized methods (more efficient)
+let sum: i32 = numbers.iter().sum();
+let product: i32 = numbers.iter().product();
+
+// reduce (no initial value, returns Option)
+let max = numbers.iter().reduce(|a, b| a.max(b));
+// Some(5)
+
+// Custom fold
+let concatenated = numbers.iter().fold(String::new(), |acc, x| {
+    format!("{}{},", acc, x)
+});
+// "1,2,3,4,5,"
+```
+
+#### Consuming vs Borrowing Iterators
+
+```rust
+let numbers = vec![1, 2, 3, 4, 5];
+
+// iter() - Borrows elements (&T)
+let sum1: i32 = numbers.iter().sum();
+let sum2: i32 = numbers.iter().sum();  // OK! numbers still valid
+
+// into_iter() - Consumes elements (T)
+let doubled: Vec<i32> = numbers.into_iter().map(|x| x * 2).collect();
+// numbers is now moved, can't use it anymore
+
+// iter_mut() - Mutable borrows (&mut T)
+let mut numbers = vec![1, 2, 3];
+numbers.iter_mut().for_each(|x| *x *= 2);
+// numbers is now [2, 4, 6]
+```
+
+#### Custom Foldable (Tree Example)
+
+```rust
+#[derive(Debug)]
+enum Tree<T> {
+    Leaf(T),
+    Branch(Box<Tree<T>>, Box<Tree<T>>),
+}
+
+impl<T> Tree<T> {
+    // Fold over tree (in-order traversal)
+    fn fold<B, F>(&self, init: B, f: &F) -> B
+    where
+        F: Fn(B, &T) -> B,
+    {
+        match self {
+            Tree::Leaf(value) => f(init, value),
+            Tree::Branch(left, right) => {
+                let acc = left.fold(init, f);
+                right.fold(acc, f)
+            }
+        }
+    }
+}
+
+// Usage
+let tree = Tree::Branch(
+    Box::new(Tree::Leaf(1)),
+    Box::new(Tree::Branch(
+        Box::new(Tree::Leaf(2)),
+        Box::new(Tree::Leaf(3)),
+    )),
+);
+
+let sum = tree.fold(0, &|acc, x| acc + x);
+// 6
+```
+
+#### Iterator Combinators (Lazy Evaluation)
+
+```rust
+let numbers = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+// Chain operations (all lazy until collect)
+let result: i32 = numbers
+    .iter()
+    .filter(|&&x| x % 2 == 0)    // Lazy
+    .map(|&x| x * 2)              // Lazy
+    .take(3)                       // Lazy
+    .sum();                        // Eager (consumes iterator)
+// 24 (2*2 + 4*2 + 6*2)
+
+// Zero-cost: Compiles to equivalent of hand-written loop!
+```
+
+---
+
+### Traversable in Rust
+
+Rust's `collect()` method with `FromIterator` trait provides **excellent native Traversable support**:
+
+#### collect() with Result
+
+```rust
+// Validate all items, stop at first error
+fn validate_positive(n: i32) -> Result<i32, String> {
+    if n > 0 {
+        Ok(n)
+    } else {
+        Err(format!("{} is not positive", n))
+    }
+}
+
+let numbers = vec![1, 2, 3, 4, 5];
+let validated: Result<Vec<i32>, String> = numbers
+    .into_iter()
+    .map(validate_positive)
+    .collect();
+
+match validated {
+    Ok(valid) => println!("All valid: {:?}", valid),
+    Err(e) => println!("Error: {}", e),
+}
+
+// With negative number
+let numbers = vec![1, -2, 3];
+let validated: Result<Vec<i32>, String> = numbers
+    .into_iter()
+    .map(validate_positive)
+    .collect();
+// Returns Err("-2 is not positive") - stops at first error!
+```
+
+#### collect() with Option
+
+```rust
+fn safe_divide(a: i32, b: i32) -> Option<i32> {
+    if b == 0 {
+        None
+    } else {
+        Some(a / b)
+    }
+}
+
+let pairs = vec![(10, 2), (20, 4), (30, 0), (40, 5)];
+
+let results: Option<Vec<i32>> = pairs
+    .into_iter()
+    .map(|(a, b)| safe_divide(a, b))
+    .collect();
+
+// Returns None because (30, 0) produces None
+assert!(results.is_none());
+
+// With all valid
+let pairs = vec![(10, 2), (20, 4), (30, 5)];
+let results: Option<Vec<i32>> = pairs
+    .into_iter()
+    .map(|(a, b)| safe_divide(a, b))
+    .collect();
+// Returns Some([5, 5, 6])
+```
+
+#### FromIterator Trait
+
+```rust
+// FromIterator is what makes collect() work with different types
+use std::iter::FromIterator;
+
+// Result implements FromIterator for early exit semantics
+impl<A, E, V: FromIterator<A>> FromIterator<Result<A, E>> for Result<V, E> {
+    fn from_iter<I: IntoIterator<Item = Result<A, E>>>(iter: I) -> Self {
+        // Stops at first Err!
+        let mut accum = Vec::new();
+        for result in iter {
+            match result {
+                Ok(value) => accum.push(value),
+                Err(e) => return Err(e),  // Early exit
+            }
+        }
+        Ok(accum.into_iter().collect())
+    }
+}
+
+// Custom collection implementing FromIterator
+#[derive(Debug)]
+struct MyCollection<T>(Vec<T>);
+
+impl<T> FromIterator<T> for MyCollection<T> {
+    fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self {
+        MyCollection(iter.into_iter().collect())
+    }
+}
+
+// Usage
+let my_coll: MyCollection<i32> = vec![1, 2, 3].into_iter().collect();
+```
+
+#### Traverse with Custom Types
+
+```rust
+#[derive(Debug)]
+enum Tree<T> {
+    Leaf(T),
+    Branch(Box<Tree<T>>, Box<Tree<T>>),
+}
+
+impl<T> Tree<T> {
+    // Traverse tree with effectful function
+    fn traverse<E, F, U>(&self, f: &F) -> Result<Tree<U>, E>
+    where
+        F: Fn(&T) -> Result<U, E>,
+    {
+        match self {
+            Tree::Leaf(value) => {
+                f(value).map(Tree::Leaf)
+            }
+            Tree::Branch(left, right) => {
+                let left_result = left.traverse(f)?;
+                let right_result = right.traverse(f)?;
+                Ok(Tree::Branch(
+                    Box::new(left_result),
+                    Box::new(right_result),
+                ))
+            }
+        }
+    }
+}
+
+// Usage
+let tree = Tree::Branch(
+    Box::new(Tree::Leaf(1)),
+    Box::new(Tree::Leaf(2)),
+);
+
+let doubled = tree.traverse(&|x| Ok::<_, String>(x * 2));
+// Ok(Tree with values [2, 4])
+
+let validated = tree.traverse(&|x| {
+    if *x > 0 {
+        Ok(*x)
+    } else {
+        Err("Negative value")
+    }
+});
+// Ok(Tree with values [1, 2])
+```
+
+---
+
+### Parallel Operations (rayon)
+
+The `rayon` library provides **zero-cost parallel iterators**:
+
+```toml
+# Cargo.toml
+[dependencies]
+rayon = "1.8"
+```
+
+#### Parallel Fold
+
+```rust
+use rayon::prelude::*;
+
+let numbers: Vec<i32> = (1..=1000).collect();
+
+// Parallel sum (automatic work stealing)
+let sum: i32 = numbers.par_iter().sum();
+
+// Parallel fold
+let sum = numbers
+    .par_iter()
+    .fold(|| 0, |acc, &x| acc + x)  // Each thread starts with 0
+    .sum::<i32>();                   // Combine results
+```
+
+#### Parallel Traverse
+
+```rust
+use rayon::prelude::*;
+
+fn expensive_computation(x: i32) -> Result<i32, String> {
+    // Simulate expensive work
+    std::thread::sleep(std::time::Duration::from_millis(100));
+    if x % 7 == 0 {
+        Err(format!("{} is divisible by 7", x))
+    } else {
+        Ok(x * 2)
+    }
+}
+
+let numbers: Vec<i32> = (1..=20).collect();
+
+// Parallel map + collect (all results)
+let results: Vec<Result<i32, String>> = numbers
+    .par_iter()
+    .map(|&x| expensive_computation(x))
+    .collect();
+
+// Stop at first error (sequential check after parallel processing)
+let validated: Result<Vec<i32>, String> = results.into_iter().collect();
+```
+
+#### When to Use Parallel
+
+```rust
+// ✅ Use parallel when:
+// - CPU-bound operations
+// - Large collections (>1000 items)
+// - Independent computations (no shared mutable state)
+// - Operations take >1ms each
+
+// Example: Image processing
+let processed: Vec<Image> = images
+    .par_iter()
+    .map(|img| process_image(img))  // CPU-intensive
+    .collect();
+
+// ❌ Don't use parallel for:
+// - I/O-bound operations (use async instead)
+// - Small collections (<100 items)
+// - Fast operations (<1μs each)
+// - Operations with synchronization overhead
+```
+
+#### Performance Comparison
+
+```rust
+use std::time::Instant;
+
+let numbers: Vec<i32> = (1..=10_000_000).collect();
+
+// Sequential
+let start = Instant::now();
+let sum: i64 = numbers.iter().map(|&x| x as i64 * x as i64).sum();
+println!("Sequential: {:?}", start.elapsed());
+
+// Parallel
+let start = Instant::now();
+let sum: i64 = numbers.par_iter().map(|&x| x as i64 * x as i64).sum();
+println!("Parallel: {:?}", start.elapsed());
+
+// On 8-core CPU:
+// Sequential: ~25ms
+// Parallel: ~4ms (6x speedup)
+```
+
+---
+
+### Async Operations (tokio/futures)
+
+For I/O-bound operations, use `tokio` for async/await:
+
+```toml
+# Cargo.toml
+[dependencies]
+tokio = { version = "1.35", features = ["full"] }
+futures = "0.3"
+```
+
+#### Async Traverse (Sequential)
+
+```rust
+use tokio;
+
+async fn fetch_user(id: u64) -> Result<User, ApiError> {
+    // Simulate HTTP request
+    tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+    Ok(User { id, name: format!("User {}", id) })
+}
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let ids = vec![1, 2, 3, 4, 5];
+    
+    // Sequential async (one at a time)
+    let mut users = Vec::new();
+    for id in ids {
+        users.push(fetch_user(id).await?);
+    }
+    
+    println!("Users: {:?}", users);
+    Ok(())
+}
+```
+
+#### Async Traverse (Parallel with try_join_all)
+
+```rust
+use futures::future::try_join_all;
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let ids = vec![1, 2, 3, 4, 5];
+    
+    // Create all futures
+    let futures: Vec<_> = ids
+        .iter()
+        .map(|&id| fetch_user(id))
+        .collect();
+    
+    // Run all concurrently, stop at first error
+    let users = try_join_all(futures).await?;
+    
+    println!("Users: {:?}", users);
+    Ok(())
+}
+// All 5 requests run concurrently!
+// ~100ms total (vs ~500ms sequential)
+```
+
+#### Stream (Async Iterator)
+
+```rust
+use futures::stream::{self, StreamExt};
+
+async fn process_items() {
+    let items = vec![1, 2, 3, 4, 5];
+    
+    let mut stream = stream::iter(items)
+        .then(|x| async move {
+            // Async operation on each item
+            tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+            x * 2
+        });
+    
+    // Process stream
+    while let Some(result) = stream.next().await {
+        println!("Result: {}", result);
+    }
+}
+
+// Or collect all results
+async fn collect_stream() -> Vec<i32> {
+    let items = vec![1, 2, 3, 4, 5];
+    
+    stream::iter(items)
+        .then(|x| async move { x * 2 })
+        .collect()
+        .await
+}
+```
+
+#### FuturesUnordered (Dynamic Concurrency)
+
+```rust
+use futures::stream::{FuturesUnordered, StreamExt};
+
+async fn fetch_all_users(ids: Vec<u64>) -> Vec<Result<User, ApiError>> {
+    let futures: FuturesUnordered<_> = ids
+        .into_iter()
+        .map(|id| fetch_user(id))
+        .collect();
+    
+    futures.collect().await
+}
+
+// With error handling (stop at first error)
+async fn fetch_all_users_checked(ids: Vec<u64>) -> Result<Vec<User>, ApiError> {
+    let futures: FuturesUnordered<_> = ids
+        .into_iter()
+        .map(|id| fetch_user(id))
+        .collect();
+    
+    let results: Vec<_> = futures.collect().await;
+    results.into_iter().collect()  // Stops at first Err
+}
+```
+
+---
+
+### Real-World Patterns
+
+#### Pattern 1: Form Validation (Railway-Oriented)
+
+```rust
+#[derive(Debug)]
+struct User {
+    name: String,
+    email: String,
+    age: u32,
+}
+
+#[derive(Debug)]
+enum ValidationError {
+    InvalidName(String),
+    InvalidEmail(String),
+    InvalidAge(String),
+}
+
+fn validate_name(name: &str) -> Result<String, ValidationError> {
+    if name.len() < 2 {
+        Err(ValidationError::InvalidName("Too short".into()))
+    } else {
+        Ok(name.to_string())
+    }
+}
+
+fn validate_email(email: &str) -> Result<String, ValidationError> {
+    if !email.contains('@') {
+        Err(ValidationError::InvalidEmail("Missing @".into()))
+    } else {
+        Ok(email.to_string())
+    }
+}
+
+fn validate_age(age: u32) -> Result<u32, ValidationError> {
+    if age < 13 {
+        Err(ValidationError::InvalidAge("Too young".into()))
+    } else if age > 120 {
+        Err(ValidationError::InvalidAge("Invalid".into()))
+    } else {
+        Ok(age)
+    }
+}
+
+// Railway-oriented programming with ? operator
+fn validate_user(
+    name: &str,
+    email: &str,
+    age: u32
+) -> Result<User, ValidationError> {
+    let valid_name = validate_name(name)?;     // Exit on error
+    let valid_email = validate_email(email)?;   // Exit on error
+    let valid_age = validate_age(age)?;         // Exit on error
+    
+    Ok(User {
+        name: valid_name,
+        email: valid_email,
+        age: valid_age,
+    })
+}
+
+// Usage
+match validate_user("Alice", "alice@example.com", 25) {
+    Ok(user) => println!("Valid: {:?}", user),
+    Err(e) => eprintln!("Error: {:?}", e),
+}
+```
+
+#### Pattern 2: ETL Pipeline
+
+```rust
+#[derive(Debug, Clone)]
+struct RawRecord {
+    data: String,
+}
+
+#[derive(Debug)]
+struct ParsedRecord {
+    id: u64,
+    value: f64,
+}
+
+#[derive(Debug)]
+struct ValidatedRecord {
+    id: u64,
+    value: f64,
+}
+
+#[derive(Debug)]
+struct EnrichedRecord {
+    id: u64,
+    value: f64,
+    category: String,
+    timestamp: String,
+}
+
+#[derive(Debug)]
+enum EtlError {
+    ParseError,
+    ValidationError(String),
+}
+
+fn parse_record(raw: RawRecord) -> Result<ParsedRecord, EtlError> {
+    let parts: Vec<&str> = raw.data.split(',').collect();
+    let id = parts.get(0)
+        .and_then(|s| s.parse().ok())
+        .ok_or(EtlError::ParseError)?;
+    let value = parts.get(1)
+        .and_then(|s| s.parse().ok())
+        .ok_or(EtlError::ParseError)?;
+    
+    Ok(ParsedRecord { id, value })
+}
+
+fn validate_record(parsed: ParsedRecord) -> Result<ValidatedRecord, EtlError> {
+    if parsed.value < 0.0 {
+        Err(EtlError::ValidationError("Negative value".into()))
+    } else {
+        Ok(ValidatedRecord {
+            id: parsed.id,
+            value: parsed.value,
+        })
+    }
+}
+
+fn enrich_record(validated: ValidatedRecord) -> Result<EnrichedRecord, EtlError> {
+    let category = if validated.value < 100.0 { "Low" } else { "High" };
+    Ok(EnrichedRecord {
+        id: validated.id,
+        value: validated.value,
+        category: category.to_string(),
+        timestamp: "2025-11-01T00:00:00Z".to_string(),
+    })
+}
+
+// Sequential ETL pipeline (Traversable!)
+fn etl_pipeline(raw_records: Vec<RawRecord>) -> Result<Vec<EnrichedRecord>, EtlError> {
+    raw_records
+        .into_iter()
+        .map(parse_record)
+        .collect::<Result<Vec<_>, _>>()?  // Stop at first parse error
+        .into_iter()
+        .map(validate_record)
+        .collect::<Result<Vec<_>, _>>()?  // Stop at first validation error
+        .into_iter()
+        .map(enrich_record)
+        .collect()                         // Stop at first enrichment error
+}
+
+// Parallel ETL pipeline (rayon)
+use rayon::prelude::*;
+
+fn etl_pipeline_parallel(raw_records: Vec<RawRecord>) -> Result<Vec<EnrichedRecord>, EtlError> {
+    raw_records
+        .par_iter()
+        .map(|r| {
+            parse_record(r.clone())
+                .and_then(validate_record)
+                .and_then(enrich_record)
+        })
+        .collect()  // Parallel processing, early exit on error
+}
+```
+
+#### Pattern 3: Parallel API Calls
+
+```rust
+use tokio;
+use futures::future::try_join_all;
+
+#[derive(Debug)]
+struct Post {
+    id: u64,
+    title: String,
+    content: String,
+}
+
+#[derive(Debug)]
+enum ApiError {
+    NetworkError(String),
+    NotFound,
+}
+
+async fn fetch_post(id: u64) -> Result<Post, ApiError> {
+    // Simulate HTTP request
+    tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+    
+    if id > 100 {
+        Err(ApiError::NotFound)
+    } else {
+        Ok(Post {
+            id,
+            title: format!("Post {}", id),
+            content: "Content".to_string(),
+        })
+    }
+}
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let post_ids = vec![1, 2, 3, 4, 5];
+    
+    // Create all futures
+    let futures: Vec<_> = post_ids
+        .iter()
+        .map(|&id| fetch_post(id))
+        .collect();
+    
+    // Run all concurrently (Traversable in async context!)
+    let posts = try_join_all(futures).await?;
+    
+    println!("Fetched {} posts", posts.len());
+    for post in posts {
+        println!("  - {}: {}", post.id, post.title);
+    }
+    
+    Ok(())
+}
+// All 5 requests run concurrently!
+// ~100ms total (vs ~500ms if sequential)
+```
+
+---
+
+### Performance Notes
+
+**Zero-Cost Abstractions:**
+```rust
+// These are equivalent in performance:
+
+// FP style
+let sum: i32 = numbers.iter().filter(|&&x| x > 0).sum();
+
+// Imperative style
+let mut sum = 0;
+for &x in &numbers {
+    if x > 0 {
+        sum += x;
+    }
+}
+
+// Both compile to identical machine code!
+```
+
+**Benchmarking Example:**
+```rust
+use criterion::{black_box, criterion_group, criterion_main, Criterion};
+
+fn sum_imperative(numbers: &[i32]) -> i32 {
+    let mut sum = 0;
+    for &x in numbers {
+        sum += x;
+    }
+    sum
+}
+
+fn sum_fp(numbers: &[i32]) -> i32 {
+    numbers.iter().sum()
+}
+
+fn benchmark(c: &mut Criterion) {
+    let numbers: Vec<i32> = (1..=10000).collect();
+    
+    c.bench_function("imperative", |b| {
+        b.iter(|| sum_imperative(black_box(&numbers)))
+    });
+    
+    c.bench_function("fp", |b| {
+        b.iter(|| sum_fp(black_box(&numbers)))
+    });
+}
+
+criterion_group!(benches, benchmark);
+criterion_main!(benches);
+
+// Result: Both take ~5μs - identical performance!
+```
+
+---
+
+### Why Rust Excels
+
+1. **⭐⭐⭐⭐⭐ Zero-Cost Abstractions**
+   - Iterator chains compile to optimal code
+   - No runtime overhead for FP patterns
+   - As fast as hand-written loops
+
+2. **⭐⭐⭐⭐⭐ Native Traversable Support**
+   - `collect()` with `Result`/`Option` built-in
+   - Better than Python, comparable to TypeScript
+   - Early exit semantics automatic
+
+3. **⭐⭐⭐⭐⭐ Best Performance**
+   - Fastest of all 5 languages
+   - No garbage collection
+   - Predictable performance
+
+4. **⭐⭐⭐⭐⭐ Memory Safety**
+   - Ownership + borrow checker
+   - No null pointers
+   - No data races
+   - Compile-time guarantees
+
+5. **⭐⭐⭐⭐⭐ Excellent Ecosystem**
+   - rayon: Best parallel iterators
+   - tokio: Best async runtime
+   - Mature, production-ready libraries
+
+---
+
+### Summary: Rust
+
+**Foldable:**
+- ⭐⭐⭐⭐⭐ Excellent native support via Iterator trait
+- fold, reduce, sum, product all optimized
+- Zero-cost abstractions
+- Custom iterators easy to implement
+
+**Traversable:**
+- ⭐⭐⭐⭐⭐ Excellent native support via collect()
+- Result/Option traversal built-in
+- Early exit semantics automatic
+- Best of all 5 languages for performance
+
+**Parallel:**
+- ⭐⭐⭐⭐⭐ Best parallel support (rayon)
+- Zero-cost abstractions
+- Automatic work stealing
+- Production-ready
+
+**Async:**
+- ⭐⭐⭐⭐⭐ Excellent async support (tokio)
+- try_join_all for concurrent operations
+- Stream for async iteration
+- Industry-standard runtime
+
+**Overall:**
+- 🥇 **Best for performance-critical FP code**
+- 🥇 **Best memory safety guarantees**
+- 🥇 **Best zero-cost abstractions**
+- 🥇 **Ideal for systems programming with FP patterns**
+
+---
+
 ## Practical Examples
 
 ### Example 1: Validating User Input (TypeScript)
@@ -3050,23 +3933,65 @@ dependencies: [
 ]
 ```
 
+### Rust
+
+| Library | Foldable | Traversable | HKT | Quality |
+|---------|----------|-------------|-----|---------|
+| **Standard Library** | ⭐⭐⭐⭐⭐ Excellent | ⭐⭐⭐⭐⭐ Excellent | ❌ (Associated Types) | ⭐⭐⭐⭐⭐ |
+| **rayon** | ⭐⭐⭐⭐⭐ Excellent | ⭐⭐⭐⭐⭐ Excellent | ❌ | ⭐⭐⭐⭐⭐ |
+| **tokio/futures** | ⭐⭐⭐⭐⭐ Excellent | ⭐⭐⭐⭐⭐ Excellent | ❌ | ⭐⭐⭐⭐⭐ |
+
+**Recommendation:** **Start with std library** (Iterator trait, Result, Option). Rust's standard library provides the **best native Foldable/Traversable support** of all 5 languages with **zero-cost abstractions**. Add rayon for parallel operations and tokio for async operations.
+
+**Key Strengths:**
+- **⭐⭐⭐⭐⭐ Zero-Cost Abstractions**: FP without overhead
+- **⭐⭐⭐⭐⭐ Best Performance**: Fastest of all 5 languages
+- **⭐⭐⭐⭐⭐ Native collect()**: Result/Option traversal built-in
+- **⭐⭐⭐⭐⭐ Memory Safety**: Ownership + borrow checker
+- **⭐⭐⭐⭐⭐ No HKT needed**: Associated types are simpler
+- **⭐⭐⭐⭐⭐ Best parallel**: rayon's par_iter is production-ready
+
+**Dependencies (Standard)**:
+```rust
+// No dependencies needed for basic Foldable/Traversable!
+// Everything is in the standard library:
+// - Iterator trait (fold, reduce, sum, product)
+// - Result<T, E> and Option<T>
+// - collect() with FromIterator
+```
+
+**Dependencies (Parallel)**:
+```toml
+[dependencies]
+rayon = "1.8"  # Parallel iterators
+```
+
+**Dependencies (Async)**:
+```toml
+[dependencies]
+tokio = { version = "1.35", features = ["full"] }
+futures = "0.3"
+```
+
 ---
 
 ## Summary
 
-### Can All Four Languages Handle These Typeclasses?
+### Can All Five Languages Handle These Typeclasses?
 
-**Foldable:** ✅ Yes, all four languages can express Foldable excellently
+**Foldable:** ✅ Yes, all five languages can express Foldable excellently
 - TypeScript: Full support via fp-ts/Effect
 - Python: Good support via protocols and libraries
 - Kotlin: Full support via Arrow + excellent native fold/reduce
 - Swift: Excellent native reduce + Bow library
+- Rust: ⭐⭐⭐⭐⭐ **Best native support** via Iterator trait (zero-cost!)
 
 **Traversable:** ✅ Yes, with varying approaches
 - TypeScript: Full support via fp-ts/Effect (HKT encoding)
 - Python: Limited, requires manual implementation
 - Kotlin: Full support via Arrow (HKT encoding with Kind<F, A>)
 - Swift: Good native support + Bow for full typeclasses
+- Rust: ⭐⭐⭐⭐⭐ **Best native support** via collect() + FromIterator
 
 ### Key Takeaways
 
@@ -3075,26 +4000,36 @@ dependencies: [
    - Python: returns + toolz
    - Kotlin: Arrow
    - Swift: Native first, then Bow if needed
+   - Rust: **std library (best native support!)**
    
 2. **Foldable is universal** - All languages handle it excellently
-   - Native support: Kotlin (fold), Swift (reduce), TypeScript (Array.reduce), Python (reduce)
+   - Native support: Rust (Iterator), Kotlin (fold), Swift (reduce), TypeScript (Array.reduce), Python (reduce)
    - Library support: All have excellent options
+   - **Rust wins for performance**: Zero-cost abstractions
    
 3. **Traversable varies by language**
-   - Best: TypeScript (fp-ts/Effect), Kotlin (Arrow)
+   - **Best: Rust (collect!)**, TypeScript (fp-ts/Effect), Kotlin (Arrow)
    - Good: Swift (native + Bow)
    - Limited: Python (manual implementation)
    
 4. **HKT encoding trade-offs**
    - TypeScript & Kotlin: Verbose but powerful
    - Python: Protocol workarounds
-   - Swift: Native-first is often sufficient
+   - Swift & Rust: Native-first is often sufficient (no HKT needed!)
    
-5. **Best async support** - Swift's async/await is exceptional
-   - Swift: TaskGroup for parallel operations
+5. **Best async support** - Rust & Swift excel
+   - Rust: tokio + try_join_all (zero-cost, best performance)
+   - Swift: TaskGroup for parallel operations (best ergonomics)
    - Kotlin: Arrow + coroutines (parTraverse)
    - TypeScript: Effect for structured concurrency
    - Python: asyncio integration
+   
+6. **Best performance** - Rust wins hands down
+   - Rust: Zero-cost abstractions, no GC, fastest
+   - Swift: Fast, no GC (iOS/macOS)
+   - Kotlin: JVM overhead
+   - TypeScript: V8 JIT
+   - Python: Slowest
 
 ### When to Use
 
