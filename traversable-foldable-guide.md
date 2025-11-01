@@ -3018,6 +3018,38 @@ dependencies {
 }
 ```
 
+### Swift
+
+| Library | Foldable | Traversable | HKT | Quality |
+|---------|----------|-------------|-----|---------|
+| **Native Swift** | ⭐⭐⭐⭐⭐ Excellent | ⭐⭐⭐⭐ Good (DIY) | ❌ | ⭐⭐⭐⭐⭐ |
+| **Bow** | ✅ Full | ✅ Full | ✅ Kind<F, A> | ⭐⭐⭐⭐ |
+| **async/await** | ⭐⭐⭐⭐⭐ Excellent | ⭐⭐⭐⭐⭐ **Best!** | ❌ | ⭐⭐⭐⭐⭐ |
+
+**Recommendation:** **Start with native Swift** (reduce, custom traverse extensions). Native Swift covers 95% of use cases with excellent performance and the **best async/await support** of all 4 languages. Consider Bow only for advanced FP needs.
+
+**Key Strengths:**
+- **Best async/await**: TaskGroup for parallel operations
+- **Native reduce()**: Excellent for Foldable
+- **Result type**: Great for traverse with validation
+- **SwiftUI integration**: Perfect for form validation
+- **Performance**: Best of all 4 languages
+- **No HKT boilerplate**: Simple and ergonomic
+
+**Dependencies (Native)**:
+```swift
+// No dependencies needed!
+// Everything is in the standard library
+```
+
+**Dependencies (Bow - Optional)**:
+```swift
+// Package.swift
+dependencies: [
+    .package(url: "https://github.com/bow-swift/bow.git", from: "3.0.0")
+]
+```
+
 ---
 
 ## Summary
