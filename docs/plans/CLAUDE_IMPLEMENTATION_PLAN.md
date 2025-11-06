@@ -142,7 +142,7 @@ claude/
 ---
 
 ### Phase 2: Language-Specific Guides
-**Time**: 2 hours
+**Time**: 2.5 hours (updated from 2h - added Rust)
 **Status**: ⏳ PENDING
 **Dependencies**: Phase 1 complete
 
@@ -151,16 +151,18 @@ claude/
 2. Copy `cursor/typescript-fp-style-guide.md` → `claude/typescript-fp-style-guide.md`
 3. Copy `cursor/swift-fp-style-guide.md` → `claude/swift-fp-style-guide.md`
 4. Copy `cursor/kotlin-fp-style-guide.md` → `claude/kotlin-fp-style-guide.md`
-5. Add Claude-specific notes to each guide (header section)
-6. Update integration sections for Claude Code
-7. Git checkpoint: "Complete Phase 2 - Language guides"
+5. Copy `cursor/rust-fp-style-guide.md` → `claude/rust-fp-style-guide.md` ⭐ NEW
+6. Add Claude-specific notes to each guide (header section)
+7. Update integration sections for Claude Code
+8. Git checkpoint: "Complete Phase 2 - Language guides"
 
 **Deliverables**:
 - `claude/python-fp-style-guide.md` (700+ lines)
 - `claude/typescript-fp-style-guide.md` (1,150+ lines)
 - `claude/swift-fp-style-guide.md` (1,150+ lines)
 - `claude/kotlin-fp-style-guide.md` (1,150+ lines)
-- `docs/2025_10_31/20251031_NNNN_PHASE_2_COMPLETE.md` (sequential number)
+- `claude/rust-fp-style-guide.md` (1,630+ lines) ⭐ NEW
+- `docs/2025_11_07/20251107_NNNN_PHASE_2_COMPLETE.md` (sequential number)
 
 **Claude-Specific Notes** (add to each guide):
 ```markdown
@@ -186,10 +188,34 @@ See ${CLAUDE_RULES_PATH}/claude/python-fp-style-guide.md for Python patterns.
 
 ---
 
+### Phase 2b: Advanced Guides (NEW)
+**Time**: 1 hour
+**Status**: ⏳ PENDING
+**Dependencies**: Phase 2 complete
+
+**Tasks**:
+1. Create `claude/guides/` folder
+2. Copy `cursor/guides/traversable-foldable-guide.md` → `claude/guides/traversable-foldable-guide.md`
+3. Add Claude-specific notes header
+4. Update any Cursor-specific references
+5. Git checkpoint: "Complete Phase 2b - Advanced guides"
+
+**Deliverables**:
+- `claude/guides/traversable-foldable-guide.md` (4,800+ lines - comprehensive!)
+- `docs/2025_11_07/20251107_NNNN_PHASE_2B_COMPLETE.md` (sequential number)
+
+**Why This Matters**:
+- Covers advanced FP patterns (Traversable, Foldable)
+- Includes **Haskell** reference implementation
+- Shows patterns across all 5 languages + Haskell
+- Essential for understanding data structure patterns
+
+---
+
 ### Phase 3: Smart Templates
 **Time**: 1.5 hours
 **Status**: ⏳ PENDING
-**Dependencies**: Phase 2 complete
+**Dependencies**: Phase 2b complete (updated)
 
 **Tasks**:
 1. Create `claude/templates/` folder
@@ -203,7 +229,7 @@ See ${CLAUDE_RULES_PATH}/claude/python-fp-style-guide.md for Python patterns.
 - `claude/templates/CLAUDE.md_smart_template_envvar` (300+ lines)
 - `claude/templates/CLAUDE.md_smart_template_submodule` (300+ lines)
 - `claude/templates/README.md` (usage guide)
-- `docs/2025_10_31/20251031_NNNN_PHASE_3_COMPLETE.md` (sequential number)
+- `docs/2025_11_07/20251107_NNNN_PHASE_3_COMPLETE.md` (sequential number)
 
 **Template Structure**:
 ```markdown
@@ -258,7 +284,7 @@ Contents of ${CLAUDE_RULES_PATH}/claude/CLAUDE.md:
 - `claude/examples/polyglot_project/CLAUDE.md`
 - `claude/examples/polyglot_project/README.md`
 - `claude/examples/plan_with_todo/` (full example)
-- `docs/2025_10_31/20251031_NNNN_PHASE_4_COMPLETE.md` (sequential number)
+- `docs/2025_11_07/20251107_NNNN_PHASE_4_COMPLETE.md` (sequential number)
 
 **Example Content**:
 Each example includes:
@@ -286,7 +312,7 @@ Each example includes:
 - Updated `README.md` (add Claude section)
 - `claude/README.md` (overview)
 - Updated `.cursorrules`
-- `docs/2025_10_31/20251031_NNNN_PHASE_5_COMPLETE.md` (sequential number)
+- `docs/2025_11_07/20251107_NNNN_PHASE_5_COMPLETE.md` (sequential number)
 
 ---
 
@@ -305,8 +331,8 @@ Each example includes:
 7. Final git checkpoint: "Claude implementation v1.0.0 COMPLETE"
 
 **Deliverables**:
-- `docs/2025_10_31/20251031_NNNN_TESTING_RESULTS.md` (sequential number)
-- `docs/2025_10_31/20251031_NNNN_COMPLETION_SUMMARY.md` (sequential number)
+- `docs/2025_11_07/20251107_NNNN_TESTING_RESULTS.md` (sequential number)
+- `docs/2025_11_07/20251107_NNNN_COMPLETION_SUMMARY.md` (sequential number)
 - `CLAUDE_COMPLETION_CHECKLIST.md` (root level)
 
 ---
@@ -315,14 +341,15 @@ Each example includes:
 
 | Phase | Tasks | Time | Status |
 |-------|-------|------|--------|
-| Phase 0 | Planning & Setup | 1h | 🔄 IN PROGRESS |
+| Phase 0 | Planning & Setup | 1h | ✅ COMPLETE |
 | Phase 1 | Core Documentation | 2.5h | ⏳ PENDING |
-| Phase 2 | Language Guides | 2h | ⏳ PENDING |
+| Phase 2 | Language Guides (5 languages) | 2.5h | ⏳ PENDING (updated +0.5h for Rust) |
+| Phase 2b | Advanced Guides | 1h | ⏳ PENDING (NEW) |
 | Phase 3 | Templates | 1.5h | ⏳ PENDING |
 | Phase 4 | Examples | 2h | ⏳ PENDING |
 | Phase 5 | Integration | 1h | ⏳ PENDING |
 | Phase 6 | Testing | 1.5h | ⏳ PENDING |
-| **TOTAL** | **42 tasks** | **11.5h** | **4% complete** |
+| **TOTAL** | **50 tasks** | **13h** | **Updated from 11.5h** |
 
 ---
 
@@ -336,11 +363,15 @@ Each example includes:
 - [ ] `claude/FILE_LOCATIONS_USER_GUIDE.md`
 - [ ] `claude/README.md`
 
-### Language Guides (4)
+### Language Guides (5)
 - [ ] `claude/python-fp-style-guide.md`
 - [ ] `claude/typescript-fp-style-guide.md`
 - [ ] `claude/swift-fp-style-guide.md`
 - [ ] `claude/kotlin-fp-style-guide.md`
+- [ ] `claude/rust-fp-style-guide.md` ⭐ NEW
+
+### Advanced Guides (1)
+- [ ] `claude/guides/traversable-foldable-guide.md` ⭐ NEW (4,800+ lines!)
 
 ### Templates (3)
 - [ ] `claude/templates/CLAUDE.md_smart_template_envvar`
@@ -358,7 +389,7 @@ Each example includes:
 - [ ] Updated `.cursorrules`
 - [ ] `CLAUDE_COMPLETION_CHECKLIST.md`
 
-**Total Deliverables**: 20 items
+**Total Deliverables**: 22 items (updated from 20 - added Rust + advanced guides)
 
 ---
 
@@ -418,7 +449,50 @@ Each example includes:
 
 ---
 
+## 📊 Scope Changes
+
+### 2025-11-07: Added Rust + Advanced Guides
+**Change**: Repository now includes Rust language support and advanced Traversable/Foldable guide
+
+**New Content Discovered**:
+1. **Rust FP Style Guide** (`cursor/rust-fp-style-guide.md`, 1,631 lines)
+   - Systems programming patterns
+   - Zero-cost abstractions
+   - Result, Option, Iterator patterns
+   - Performance-critical FP
+
+2. **Traversable/Foldable Guide** (`cursor/guides/traversable-foldable-guide.md`, 4,819 lines!)
+   - Advanced FP patterns
+   - Covers 5 languages + Haskell reference
+   - Comprehensive data structure patterns
+   - One of the largest single documents
+
+3. **Additional Core Docs** (discovered):
+   - `cursor/DATA_STRUCTURE_PATTERNS.md` (14,285 lines)
+   - `cursor/NAMING_CONVENTION.md` (6,086 lines)
+
+**Impact on Plan**:
+- Added Phase 2b (Advanced Guides) - 1 hour
+- Extended Phase 2 by +0.5 hours for Rust
+- Total time: 13 hours (was 11.5 hours)
+- Total tasks: 50 (was 42)
+- Total deliverables: 22 (was 20)
+
+**Why This Matters**:
+- Rust is critical for systems programming use cases
+- Traversable/Foldable guide provides advanced FP patterns
+- Haskell reference implementation included (original source)
+- Maintains feature parity with cursor/ implementation
+
+---
+
 ## 🔄 Update History
+
+### 2025-11-07 (Today)
+- **Updated**: Added Rust language guide and advanced guides
+- **Scope Change**: +2 deliverables, +1.5 hours, +8 tasks
+- **Status**: Ready for Phase 1
+- **Next**: Begin core documentation setup
 
 ### 2025-10-31 09:30
 - **Created**: Initial implementation plan
