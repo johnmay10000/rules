@@ -3,10 +3,10 @@
 **Universal functional programming rules and guidelines for Cursor AI**
 
 [![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)]()
-[![Languages](https://img.shields.io/badge/languages-Python%20%7C%20TypeScript%20%7C%20Kotlin%20%7C%20Swift%20%7C%20Rust-green.svg)]()
+[![Languages](https://img.shields.io/badge/languages-Haskell%20%7C%20Python%20%7C%20TypeScript%20%7C%20Kotlin%20%7C%20Swift%20%7C%20Rust-green.svg)]()
 [![Platforms](https://img.shields.io/badge/platforms-GCP%20%7C%20AWS%20%7C%20iOS%20%7C%20Android-orange.svg)]()
 
-> **Cross-language functional programming patterns (5 languages), mandatory development practices, and intelligent auto-detection for Cursor AI.**
+> **Cross-language functional programming patterns (6 languages - Haskell as reference implementation!), mandatory development practices, and intelligent auto-detection for Cursor AI.**
 
 ---
 
@@ -15,11 +15,11 @@
 A **portable, production-tested** global rule set for Cursor that enforces:
 - ✅ Mandatory universal practices (Git, docs, testing, file size)
 - ✅ Functional programming patterns (Result types, railway-oriented programming)
-- ✅ Language-specific guidelines (Python, TypeScript, Kotlin, Swift, Rust)
+- ✅ Language-specific guidelines (Haskell, Python, TypeScript, Kotlin, Swift, Rust)
 - ✅ Platform-specific rules (GCP, AWS)
 - ✅ Auto-detection (detects your stack automatically)
 
-**One setup, works everywhere.** Use the same FP patterns across all 5 languages.
+**One setup, works everywhere.** Use the same FP patterns across all 6 languages, from Haskell (the reference implementation) to Rust (zero-cost abstractions).
 
 ---
 
@@ -53,7 +53,7 @@ See [SETUP_GUIDE.md](SETUP_GUIDE.md) for detailed instructions.
 
 ## Language-Specific Rules
 @${CURSOR_RULES_PATH}/cursor/python-fp-style-guide.md
-# Or: cursor/typescript-fp-style-guide.md, cursor/kotlin-fp-style-guide.md, cursor/swift-fp-style-guide.md, cursor/rust-fp-style-guide.md
+# Or: cursor/haskell-fp-style-guide.md, cursor/typescript-fp-style-guide.md, cursor/kotlin-fp-style-guide.md, cursor/swift-fp-style-guide.md, cursor/rust-fp-style-guide.md
 
 ## Project-Specific Overrides
 [Your project-specific rules here]
@@ -111,6 +111,15 @@ Cursor now enforces:
 
 ### Functional Programming Style Guides
 
+**[cursor/haskell-fp-style-guide.md](cursor/haskell-fp-style-guide.md)** 🎩 **NEW! Reference Implementation!**
+- **Where FP concepts originated** - THE reference for all other languages
+- For compilers, DSLs, financial systems, type-safe web APIs
+- Tools: Stack (build), GHC (compiler), Hspec + QuickCheck (testing)
+- Libraries: `base`, `containers`, `text`, `mtl`, `aeson`, `servant`
+- Patterns: `Maybe`, `Either`, Monad transformers, `Foldable`, `Traversable` (the originals!)
+- Unique: **Native HKT**, lazy evaluation, infinite data structures, type-driven development
+- **The gold standard** - all other languages approximate Haskell
+
 **[cursor/python-fp-style-guide.md](cursor/python-fp-style-guide.md)** 🐍
 - For ML, data processing, cloud functions
 - Libraries: `returns`, `toolz`, `polars`
@@ -131,17 +140,31 @@ Cursor now enforces:
 - Libraries: Arrow
 - Patterns: Either, sealed classes, coroutines
 
-**[cursor/rust-fp-style-guide.md](cursor/rust-fp-style-guide.md)** 🦀 **NEW!**
+**[cursor/rust-fp-style-guide.md](cursor/rust-fp-style-guide.md)** 🦀
 - For systems programming, performance-critical code
 - Libraries: rayon (parallel), tokio (async), serde
 - Patterns: Result, Option, Iterator, zero-cost abstractions
-- **Best performance of all 5 languages!**
+- **Best performance of all 6 languages!**
 
 ---
 
 ## 📖 Universal FP Pattern
 
 **The same pattern works in ALL languages**:
+
+```haskell
+-- Haskell (THE REFERENCE IMPLEMENTATION!)
+result = loadData
+    >>= validate    -- Returns Maybe/Either/IO
+    >>= transform   -- Returns Maybe/Either/IO
+    >>= return . format  -- Pure function
+-- Or with do-notation:
+result = do
+    data <- loadData
+    valid <- validate data
+    trans <- transform valid
+    return (format trans)
+```
 
 ```python
 # Python
@@ -413,7 +436,8 @@ rules/
 │   ├── typescript-fp-style-guide.md    # 📘 TypeScript guide
 │   ├── kotlin-fp-style-guide.md        # 🤖 Kotlin guide
 │   ├── swift-fp-style-guide.md         # 🍎 Swift guide
-│   ├── rust-fp-style-guide.md          # 🦀 Rust guide ⭐ NEW
+│   ├── rust-fp-style-guide.md          # 🦀 Rust guide
+│   ├── haskell-fp-style-guide.md       # 🎩 Haskell guide ⭐ NEW (Reference Impl!)
 │   │
 │   ├── templates/                      # 📋 Smart templates
 │   │   ├── .cursorrules_smart_template_envvar

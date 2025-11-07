@@ -955,6 +955,22 @@ let sum = numbers.iter().fold(0, |acc, n| acc + n);  // 15
 let sum: i32 = numbers.iter().sum();
 ```
 
+**Haskell**: `foldr`, `foldl`, `Foldable` typeclass (⭐⭐⭐⭐⭐ **Reference Implementation!**)
+```haskell
+-- Native Foldable typeclass
+numbers = [1, 2, 3, 4, 5]
+sum numbers  -- 15
+product numbers  -- 120
+
+-- Explicit foldr/foldl
+foldr (+) 0 numbers  -- 15 (right-associative)
+foldl (+) 0 numbers  -- 15 (left-associative)
+
+-- Works on any Foldable (Maybe, Either, Tree, etc.)
+sum (Just 5)  -- 5
+sum Nothing   -- 0
+```
+
 ### 8.3 Traversable Patterns
 
 **Use Traversable when transforming collections with effects:**
@@ -994,6 +1010,32 @@ const validated = pipe(
   A.traverse(E.Applicative)(validatePositive)
 )
 // Early exit on first error
+```
+
+**Haskell**: `traverse`, `Traversable` typeclass (⭐⭐⭐⭐⭐ **Reference Implementation!**)
+```haskell
+-- Native Traversable typeclass
+validatePositive :: Int -> Maybe Int
+validatePositive n
+  | n > 0 = Just n
+  | otherwise = Nothing
+
+-- Traverse with Maybe (early exit!)
+traverse validatePositive [1, 2, 3]    -- Just [1,2,3]
+traverse validatePositive [1, -2, 3]   -- Nothing (stopped at -2)
+
+-- Traverse with Either
+validateE :: Int -> Either String Int
+validateE n
+  | n > 0 = Right n
+  | otherwise = Left $ show n ++ " is not positive"
+
+traverse validateE [1, 2, 3]    -- Right [1,2,3]
+traverse validateE [1, -2, 3]   -- Left "-2 is not positive"
+
+-- Works with any Applicative/Monad (Maybe, Either, IO, etc.)
+-- Lazy evaluation enables infinite traversals!
+traverse validatePositive (take 5 [0..])  -- Just [0,1,2,3,4]
 ```
 
 **Kotlin**: Arrow `traverse()` with Either/IO
@@ -1198,7 +1240,7 @@ Parallel operations? (API calls, I/O)
 
 ### 8.7 References
 
-- **Full Guide**: [guides/traversable-foldable-guide.md](guides/traversable-foldable-guide.md) - Comprehensive 4,000+ line guide covering all 5 languages (Python, TypeScript, Kotlin, Swift, Rust)
+- **Full Guide**: [guides/traversable-foldable-guide.md](guides/traversable-foldable-guide.md) - Comprehensive 4,800+ line guide covering all 6 languages (Haskell, Python, TypeScript, Kotlin, Swift, Rust)
 - **Quick Reference**: [DATA_STRUCTURE_PATTERNS.md](DATA_STRUCTURE_PATTERNS.md) - Fast lookup table and common patterns
 - **Language Guides**: See language-specific guides for integration details
 
@@ -1255,6 +1297,7 @@ See [SETUP_GUIDE.md](SETUP_GUIDE.md) for detailed instructions.
 - Kotlin: `build.gradle.kts`, `*.kt` files
 - Swift: `Package.swift`, `*.swift` files
 - Rust: `Cargo.toml`, `*.rs` files
+- Haskell: `stack.yaml`, `*.cabal`, `*.hs` files
 - GCP: `gc/` folder, `workflows/` folder
 - AWS: `lambda/` folder, `serverless.yml`
 
@@ -1293,7 +1336,14 @@ cp ${CURSOR_RULES_PATH}/templates/.cursorrules_smart_template_envvar .cursorrule
 **Rust**: See [`rust-fp-style-guide.md`](rust-fp-style-guide.md)
 - Libraries: `rayon` (parallel), `tokio` (async), `serde` (serialization)
 - Patterns: `Result`, `Option`, `Iterator` trait, zero-cost abstractions
-- Performance: Best of all 5 languages
+- Performance: Best of all 6 languages
+
+**Haskell**: See [`haskell-fp-style-guide.md`](haskell-fp-style-guide.md) ⭐ **Reference Implementation!**
+- Libraries: `base`, `containers`, `text`, `mtl`, `aeson`
+- Tools: `Stack` (build), `GHC` (compiler), `Hspec` + `QuickCheck` (testing)
+- Patterns: `Maybe`, `Either`, Monad transformers, `Foldable`, `Traversable` (THE originals!)
+- Unique: Native HKT, lazy evaluation, type-driven development
+- Position: **The reference implementation** - all other FP languages approximate Haskell
 
 ---
 

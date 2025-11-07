@@ -1,8 +1,8 @@
 # Data Structure Patterns: Quick Reference Guide
 
-**Purpose**: Quick lookup for Foldable/Traversable patterns across Python, TypeScript, Kotlin, Swift, and Rust.
+**Purpose**: Quick lookup for Foldable/Traversable patterns across Haskell, Python, TypeScript, Kotlin, Swift, and Rust.
 
-**Full Guide**: See [guides/traversable-foldable-guide.md](guides/traversable-foldable-guide.md) for comprehensive details (4,000+ lines covering all 5 languages).
+**Full Guide**: See [guides/traversable-foldable-guide.md](guides/traversable-foldable-guide.md) for comprehensive details (4,800+ lines covering all 6 languages, with Haskell as the reference implementation).
 
 ---
 
@@ -34,6 +34,7 @@ Need to work with collections/data structures?
 Need to aggregate/reduce? (sum, product, concat)
     ↓
     YES → Use FOLDABLE
+    │     - Haskell: foldr/foldl, sum, product (REFERENCE IMPL!)
     │     - Python: reduce, foldr
     │     - TypeScript: Array.reduce, fp-ts
     │     - Kotlin: fold/reduce, Arrow
@@ -43,6 +44,7 @@ Need to aggregate/reduce? (sum, product, concat)
 Need to transform with effects? (validation, IO, async)
     ↓
     YES → Use TRAVERSABLE
+    │     - Haskell: traverse, sequenceA (REFERENCE IMPL!)
     │     - Python: custom traverse with Result
     │     - TypeScript: fp-ts traverse, Effect
     │     - Kotlin: Arrow traverse with Either/IO
@@ -73,6 +75,7 @@ Need parallel async operations?
 
 | Language | Syntax | Example |
 |----------|--------|---------|
+| **Haskell** 🎩 | `foldr f z xs`, `sum`, `product` | `sum [1,2,3]  -- 6` |
 | **Python** | `reduce(f, iterable, initial)` | `reduce(lambda acc, x: acc + x, [1,2,3], 0)` |
 | **TypeScript** | `array.reduce(f, initial)` | `[1,2,3].reduce((acc, x) => acc + x, 0)` |
 | **Kotlin** | `list.fold(initial) { acc, x -> ... }` | `listOf(1,2,3).fold(0) { acc, x -> acc + x }` |
@@ -83,6 +86,7 @@ Need parallel async operations?
 
 | Language | Approach | Example |
 |----------|----------|---------|
+| **Haskell** 🎩 | **Native typeclass** | `traverse validatePositive [1,2,3]  -- Just [1,2,3]` |
 | **Python** | Custom function | `traverse(items, validate)` |
 | **TypeScript** | fp-ts/Effect | `A.traverse(E.Applicative)(validate)(items)` |
 | **Kotlin** | Arrow | `items.traverse(Either.applicative()) { validate(it) }` |
@@ -95,6 +99,7 @@ Need parallel async operations?
 |----------|--------|-------------|
 | **Rust** 🦀 | `items.par_iter().map(f).collect()` (rayon) | ⭐⭐⭐⭐⭐ **Fastest!** |
 | **Swift** | `items.traverseParallel(f)` with TaskGroup | ⭐⭐⭐⭐⭐ **Best Ergonomics!** |
+| **Haskell** 🎩 | `parTraverse strat f items` (Strategies) | ⭐⭐⭐⭐ Excellent |
 | **Kotlin** | `items.parTraverse { f(it) }` | ⭐⭐⭐⭐ Excellent |
 | **TypeScript** | `Effect.all(items.map(f), { concurrency: "unbounded" })` | ⭐⭐⭐⭐ Excellent |
 | **Python** | `asyncio.gather(*[f(x) for x in items])` | ⭐⭐⭐ Good |
