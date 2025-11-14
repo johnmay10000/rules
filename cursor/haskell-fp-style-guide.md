@@ -2293,3 +2293,9 @@ traverse validatePositive [1,-2,3]   -- Nothing
 
 **Haskell: The Reference Implementation for Functional Programming** 🎩
 
+
+
+
+
+
+
