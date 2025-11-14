@@ -128,3 +128,163 @@ ls -la cursor/examples/python_project/
 **Last Updated**: 2025-11-14
 **Version**: 1.0.1
 **Status**: Production Ready
+
+---
+
+## 🤖 Kimi CLI Specific Guidelines
+
+**When working on Kimi-specific files (`kimi/` folder):**
+
+### Kimi Tool Architecture
+
+Kimi CLI uses a **tool-based architecture** with parallel execution capabilities:
+
+- **ReadFile**: Read multiple files simultaneously
+- **WriteFile**: Write multiple files in one response  
+- **SetTodoList**: Tool-based task tracking (not just markdown)
+- **Bash**: Execute system commands with timeout
+- **Task**: Spawn subagents for complex operations
+
+**Parallel Execution Example** (Kimi-specific pattern):
+```bash
+# Kimi can read 4 files at once (much faster than sequential)
+ReadFile: cursor/CURSOR.md
+ReadFile: cursor/CURSOR_WORKFLOW_GUIDE.md
+ReadFile: cursor/SETUP_GUIDE.md
+ReadFile: cursor/FILE_LOCATIONS_USER_GUIDE.md
+
+# Or write multiple files simultaneously
+WriteFile: docs/plans/FEATURE_PLAN.md
+WriteFile: docs/plans/FEATURE_TODO.md
+WriteFile: docs/2025_11_14/20251114_0001_EXAMPLE.md
+```
+
+### SetTodoList Tool Integration
+
+**Unlike Cursor/Claude which use markdown TODOs, Kimi has a dedicated SetTodoList tool:**
+
+```typescript
+// Use SetTodoList tool instead of just editing markdown
+SetTodoList: [
+  { title: "TASK-1: Create KIMI.md", status: "Done" },
+  { title: "TASK-2: Create KIMI_WORKFLOW_GUIDE.md", status: "In Progress" }
+]
+```
+
+**Key Differences from Markdown TODOs:**
+- ✅ Tool-enforced structure (not free-form text)
+- ✅ Status tracking (Pending/In Progress/Done)
+- ✅ Can be integrated with actual task management systems
+- ✅ More formal than markdown checkboxes
+
+### Kimi Commit Format
+
+**All Kimi commits MUST include:**
+
+```
+Commit message with detailed description
+
+🤖 Generated with [Kimi](https://kimi.ai)
+
+Co-Authored-By: Kimi <noreply@kimi.ai>
+```
+
+### Parallel Validation Patterns
+
+**Kimi excels at parallel validation - document these patterns:**
+
+```bash
+# Validate multiple components simultaneously
+cd project && pytest tests/unit/ &
+cd project && pytest tests/integration/ &
+wait
+
+# Type check multiple files
+cat file1.py file2.py file3.py | python -m pyflakes &
+cat file1.ts file2.ts file3.ts | npx tsc --noEmit &
+wait
+```
+
+### Subagent Usage
+
+**For complex, independent subtasks, spawn subagents:**
+
+```typescript
+// Use Task tool to spawn subagent
+Task: {
+  description: "Research Kimi patterns",
+  prompt: "Find Kimi-specific workflow patterns and best practices"
+}
+
+// Context isolation - subagent gets clean context
+// Use for: code generation, research, refactoring operations
+```
+
+### Kimi-Specific Documentation Files
+
+**When working with Kimi, reference these files:**
+
+- **`kimi/KIMI.md`** - Main Kimi mandatory rules (parallel tools, SetTodoList)
+- **`kimi/KIMI_WORKFLOW_GUIDE.md`** - Kimi-specific workflow patterns
+- **`kimi/KIMI_FP_PRINCIPLES.md`** - FP principles with Kimi examples
+- **`kimi/DATA_STRUCTURE_PATTERNS.md`** - FP data structures for Kimi
+- **`kimi/FILE_LOCATIONS_USER_GUIDE.md`** - File organization for Kimi projects
+- **`kimi/NAMING_CONVENTION.md`** - Naming conventions with Kimi examples
+
+### Effect-ts for TypeScript (Kimi Difference)
+
+**Note: Kimi uses Effect-ts while Cursor uses fp-ts:**
+
+- **Effect-ts**: More comprehensive, better TypeScript integration
+- **fp-ts**: Lighter weight, more established
+- **Key difference**: Effect-ts includes streaming, concurrency, dependency injection
+- **Both valid**: Kimi examples demonstrate Effect-ts patterns
+
+### Kimi Example Projects
+
+**The `kimi/examples/` folder demonstrates Kimi-specific patterns:**
+
+1. **plan_with_todo** - SetTodoList integration across all tiers
+2. **python_project** - Returns library with Result types
+3. **rust_project** - Native Result<T, E> with railway composition
+4. **typescript_project** - Full-stack with Effect-ts
+
+**What Each Example Shows:**
+- Three-tier documentation structure
+- Cross-reference patterns
+- Language-specific FP implementation
+- Kimi workflow integration
+- Parallel validation examples
+
+### Testing Kimi Templates
+
+**Verify Kimi templates work correctly:**
+
+```bash
+# For envvar template
+export KIMI_RULES_PATH="$HOME/projects/rules"
+cp kimi/templates/.kimirules_smart_template_envvar ./.kimirules
+# Test that Kimi loads rules correctly
+
+# For submodule template
+git submodule add <repo> .kimi-rules
+cp kimi/templates/.kimirules_smart_template_submodule ./.kimirules
+# Verify relative paths work
+```
+
+### Repository Statistics Update (with Kimi)
+
+- **Total Markdown Files**: 165+ (104+ original + 60+ Kimi files)
+- **Languages Covered**: 6 languages × 2 AI tools = 12 guides
+- **Core Rule Documents**: 15+ (original + Kimi-specific)
+- **Project Templates**: 8+ (4 Cursor + 4 Kimi)
+- **Smart Templates**: 5+ (2 Cursor + 3 Kimi)
+- **Kimi-Specific Examples**: 4 complete examples
+- **Planning Documents**: 20+ including Kimi implementation plans
+
+**Repository Size**: ~700KB total (including Kimi documentation)
+
+---
+
+**Key Takeaway**: Kimi has parallel, tool-based architecture. Leverage parallel execution, SetTodoList tool, and subagents for maximum efficiency. Documentation goes in `kimi/` folder mirroring `cursor/` structure.
+
