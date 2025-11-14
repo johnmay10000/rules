@@ -451,6 +451,31 @@ rules/
 │
 ├── claude/                             # 🔮 Future: Claude files (isolated)
 │
+├── kimi/                               # ✨ NEW: Kimi CLI rules (isolated)
+│   ├── KIMI.md                         # ⭐ Main Kimi rule set
+│   ├── KIMI_FP_PRINCIPLES.md           # 🧠 FP deep dive
+│   ├── KIMI_WORKFLOW_GUIDE.md          # 🔄 Git and docs workflow
+│   ├── SETUP_GUIDE.md                  # 🚀 Initial setup
+│   ├── DATA_STRUCTURE_PATTERNS.md      # 📊 FP data structures
+│   ├── FILE_LOCATIONS_USER_GUIDE.md    # 📁 Where files go
+│   ├── NAMING_CONVENTION.md            # 🔤 Naming conventions
+│   ├── aws-fp-style-guide.md           # ☁️ AWS patterns
+│   ├── gcp-fp-style-guide.md           # ☁️ GCP patterns
+│   ├── typescript-fp-style-guide.md    # 📘 TypeScript guide
+│   ├── python-fp-style-guide.md        # 🐍 Python guide
+│   ├── rust-fp-style-guide.md          # 🦀 Rust guide
+│   ├── kotlin-fp-style-guide.md        # 🤖 Kotlin guide
+│   ├── swift-fp-style-guide.md         # 🍎 Swift guide
+│   ├── haskell-fp-style-guide.md       # 🎩 Haskell guide
+│   ├── templates/                      # 📋 Smart templates
+│   │   ├── .kimirules_smart_template_envvar
+│   │   └── .kimirules_smart_template_submodule
+│   └── examples/                       # 🎨 Real-world examples
+│       ├── plan_with_todo/             # SetTodoList demonstration
+│       ├── python_project/             # ML pipeline with returns
+│       ├── rust_project/               # CLI with Result types
+│       └── typescript_project/         # Full-stack with Effect-ts
+│
 ├── docs/                               # 📚 Planning docs (for this repo)
 │   ├── 2025_10_30/                    # Daily work
 │   ├── 2025_10_31/                    # Daily work
@@ -490,23 +515,59 @@ See LICENSE file for details.
 
 ---
 
+## 🤖 Kimi CLI Integration
+
+**NEW!** ✨ Kimi CLI now supports this repository with complete rules system:
+
+**Location**: `kimi/` folder contains full Kimi rules system mirroring cursor/ structure
+
+**Quick Start for Kimi**:
+1. Navigate to project root
+2. Copy appropriate template: `cp kimi/templates/.kimirules_smart_template_envvar ./.kimirules`
+3. Set environment: `export KIMI_RULES_PATH="$HOME/projects/rules"`
+4. Start working with Kimi - rules auto-load!
+
+**Kimi Rules Mirror Cursor**:
+- [kimi/KIMI.md](kimi/KIMI.md) - Main Kimi rule set
+- [kimi/KIMI_WORKFLOW_GUIDE.md](kimi/KIMI_WORKFLOW_GUIDE.md) - Kimi-specific workflows
+- Language guides for Python, TypeScript, Rust, Kotlin, Swift, Haskell
+- Platform guides for AWS and GCP
+- Smart templates with auto-detection
+- 4 comprehensive examples
+
+**Key Differences**:
+- Kimi uses tool-based architecture (parallel execution)
+- SetTodoList integration for task management
+- Subagent spawning for complex tasks
+- Effect-ts for TypeScript (vs fp-ts in Cursor)
+
+**Generate with Kimi**:
+```
+All commits labeled "Generated with [Kimi](https://kimi.ai)"
+```
+
+---
+
 ## 🎯 Quick Links
 
 **Essential**:
-- [cursor/CURSOR.md](cursor/CURSOR.md) - Main rules
+- [cursor/CURSOR.md](cursor/CURSOR.md) - Main Cursor rules
 - [cursor/SETUP_GUIDE.md](cursor/SETUP_GUIDE.md) - Setup
+- [kimi/KIMI.md](kimi/KIMI.md) - Kimi rules
 - [Examples](cursor/examples/) - Real-world templates
 
 **Guides**:
-- [Python](cursor/python-fp-style-guide.md)
-- [TypeScript](cursor/typescript-fp-style-guide.md)
-- [Kotlin](cursor/kotlin-fp-style-guide.md)
-- [Swift](cursor/swift-fp-style-guide.md)
-- [Rust](cursor/rust-fp-style-guide.md) ⭐ NEW!
+- [Python (Cursor)](cursor/python-fp-style-guide.md) | [Python (Kimi)](kimi/python-fp-style-guide.md)
+- [TypeScript (Cursor)](cursor/typescript-fp-style-guide.md) | [TypeScript (Kimi)](kimi/typescript-fp-style-guide.md)
+- [Kotlin (Cursor)](cursor/kotlin-fp-style-guide.md) | [Kotlin (Kimi)](kimi/kotlin-fp-style-guide.md)
+- [Swift (Cursor)](cursor/swift-fp-style-guide.md) | [Swift (Kimi)](kimi/swift-fp-style-guide.md)
+- [Rust (Cursor)](cursor/rust-fp-style-guide.md) ⭐ NEW! | [Rust (Kimi)](kimi/rust-fp-style-guide.md)
 
 **Deep Dives**:
-- [FP Principles](cursor/CURSOR_FP_PRINCIPLES.md)
-- [Workflow](cursor/CURSOR_WORKFLOW_GUIDE.md)
+- [FP Principles (Cursor)](cursor/CURSOR_FP_PRINCIPLES.md)
+- [Workflow (Cursor)](cursor/CURSOR_WORKFLOW_GUIDE.md)
+- [FP Principles (Kimi)](kimi/KIMI_FP_PRINCIPLES.md)
+- [Workflow (Kimi)](kimi/KIMI_WORKFLOW_GUIDE.md)
 
 ---
 
