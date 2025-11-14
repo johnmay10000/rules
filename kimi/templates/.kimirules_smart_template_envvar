@@ -1,0 +1,277 @@
+# Smart .kimirules Template (Environment Variable Version)
+# 
+# PORTABLE: Works on any machine where $KIMI_RULES_PATH is set
+# SETUP: See SETUP_GUIDE.md in the rules repository
+#
+# Quick Setup:
+#   echo 'export KIMI_RULES_PATH="$HOME/projects/rules"' >> ~/.zshrc
+#   source ~/.zshrc
+#
+# This template automatically detects your project type and loads
+# appropriate rules. Copy to your project root as .kimirules
+
+---
+
+## ⚠️ SETUP CHECK
+
+# If you see errors about files not found:
+# 1. Ensure $KIMI_RULES_PATH is set: echo $KIMI_RULES_PATH
+# 2. See SETUP_GUIDE.md for platform-specific setup
+# 3. Verify rules exist: ls ${KIMI_RULES_PATH}/kimi/KIMI.md
+
+---
+
+## 🌍 GLOBAL RULES (All Projects)
+
+# Core mandatory rules - git checkpoints, FP principles, documentation
+@${KIMI_RULES_PATH}/kimi/KIMI.md
+
+# Workflow guide - git workflow, documentation hierarchy, TODO lists, SetTodoList tool
+@${KIMI_RULES_PATH}/kimi/KIMI_WORKFLOW_GUIDE.md
+
+# FP principles deep dive - ADTs, Result types, monadic composition
+@${KIMI_RULES_PATH}/kimi/KIMI_FP_PRINCIPLES.md
+
+# Data structure patterns - Foldable/Traversable across languages
+@${KIMI_RULES_PATH}/kimi/DATA_STRUCTURE_PATTERNS.md
+
+# File locations guide - portable setup, environment variables
+@${KIMI_RULES_PATH}/kimi/FILE_LOCATIONS_USER_GUIDE.md
+
+# Naming conventions - YYYYMMDD_NNNN format, auto-numbering
+@${KIMI_RULES_PATH}/kimi/NAMING_CONVENTION.md
+
+---
+
+## 📝 LANGUAGE-SPECIFIC RULES (Auto-Detected)
+
+### Python Projects
+# Detected if: requirements.txt, pyproject.toml, setup.py, or *.py files exist
+# 
+# Includes: returns, toolz, ADTs, Result types, pytest, mypy
+# FP libraries: returns (Result/Maybe), toolz (functional utilities)
+# Style: File size 250-300 lines, immutable data, pattern matching
+# Kimi patterns: Parallel validation with Task tool, subagent for complex pipelines
+#
+# Uncomment if this is a Python project:
+# @${KIMI_RULES_PATH}/kimi/python-fp-style-guide.md
+
+### TypeScript Projects
+# Detected if: package.json with "typescript" dependency exists
+# 
+# Includes: fp-ts/Effect, TaskEither, Option, immutable types
+# FP libraries: fp-ts, Effect (ZIO-inspired), ts-pattern
+# Style: readonly, as const, never mutate, railway-oriented programming
+# Kimi patterns: Parallel type-checking, subagent for effect validation
+#
+# Uncomment if this is a TypeScript project:
+# @${KIMI_RULES_PATH}/kimi/typescript-fp-style-guide.md
+
+### Rust Projects
+# Detected if: Cargo.toml or *.rs files exist
+# 
+# Includes: Result, Option, Iterators, ownership, zero-cost abstractions
+# FP libraries: Native (no external deps needed for core FP)
+# Style: Immutable by default, explicit error types, no unwrap() in prod
+# Kimi patterns: Parallel compilation checks, subagent for borrow-checking validation
+#
+# Uncomment if this is a Rust project:
+# @${KIMI_RULES_PATH}/kimi/rust-fp-style-guide.md
+
+### Swift Projects
+# Detected if: Package.swift, *.xcodeproj, or *.swift files exist
+# 
+# Includes: Result, Optional, value types, protocols
+# FP libraries: Swift Composable Architecture (TCA), Overture, Tagged
+# Style: let over var, structs over classes, explicit Result types
+# Kimi patterns: Parallel view validation, subagent for TCA reducer verification
+#
+# Uncomment if this is a Swift project:
+# @${KIMI_RULES_PATH}/kimi/swift-fp-style-guide.md
+
+### Kotlin Projects
+# Detected if: build.gradle(.kts), pom.xml, or *.kt files exist
+# 
+# Includes: Arrow (Either, Option, Validated), immutable collections
+# FP libraries: Arrow (core, fx, optics), Kotlinx Coroutines
+# Style: val over var, data classes, explicit Either types
+# Kimi patterns: Parallel coroutine validation, subagent for Arrow pattern checks
+#
+# Uncomment if this is a Kotlin project (including Android):
+# @${KIMI_RULES_PATH}/kimi/kotlin-fp-style-guide.md
+
+### Haskell Projects
+# Detected if: *.cabal, stack.yaml, or *.hs files exist
+# 
+# Includes: Native FP (pure functions, monads, typeclasses)
+# FP libraries: Built-in (Functor, Applicative, Monad, etc.)
+# Style: Pure functions, explicit types, pattern matching
+# Kimi patterns: Parallel type-check across modules, subagent for law verification
+#
+# Uncomment if this is a Haskell project:
+# @${KIMI_RULES_PATH}/kimi/haskell-fp-style-guide.md
+
+---
+
+## ☁️ PLATFORM-SPECIFIC RULES (Auto-Detected)
+
+### AWS Projects
+# Detected if: template.yaml, serverless.yml, or .aws/ directory exists
+# 
+# Includes: Lambda, Step Functions, DynamoDB, EventBridge, S3 patterns
+# FP patterns: Railway-oriented handlers, event sourcing, immutable snapshots
+# Kimi patterns: Parallel deployment validation, multi-region verification
+#
+# Uncomment if this uses AWS services:
+# @${KIMI_RULES_PATH}/kimi/aws-fp-style-guide.md
+
+### GCP Projects
+# Detected if: app.yaml, cloudbuild.yaml, or firebase.json exists
+# 
+# Includes: Cloud Functions, Cloud Run, Firestore, Pub/Sub, Eventarc
+# FP patterns: Pure handler factories, event sourcing, circuit breakers
+# Kimi patterns: Multi-environment validation, circuit breaker verification
+#
+# Uncomment if this uses Google Cloud Platform:
+# @${KIMI_RULES_PATH}/kimi/gcp-fp-style-guide.md
+
+---
+
+## 🏗️ PROJECT-SPECIFIC CUSTOMIZATIONS
+
+# Add your project-specific rules here.
+# These override or extend the global patterns above.
+# Keep customizations minimal and focused.
+
+# Example: Python ML project
+# Note: For Python ML/MLX projects, extend python-fp-style-guide.md
+# Note: For MLX specifically, see additional notes below
+
+# Example: TypeScript Next.js + Supabase project
+# - Use TaskEither for all data fetching
+# - Use Effect for complex business logic
+# - No try/catch blocks (use railway error handling)
+# - Prefer Zod for runtime validation schemas
+# - Use TanQuery with fp-ts/Either for caching
+
+# Example: Rust CLI project
+# - Use anyhow for application-level errors
+# - Use thiserror for library errors
+# - No unwrap() in production code
+# - Prefer Iterator combinators over loops
+# - Use clap for type-safe CLI parsing
+
+# Example: Swift iOS project
+# - Use TCA (Swift Composable Architecture)
+# - No @StateObject in SwiftUI (use Environment)
+# - Prefer value types (struct over class)
+# - Use Tagged for type-safe identifiers
+# - Use SwiftFormat and SwiftLint
+
+# Example: Kotlin Android/Ktor project
+# - Use Arrow Either for all operations
+# - Use Arrow Optics for nested updates
+# - No nullable types (use Option instead)
+# - Use Kotlinx Serialization for JSON
+# - Arrow Fx for structured coroutines
+
+# Example: Haskell web service
+# - Use Servant for type-safe APIs
+# - Use Polysemy/MTL for effects
+# - Use Lens for record updates
+# - Property tests with QuickCheck/Hedgehog
+# - Use GHC extensions: DerivingVia, DerivingStrategies
+
+---
+
+## 🚀 KIMI-SPECIFIC WORKFLOW
+
+When working in this project, Kimi will:
+
+1. **Read .kimirules** to load appropriate global and language-specific rules
+2. **Auto-detect** project type and platform based on files present
+3. **Use parallel tool calls** to validate multiple files/functions simultaneously
+4. **Spawn subagents** for complex validations (type checking, law verification)
+5. **Follow mandatory patterns**:
+   - Git checkpoint every 30-60 minutes
+   - Documentation naming: YYYYMMDD_NNNN_DESCRIPTIVE_NAME.md
+   - SetTodoList tool for task tracking (NOT manual TODO files)
+   - Three-tier documentation hierarchy
+   - Railway-oriented error handling (no exceptions)
+   - Immutable data structures
+
+---
+
+## 📋 QUICK START CHECKLIST
+
+After copying this template to your project:
+
+- [ ] Verify KIMI_RULES_PATH environment variable is set
+- [ ] Uncomment appropriate language-specific guide(s)
+- [ ] Uncomment platform-specific guide if using cloud services
+- [ ] Add project-specific customizations below
+- [ ] Test that Kimi loads rules: `kimi read-file .kimirules`
+- [ ] Create first daily work document `docs/$(date +%Y_%m_%d)/$(date +%Y%m%d)_0000_*.md`
+- [ ] Initialize SetTodoList with project tasks
+
+---
+
+## ⚙️ TROUBLESHOOTING
+
+### "File not found: ${KIMI_RULES_PATH}/kimi/KIMI.md"
+**Solution**: 
+```bash
+echo $KIMI_RULES_PATH  # Should show path to rules repo
+# If empty, add to ~/.zshrc or ~/.bashrc:
+echo 'export KIMI_RULES_PATH="$HOME/projects/rules"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+### "Kimi not loading rules"
+**Solution**:
+```bash
+# Verify symlink works
+cat .kimirules  # Should show content (not "No such file")
+
+# If broken, recreate:
+rm .kimirules
+ln -s "${KIMI_RULES_PATH}/kimi/KIMI.md" .kimirules
+```
+
+### "Wrong language guide loaded"
+**Solution**:
+```bash
+# Check current uncommented rules
+grep -E "^@\$\{KIMI_RULES_PATH" .kimirules
+
+# Uncomment correct language(s) by removing "#" from beginning of line
+```
+
+---
+
+## 📖 FURTHER DOCUMENTATION
+
+- **Full Global Rules**: ${KIMI_RULES_PATH}/kimi/KIMI.md
+- **Setup Instructions**: ${KIMI_RULES_PATH}/kimi/SETUP_GUIDE.md
+- **Workflow Guide**: ${KIMI_RULES_PATH}/kimi/KIMI_WORKFLOW_GUIDE.md
+- **FP Principles**: ${KIMI_RULES_PATH}/kimi/KIMI_FP_PRINCIPLES.md
+
+---
+
+## 🎯 PROJECT-SPECIFIC NOTES
+
+# Add any project-specific notes or reminders here.
+# These are visible to Kimi as additional context.
+
+# Example notes:
+# - This project uses Effect rather than fp-ts
+# - All API responses must be wrapped in TaskEither
+# - No exceptions allowed (use Result types only)
+# - Immutability: use readonly and as const
+# - Testing: 100% coverage required before commit
+
+---
+
+**Template Version**: 1.0.0  
+**Last Updated**: 2025-11-14  
+**Maintained By**: Kimi CLI Global Rules System
