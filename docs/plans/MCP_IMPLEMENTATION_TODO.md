@@ -710,7 +710,7 @@
 ## 📚 Reference Documents
 
 **Architecture:**
-- [ARCHITECTURE_PLAN_MCP.md](../../ARCHITECTURE_PLAN_MCP.md) - System architecture
+- [ARCHITECTURE_PLAN_MCP.md](ARCHITECTURE_PLAN_MCP.md) - System architecture
 - [MCP_IMPLEMENTATION_PLAN.md](MCP_IMPLEMENTATION_PLAN.md) - This implementation plan
 
 **Usage:**

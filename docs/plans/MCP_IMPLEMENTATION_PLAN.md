@@ -4,7 +4,7 @@
 **Type**: Implementation Planning
 **Version**: 1.0.0
 **Status**: In Progress
-**Parent**: [../../ARCHITECTURE_PLAN_MCP.md](../../ARCHITECTURE_PLAN_MCP.md)
+**Parent**: [ARCHITECTURE_PLAN_MCP.md](ARCHITECTURE_PLAN_MCP.md)
 
 ---
 
@@ -12,7 +12,7 @@
 
 This document provides a detailed technical implementation plan for the MCP (Model Context Protocol) server that will enable dynamic, automatic functional programming pattern enforcement across multiple AI coding assistants (Cursor, Kimi, Claude, Gemini).
 
-The implementation follows the architecture outlined in ARCHITECTURE_PLAN_MCP.md and tracks progress via the paired TODO list (MCP_IMPLEMENTATION_TODO.md).
+The implementation follows the architecture outlined in [ARCHITECTURE_PLAN_MCP.md](ARCHITECTURE_PLAN_MCP.md) and tracks progress via the paired TODO list (MCP_IMPLEMENTATION_TODO.md).
 
 ---
 
@@ -1029,7 +1029,7 @@ The MCP server uses:
 ## 📞 Support & Resources
 
 ### **Documentation**
-- **[ARCHITECTURE_PLAN_MCP.md](../../ARCHITECTURE_PLAN_MCP.md)** - Architecture overview
+- **[ARCHITECTURE_PLAN_MCP.md](ARCHITECTURE_PLAN_MCP.md)** - Architecture overview
 - **[SETUP_GUIDE.md](../../SETUP_GUIDE.md)** - Global rules setup
 - **[AGENTS.md](../../AGENTS.md)** - Working with this repo
 
