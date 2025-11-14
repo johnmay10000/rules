@@ -33,7 +33,15 @@ This is a **pure documentation repository** containing global rule sets and func
    - Isolated Gemini-specific documentation
    - Same content organization as Cursor files
 
-3. **`docs/`** - Repository planning and tracking
+3. **`kimi/`** - Kimi CLI rule set (parallel structure to `cursor/`)
+   - Isolated Kimi-specific documentation
+   - Mirrors Cursor organization: `KIMI.md`, `KIMI_FP_PRINCIPLES.md`, `KIMI_WORKFLOW_GUIDE.md`
+   - Language-specific FP guides (6 languages + 2 platforms)
+   - `templates/` - Smart `.kimirules` templates with auto-detection
+   - `examples/` - Real-world project templates demonstrating Kimi patterns
+   - **Status**: ✅ Implementation complete (Phases 0-4)
+
+4. **`docs/`** - Repository planning and tracking
    - `ARCHITECTURE_PLAN.md` - High-level project strategy
    - `plans/` - Feature-specific plans paired with TODO lists
    - `YYYY_MM_DD/` - Daily work logs following mandatory naming: `YYYYMMDD_NNNN_DESCRIPTIVE_NAME.md`

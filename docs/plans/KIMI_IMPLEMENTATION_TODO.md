@@ -391,12 +391,12 @@
 
 ### Documentation Updates
 
-- [ ] Update root `KIMI.md` with completed structure
+- [x] Update root `KIMI.md` with completed structure
   - Add section on `kimi/` folder organization
   - Update "Current Status" section
   - Estimated: 0.2h
 
-- [ ] Update `README.md` with Kimi section
+- [x] Update `README.md` with Kimi section
   - Add Kimi to project list
   - Brief description with link
   - Estimated: 0.15h
@@ -408,7 +408,7 @@
 
 ### Verification
 
-- [ ] Verify all symlinks and references work
+- [x] Verify all symlinks and references work
   - Check all cross-document links
   - Test template symlinks
   - Estimated: 0.15h

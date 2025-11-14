@@ -21,18 +21,33 @@
 - Add quick links section referencing related documents
 - Include setup instructions specific to that language
 
+**When working on Kimi-specific files:**
+- Reference `kimi/KIMI.md` for mandatory rules
+- Use Kimi's `SetTodoList` tool for task tracking (not just markdown TODOs)
+- Demonstrate parallel tool execution where possible (Read multiple files, Write multiple files)
+- Follow Kimi-specific formatting: include "Generated with Kimi" in commits
+- Use subagents for complex or independent subtasks
+- Document Kimi-specific patterns: parallel validation, subagent workflows
+
 ### For Template Creation Tasks
 
 **When creating project templates:**
 
 1. **Choose right template type**:
-   - `envvar` - Uses `${CURSOR_RULES_PATH}` environment variable (portable)
+   - `envvar` - Uses `${CURSOR_RULES_PATH}` or `${KIMI_RULES_PATH}` environment variable (portable)
    - `submodule` - Uses relative paths (self-contained)
    - `basic` - Simple projects
 
 2. **Include auto-detection logic** for languages and platforms
-3. **Test the template** by creating a test project and verifying Cursor detects the stack
+3. **Test the template** by creating a test project and verifying Cursor/Kimi detects the stack
 4. **Document usage** in template comments and SETUP_GUIDE.md
+
+**When creating Kimi templates:**
+- Use `.kimirules` filename instead of `.cursorrules`
+- Demonstrate parallel file operations: `ReadFile` multiple files, `WriteFile` multiple files
+- Show subagent spawning for complex operations
+- Include SetTodoList initialization examples
+- Document Kimi-specific workflow patterns (parallel validation, batch operations)
 
 ### For Example Project Tasks
 
