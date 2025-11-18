@@ -138,6 +138,35 @@ Create CURSOR.md, fix typos, update README, add examples, refactor templates
 
 ### File Organization
 
+**New Unified Structure** (Post-Refactor):
+```
+rules/
+├── code_guidelines/                      # Language-specific FP patterns (tool-agnostic)
+│   └── languages/
+│       ├── python/
+│       ├── typescript/
+│       ├── rust/
+│       ├── kotlin/
+│       ├── swift/
+│       └── haskell/
+├── universal_rules/                      # Mandatory rules for all AI tools
+│   ├── git/                             # Git checkpoint rules, commit conventions
+│   ├── testing/                         # Testing philosophy, coverage requirements
+│   ├── documentation/                   # File organization, naming conventions
+│   ├── project_structure/               # Directory layout, file size limits
+│   └── ai_tool_usage/                   # MCP protocol, tool selection
+├── ai_tool_specific/                     # Truly unique tool features only
+│   ├── cursor/
+│   ├── kimi/
+│   ├── claude/
+│   └── gemini/
+├── templates/                           # Reusable templates
+├── examples/                            # Usage examples
+└── docs/                                # Documentation and plans
+    ├── YYYY_MM_DD/                      # Daily work folders
+    └── plans/                           # Strategic plans
+```
+
 **Daily Work Folders**: `docs/YYYY_MM_DD/`
 - All work documents go in dated folders
 - Format: `YYYYMMDD_NNNN_DESCRIPTIVE_NAME.md` (**MANDATORY**)
