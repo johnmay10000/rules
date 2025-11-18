@@ -907,6 +907,7 @@ describe("detectLanguage", () => {
 
 | Phase | Description | Estimated Hours | Priority |
 |-------|-------------|-----------------|----------|
+| 0 | Digital Ocean Deployment | 2-3 | High |
 | 1 | Foundation | 2-3 | High |
 | 2 | Core Server | 3-4 | High |
 | 3 | Language Detection | 3-4 | High |
@@ -916,7 +917,7 @@ describe("detectLanguage", () => {
 | 7 | Advanced Features | 3-4 | Medium |
 | 8 | Testing | 3-4 | High |
 | 9 | Integration | 2-3 | High |
-| **Total** | **All Phases** | **22-31 hours** | **~3-4 days** |
+| **Total** | **All Phases** | **24-34 hours** | **~4 days** |
 
 **Recommended Schedule:**
 - **Day 1**: Phases 1-3 (Foundation + Detection)
@@ -953,27 +954,41 @@ describe("detectLanguage", () => {
 
 **Immediate (This Session):**
 1. ✅ Implementation plan created (this document)
-2. ⏳ Create implementation TODO list
-3. ⏳ Review and approve plan
-4. ⏳ Assign tasks and timeline
+2. ✅ Digital Ocean deployment phase added
+3. ⏳ Create implementation TODO list
+4. ⏳ Review and approve plan
+5. ⏳ Assign tasks and timeline
+
+**Deployment-Specific Next Steps:**
+1. Create Digital Ocean account and configure access
+2. Set up GitHub integration for automatic deployments
+3. Configure environment variables and secrets
+4. Test deployment with minimal MCP server
+5. Verify rules repository accessibility
+6. Test AI assistant connectivity
+7. Monitor health checks and logs
+8. Scale based on usage patterns
 
 **Short-term (Next Session):**
-1. Set up MCP server project structure
-2. Implement core server (Phase 1-2)
-3. Build language detection (Phase 3)
-4. Test with real projects
+1. Implement Phase 0: Digital Ocean deployment setup
+2. Deploy minimal MCP server (Phase 0-2)
+3. Test with Kimi CLI over HTTP
+4. Verify end-to-end cloud workflow
+5. Build language detection (Phase 3)
 
 **Medium-term (This Week):**
 1. Complete Phases 4-8
-2. Full integration testing
-3. Documentation and examples
-4. Beta testing with team
+2. Full integration testing with cloud deployment
+3. Performance testing and optimization
+4. Documentation and examples for cloud setup
+5. Beta testing with team
 
 **Long-term (This Month):**
-1. Production deployment
+1. Production deployment monitoring
 2. Community feedback
-3. Iterate and improve
+3. Iterate and improve based on usage
 4. Plan future enhancements
+5. Consider multi-region deployment
 
 ---
 
@@ -1047,6 +1062,18 @@ The MCP server uses:
 ---
 
 ## 📊 Risk Assessment
+
+### **Deployment Risks**
+
+| Risk | Likelihood | Impact | Mitigation |
+|------|-----------|--------|------------|
+| Rules repository not accessible | Medium | High | Verify paths in build process |
+| Health checks failing | Low | High | Implement robust health endpoint |
+| Environment variables misconfigured | Medium | High | Document all required env vars |
+| Build process fails | Low | Medium | Test build locally first |
+| AI tool connection issues | Medium | High | Test with multiple AI tools |
+| Scaling issues | Low | Medium | Monitor and adjust instance size |
+| Cost overruns | Low | Low | Start with smallest instance size |
 
 ### **Technical Risks**
 

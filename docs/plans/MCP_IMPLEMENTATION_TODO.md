@@ -10,17 +10,103 @@
 
 ## 📊 Progress Overview
 
-- **Total Tasks**: 48
+- **Total Tasks**: 53
 - **Completed**: 0 ✅
 - **In Progress**: 0 🔄
-- **Pending**: 48 ⏳
+- **Pending**: 53 ⏳
 - **Progress**: 0%
 
-**Estimated Time**: 22-31 hours (3-4 days)  
+**Estimated Time**: 24-34 hours (3-4 days)  
 **Time Spent**: 0 hours  
-**Time Remaining**: 22-31 hours
+**Time Remaining**: 24-34 hours
 
-**Current Phase**: Phase 1 - Project Foundation (Ready to start!)
+**Current Phase**: Phase 0 - Digital Ocean Deployment Setup (Ready to start!)
+
+---
+
+## 🚀 Phase 0: Digital Ocean Deployment Setup
+
+**Status**: ⏳ PENDING  
+**Estimated**: 2-3 hours  
+**Priority**: HIGH
+
+### Digital Ocean Configuration
+
+- [ ] **TASK-0.1**: Create Digital Ocean App Platform spec  
+  - Create `.do/app.yaml` configuration file  
+  - Configure service name: mcp-server  
+  - Set build command: npm run build  
+  - Set run command: npm start  
+  - Configure health checks  
+  - **Estimated**: 0.5 hours  
+
+- [ ] **TASK-0.2**: Configure build process for rules repository  
+  - Update package.json with copy-rules script  
+  - Ensure rules/ directory included in build  
+  - Verify RULES_PATH environment variable set  
+  - Test build process locally  
+  - **Estimated**: 0.5 hours  
+
+- [ ] **TASK-0.3**: Implement health check endpoint  
+  - Create HTTP endpoint: GET /health  
+  - Return 200 OK with status and timestamp  
+  - Add to MCP server entry point  
+  - Test health endpoint locally  
+  - **Estimated**: 0.5 hours  
+
+- [ ] **TASK-0.4**: Configure HTTP/WebSocket transport  
+  - Update MCP server for HTTP transport (not just stdio)  
+  - Implement SSEServerTransport for cloud deployment  
+  - Configure port and host binding  
+  - Test with HTTP client  
+  - **Estimated**: 0.5 hours  
+
+- [ ] **TASK-0.5**: Set up environment variables  
+  - Configure RULES_PATH=/app/rules  
+  - Configure NODE_ENV=production  
+  - Configure PORT=8080  
+  - Document all required environment variables  
+  - **Estimated**: 0.3 hours  
+
+### Deployment Verification
+
+- [ ] **TASK-0.6**: Test local deployment build  
+  - Run: npm run build  
+  - Verify: dist/ directory created with rules/  
+  - Check: All files copied correctly  
+  - **Estimated**: 0.3 hours  
+
+- [ ] **TASK-0.7**: Deploy to Digital Ocean  
+  - Connect GitHub repository to Digital Ocean  
+  - Trigger initial deployment  
+  - Monitor deployment logs  
+  - Verify: Deployment successful  
+  - **Estimated**: 0.5 hours  
+
+- [ ] **TASK-0.8**: Verify health checks  
+  - Check: Health endpoint returns 200 OK  
+  - Verify: Digital Ocean dashboard shows healthy  
+  - Test: Health check with curl  
+  - **Estimated**: 0.2 hours  
+
+- [ ] **TASK-0.9**: Test AI assistant connectivity  
+  - Configure Kimi CLI with HTTP MCP endpoint  
+  - Test: List tools request  
+  - Verify: All tools accessible  
+  - **Estimated**: 0.5 hours  
+
+### Phase 0 Completion
+
+- [ ] **TASK-0.10**: Digital Ocean deployment complete  
+  - MCP server deployed and running  
+  - Health checks passing consistently  
+  - AI assistants can connect via HTTP  
+  - Rules repository accessible  
+  - **Estimated**: 0.2 hours  
+
+**Phase 0 Tasks**: 10/10  
+**Phase 0 Progress**: 0%  
+**Phase 0 Estimated**: 2-3 hours  
 
 ---
 
@@ -654,6 +740,7 @@
 
 | Phase | Tasks | Progress | Estimated | Actual |
 |-------|-------|----------|-----------|--------|
+| Phase 0: Digital Ocean Deployment | 10/10 | 0% | 2-3h | 0h |
 | Phase 1: Foundation | 7/7 | 0% | 2-3h | 0h |
 | Phase 2: Core Server | 8/8 | 0% | 3-4h | 0h |
 | Phase 3: Language Detection | 11/11 | 0% | 3-4h | 0h |
@@ -663,12 +750,12 @@
 | Phase 7: Code Validation | 7/7 | 0% | 3-4h | 0h |
 | Phase 8: Testing | 10/10 | 0% | 3-4h | 0h |
 | Phase 9: Integration | 7/7 | 0% | 2-3h | 0h |
-| **TOTAL** | **78/78** | **0%** | **22-31h** | **0h** |
+| **TOTAL** | **88/88** | **0%** | **24-34h** | **0h** |
 
 ### Current Status Summary
 
 **Status**: 🔄 NOT STARTED  
-**Next Task**: TASK-1.1 (Initialize TypeScript Node.js project)  
+**Next Task**: TASK-0.1 (Create Digital Ocean App Platform spec)  
 **Priority**: HIGH  
 **Estimated Start**: Immediate  
 
@@ -679,6 +766,7 @@
 ### Overall Project Completion
 
 **MVP Requirements (Must-Have):**
+- [ ] Digital Ocean App Platform deployment working
 - [ ] Core MCP server functional
 - [ ] Language detection working (>95% accuracy)
 - [ ] Style guide loading working
@@ -693,17 +781,21 @@
 - [ ] Documentation complete
 
 **Integration Requirements:**
-- [ ] Works with Kimi CLI
+- [ ] Works with Kimi CLI over HTTP
 - [ ] Tested with real projects
 - [ ] Clear usage examples
 - [ ] Production ready
+- [ ] Digital Ocean deployment stable
+- [ ] Health checks and monitoring in place
 
 **Final Verification:**
-- [ ] All 78 tasks complete
-- [ ] Total time within estimate (22-31h)
+- [ ] All 88 tasks complete
+- [ ] Total time within estimate (24-34h)
 - [ ] Quality standards met
 - [ ] No critical bugs
 - [ ] Ready for production deployment
+- [ ] Digital Ocean App Platform deployment verified
+- [ ] Cloud monitoring and alerting configured
 
 ---
 
@@ -795,9 +887,9 @@
 **Document Metadata:**
 - **Status**: ✅ COMPLETE & READY FOR USE
 - **Created**: 2025-11-14
-- **Last Updated**: 2025-11-14
-- **Version**: 1.0.0
-- **Total Tasks**: 78
+- **Last Updated**: 2025-11-19
+- **Version**: 1.1.0
+- **Total Tasks**: 88
 - **Maintained By**: Kimi CLI Global Rules System
 - **Implementation Ready**: YES
 

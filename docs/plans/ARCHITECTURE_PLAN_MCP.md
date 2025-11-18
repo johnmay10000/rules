@@ -40,6 +40,47 @@ This document outlines the architecture for an MCP (Model Context Protocol) serv
 
 ## 🏗️ System Architecture
 
+### Deployment Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│              Digital Ocean App Platform                     │
+│                                                             │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │  MCP Server Container                                │  │
+│  │  ┌──────────────┐  ┌────────────────────────────┐  │  │
+│  │  │  MCP Server  │  │  Rules Repository          │  │  │
+│  │  │  (Node.js)   │◄─┼─┤  - ai-tool/*.md          │  │  │
+│  │  │              │  │  - templates/              │  │  │
+│  │  └──────────────┘  └────────────────────────────┘  │  │
+│  │         ▲                                                  │
+│  └─────────┼──────────────────────────────────────────────┘  │
+│            │ MCP Protocol (HTTP/WebSocket)                      │
+│            │                                                    │
+│  ┌─────────┼──────────────────────────────────────────────┐  │
+│  │  Health Check Endpoint                                  │  │
+│  │  GET /health → 200 OK                                   │  │
+│  └─────────────────────────────────────────────────────────┘  │
+│                                                               │
+│  Environment Variables:                                       │
+│  - RULES_PATH=/app/rules                                    │
+│  - NODE_ENV=production                                      │
+│  - PORT=8080                                                │
+└─────────────────────────────────────────────────────────────┘
+                            │
+                            │ Internet
+                            │
+┌───────────────────────────┼───────────────────────────────┐
+│                           ▼                               │
+│  ┌────────────────────────────────────────────────────┐  │
+│  │  AI Assistant (Cursor/Kimi/Claude/Gemini)        │  │
+│  │  MCP Client Configuration                        │  │
+│  │  - transport: http                               │  │
+│  │  - url: https://mcp-server.ondigitalocean.app  │  │
+│  └────────────────────────────────────────────────────┘  │
+└───────────────────────────────────────────────────────────┘
+```
+
 ### High-Level Architecture
 
 ```
@@ -86,6 +127,20 @@ This document outlines the architecture for an MCP (Model Context Protocol) serv
 
 ### Component Breakdown
 
+**0. Deployment Layer (Digital Ocean App Platform)**
+- **App Spec**: YAML configuration for deployment
+- **Build Process**: npm install, npm run build, copy rules
+- **Runtime**: Node.js 20+ container
+- **Health Checks**: HTTP endpoint for uptime monitoring
+- **Scaling**: Automatic scaling based on request volume
+- **Environment**: Managed secrets and environment variables
+
+**1. Core Server (index.ts)**
+- MCP server entry point
+- Tool registration
+- Request routing
+- Transport layer (HTTP/WebSocket for cloud deployment)
+
 **1. Core Server (index.ts)**
 - MCP server entry point
 - Tool registration
@@ -123,6 +178,19 @@ This document outlines the architecture for an MCP (Model Context Protocol) serv
 - Version tracking
 
 ### Data Flow
+
+**Workflow 0: Cloud Deployment Flow**
+```
+Git Push → Digital Ocean Build → Container Deployed
+    ↓
+Rules Repository Copied → RULES_PATH Set
+    ↓
+MCP Server Starts → Health Check Passes
+    ↓
+AI Assistant Connects → Tools Available
+```
+
+**Workflow 1: New Project Setup**
 
 **Workflow 1: New Project Setup**
 ```
@@ -167,6 +235,112 @@ AI suggests refactoring to use Result types
 ---
 
 ## 🛠️ Technical Implementation
+
+### Digital Ocean App Platform Configuration
+
+```yaml
+# .do/app.yaml
+name: mcp-fp-rules
+services:
+- name: mcp-server
+  github:
+    repo: your-org/mcp-server
+    branch: main
+    deploy_on_push: true
+  build_command: npm run build
+  run_command: npm start
+  environment_slug: node-js
+  instance_count: 1
+  instance_size_slug: basic-xxs
+  routes:
+  - path: /
+  health_check:
+    http_path: /health
+    initial_delay_seconds: 10
+    period_seconds: 10
+    timeout_seconds: 5
+    success_threshold: 1
+    failure_threshold: 3
+  envs:
+  - key: RULES_PATH
+    value: /app/rules
+    scope: RUN_AND_BUILD_TIME
+  - key: NODE_ENV
+    value: production
+    scope: RUN_TIME
+  - key: PORT
+    value: 8080
+    scope: RUN_TIME
+```
+
+### Repository Structure for Deployment
+
+```
+mcp-server/
+├── src/
+│   ├── index.ts              # MCP server entry
+│   ├── tools/                # Tool implementations
+│   └── utils/                # Utilities
+├── rules/                    # Rules repository (submodule or copy)
+│   ├── ai-tool/
+│   ├── templates/
+│   └── examples/
+├── package.json
+├── tsconfig.json
+├── .do/
+│   └── app.yaml              # Digital Ocean config
+└── Dockerfile                # Optional: custom container
+```
+
+### Build & Deployment Process
+
+```bash
+# Build script (package.json)
+"scripts": {
+  "build": "tsc && npm run copy-rules",
+  "copy-rules": "cp -r ../rules ./rules || echo 'Rules copied'",
+  "start": "node dist/index.js",
+  "dev": "tsx src/index.ts"
+}
+```
+
+### Environment Configuration
+
+```typescript
+// src/config.ts
+export const config = {
+  rulesPath: process.env.RULES_PATH || './rules',
+  port: parseInt(process.env.PORT || '8080'),
+  nodeEnv: process.env.NODE_ENV || 'development',
+  healthCheckPath: '/health'
+};
+
+// Health check endpoint for Digital Ocean
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+```
+
+### Transport Layer Configuration
+
+```typescript
+// HTTP/WebSocket transport for cloud deployment
+import express from 'express';
+import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
+
+const app = express();
+const server = new Server(...);
+
+app.post('/mcp', async (req, res) => {
+  const transport = new SSEServerTransport('/mcp', res);
+  await server.connect(transport);
+});
+
+app.listen(config.port, () => {
+  console.log(`MCP server running on port ${config.port}`);
+});
+```
 
 ### Technology Stack
 
@@ -243,8 +417,506 @@ async function detectPlatform(dir: string): Promise<string[]> {
 ```
 
 ---
+ 
+ ## 🔒 Security Architecture & Best Practices
+ 
+ ### Authentication & Authorization
+ 
+ **API Key Authentication (Recommended)**
+ ```typescript
+ // src/middleware/auth.ts
+ import { Request, Response, NextFunction } from 'express';
+ 
+ const API_KEYS = new Set([
+   process.env.MCP_API_KEY_1,
+   process.env.MCP_API_KEY_2,
+   process.env.MCP_API_KEY_3
+ ].filter(Boolean));
+ 
+ export function authenticateApiKey(req: Request, res: Response, next: NextFunction) {
+   const apiKey = req.headers['x-api-key'] || req.query.apikey;
+   
+   if (!apiKey || !API_KEYS.has(apiKey as string)) {
+     return res.status(401).json({ error: 'Unauthorized: Invalid API key' });
+   }
+   
+   next();
+ }
+ ```
+ 
+ **MCP Protocol Token Validation**
+ ```typescript
+ // Validate MCP protocol tokens in request headers
+ export function validateMcpToken(req: Request, res: Response, next: NextFunction) {
+   const authHeader = req.headers['authorization'];
+   const mcpToken = req.headers['x-mcp-token'];
+   
+   if (!authHeader || !authHeader.startsWith('Bearer ') || !mcpToken) {
+     return res.status(401).json({ error: 'Unauthorized: Missing MCP credentials' });
+   }
+   
+   // Verify token against environment variables
+   const token = authHeader.split(' ')[1];
+   if (token !== process.env.MCP_BEARER_TOKEN) {
+     return res.status(401).json({ error: 'Unauthorized: Invalid bearer token' });
+   }
+   
+   next();
+ }
+ ```
+ 
+ ### Transport Layer Security (TLS/HTTPS)
+ 
+ **Digital Ocean Managed TLS**
+ - ✅ **Automatic TLS**: Digital Ocean App Platform provides automatic TLS certificates
+ - ✅ **HTTPS Only**: Configure app to only accept HTTPS connections
+ - ✅ **Certificate Rotation**: Managed automatically by Digital Ocean
+ - ✅ **HSTS Headers**: Add HTTP Strict Transport Security headers
+ 
+ ```typescript
+ // src/middleware/security.ts
+ export function enforceHttps(req: Request, res: Response, next: NextFunction) {
+   const proto = req.headers['x-forwarded-proto'];
+   
+   if (proto && proto !== 'https' && process.env.NODE_ENV === 'production') {
+     return res.status(403).json({ 
+       error: 'HTTPS required. Use https://' + req.get('host') + req.originalUrl 
+     });
+   }
+   
+   // Add HSTS header
+   res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+   next();
+ }
+ ```
+ 
+ ### Network Security
+ 
+ **Digital Ocean App Platform Features**
+ - ✅ **Private Networking**: Use internal networking for service-to-service communication
+ - ✅ **Ingress Firewall**: Digital Ocean manages firewall rules at the edge
+ - ✅ **VPC Isolation**: Deploy in isolated Virtual Private Cloud
+ - ✅ **IP Allowlisting**: Restrict access to known AI assistant IPs
+ 
+ ```yaml
+ # .do/app.yaml - Network security configuration
+ services:
+ - name: mcp-server
+   # ... other config ...
+   internal_ports:
+   - 8080  # Only accessible within App Platform
+   cors:
+     allow_origins:
+     - https://kimi.ai
+     - https://cursor.sh
+     - https://claude.ai
+     - https://gemini.google.com
+     allow_methods:
+     - POST
+     - GET
+     allow_headers:
+     - Authorization
+     - X-API-Key
+     - X-MCP-Token
+     - Content-Type
+     max_age: 86400
+ ```
+ 
+ ### Input Validation & Sanitization
+ 
+ **Zod Schema Validation**
+ ```typescript
+ import { z } from 'zod';
+ 
+ const detectLanguageSchema = z.object({
+   directory: z.string()
+     .min(1, 'Directory path is required')
+     .max(500, 'Directory path too long')
+     .regex(/^[a-zA-Z0-9_\-\/\.]+$/, 'Invalid directory path format')
+     .transform(path => path.replace(/\.\./g, '')), // Prevent directory traversal
+   confidenceThreshold: z.number()
+     .min(0)
+     .max(1)
+     .default(0.8)
+ });
+ 
+ export function validateInput(schema: z.ZodSchema) {
+   return (req: Request, res: Response, next: NextFunction) => {
+     try {
+       req.validatedData = schema.parse(req.body);
+       next();
+     } catch (error) {
+       return res.status(400).json({
+         error: 'Invalid input',
+         details: error instanceof z.ZodError ? error.errors : 'Validation failed'
+       });
+     }
+   };
+ }
+ ```
+ 
+ **Request Size Limiting**
+ ```typescript
+ // Limit request body size to prevent DoS
+ app.use(express.json({ limit: '1mb' }));
+ app.use(express.urlencoded({ limit: '1mb', extended: true }));
+ ```
+ 
+ ### Rate Limiting & Abuse Prevention
+ 
+ **Per-Client Rate Limiting**
+ ```typescript
+ import rateLimit from 'express-rate-limit';
+ 
+ const limiter = rateLimit({
+   windowMs: 15 * 60 * 1000, // 15 minutes
+   max: 100, // limit each API key to 100 requests per windowMs
+   standardHeaders: true,
+   legacyHeaders: false,
+   keyGenerator: (req) => {
+     return req.headers['x-api-key']?.toString() || req.ip;
+   },
+   handler: (req, res) => {
+     res.status(429).json({
+       error: 'Too many requests',
+       retryAfter: Math.ceil(req.rateLimit.resetTime / 1000)
+     });
+   }
+ });
+ 
+ // Apply to all MCP endpoints
+ app.use('/mcp', limiter);
+ ```
+ 
+ **Tool-Specific Rate Limits**
+ ```typescript
+ const strictLimiter = rateLimit({
+   windowMs: 60 * 1000, // 1 minute
+   max: 30, // stricter limit for expensive operations
+   skip: (req) => {
+     // Skip rate limiting for health checks
+     return req.path === '/health';
+   }
+ });
+ 
+ app.use('/mcp/tools/validate-code', strictLimiter);
+ ```
+ 
+ ### Secrets Management
+ 
+ **Digital Ocean Managed Secrets**
+ ```yaml
+ # .do/app.yaml - Secrets configuration
+ services:
+ - name: mcp-server
+   # ... other config ...
+   envs:
+   - key: MCP_API_KEY_1
+     value: ${MCP_API_KEY_1}
+     type: SECRET
+     scope: RUN_TIME
+   - key: MCP_API_KEY_2
+     value: ${MCP_API_KEY_2}
+     type: SECRET
+     scope: RUN_TIME
+   - key: MCP_BEARER_TOKEN
+     value: ${MCP_BEARER_TOKEN}
+     type: SECRET
+     scope: RUN_TIME
+   - key: RULES_PATH
+     value: /app/rules
+     scope: RUN_AND_BUILD_TIME
+ ```
+ 
+ **Environment Variable Validation**
+ ```typescript
+ // src/config.ts
+ export function validateEnv() {
+   const required = [
+     'MCP_API_KEY_1',
+     'MCP_BEARER_TOKEN',
+     'RULES_PATH'
+   ];
+   
+   const missing = required.filter(key => !process.env[key]);
+   
+   if (missing.length > 0) {
+     throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
+   }
+   
+   return {
+     apiKeys: [
+       process.env.MCP_API_KEY_1,
+       process.env.MCP_API_KEY_2,
+       process.env.MCP_API_KEY_3
+     ].filter(Boolean),
+     bearerToken: process.env.MCP_BEARER_TOKEN,
+     rulesPath: process.env.RULES_PATH,
+     port: parseInt(process.env.PORT || '8080'),
+     nodeEnv: process.env.NODE_ENV || 'development'
+   };
+ }
+ ```
+ 
+ ### Logging & Monitoring
+ 
+ **Structured Logging**
+ ```typescript
+ import winston from 'winston';
+ 
+ const logger = winston.createLogger({
+   level: process.env.LOG_LEVEL || 'info',
+   format: winston.format.combine(
+     winston.format.timestamp(),
+     winston.format.errors({ stack: true }),
+     winston.format.json()
+   ),
+   defaultMeta: { service: 'mcp-server' },
+   transports: [
+     new winston.transports.Console({
+       format: winston.format.combine(
+         winston.format.colorize(),
+         winston.format.simple()
+       )
+     })
+   ]
+ });
+ 
+ // Log security events
+ export function logSecurityEvent(event: string, details: any) {
+   logger.warn('SECURITY_EVENT', { event, details, timestamp: new Date().toISOString() });
+ }
+ ```
+ 
+ **Digital Ocean Insights Integration**
+ - ✅ **Log Forwarding**: Automatically forwarded to Digital Ocean Insights
+ - ✅ **Metrics**: CPU, memory, request count, error rate
+ - ✅ **Alerting**: Configure alerts for high error rates or security events
+ - ✅ **Dashboards**: Visualize security metrics
+ 
+ ### CORS & Origin Restrictions
+ 
+ ```typescript
+ import cors from 'cors';
+ 
+ const allowedOrigins = [
+   'https://kimi.ai',
+   'https://cursor.sh',
+   'https://claude.ai',
+   'https://gemini.google.com'
+ ];
+ 
+ const corsOptions = {
+   origin: (origin: string | undefined, callback: Function) => {
+     // Allow requests with no origin (mobile apps, curl)
+     if (!origin) {
+       return callback(null, true);
+     }
+     
+     if (allowedOrigins.includes(origin)) {
+       callback(null, true);
+     } else {
+       logSecurityEvent('CORS_VIOLATION', { origin });
+       callback(new Error('Origin not allowed by CORS'));
+     }
+   },
+   methods: ['POST', 'GET'],
+   allowedHeaders: ['Authorization', 'X-API-Key', 'X-MCP-Token', 'Content-Type'],
+   credentials: true,
+   maxAge: 86400
+ };
+ 
+ app.use(cors(corsOptions));
+ ```
+ 
+ ### Error Handling & Information Disclosure
+ 
+ **Generic Error Messages**
+ ```typescript
+ // Don't leak stack traces or internal details
+ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+   logger.error('Unhandled error', { 
+     error: err.message,
+     stack: err.stack,
+     path: req.path,
+     method: req.method
+   });
+   
+   res.status(500).json({
+     error: 'Internal server error',
+     requestId: req.headers['x-request-id']
+   });
+ });
+ ```
+ 
+ **404 Handling**
+ ```typescript
+ app.use((req: Request, res: Response) => {
+   logSecurityEvent('UNKNOWN_ENDPOINT', {
+     path: req.path,
+     method: req.method,
+     ip: req.ip,
+     userAgent: req.get('User-Agent')
+   });
+   
+   res.status(404).json({ error: 'Endpoint not found' });
+ });
+ ```
+ 
+ ### Digital Ocean Specific Security Features
+ 
+ **App Platform Security**
+ - ✅ **Automatic OS Patching**: Digital Ocean keeps underlying OS updated
+ - ✅ **Container Isolation**: Each app runs in isolated containers
+ - ✅ **DDoS Protection**: Automatic DDoS mitigation at edge
+ - ✅ **WAF**: Web Application Firewall available as add-on
+ - ✅ **VPC**: Deploy in private VPC with controlled egress
+ 
+ **Recommended Configuration**
+ ```yaml
+ # .do/app.yaml - Security-hardened configuration
+ name: mcp-fp-rules
+ services:
+ - name: mcp-server
+   github:
+     repo: your-org/mcp-server
+     branch: main
+     deploy_on_push: true
+   build_command: npm run build
+   run_command: npm start
+   environment_slug: node-js
+   instance_count: 1
+   instance_size_slug: basic-xxs
+   routes:
+   - path: /
+   health_check:
+     http_path: /health
+     initial_delay_seconds: 10
+     period_seconds: 10
+     timeout_seconds: 5
+     success_threshold: 1
+     failure_threshold: 3
+   
+   # Security configurations
+   cors:
+     allow_origins:
+     - https://kimi.ai
+     - https://cursor.sh
+     - https://claude.ai
+     - https://gemini.google.com
+     allow_methods:
+     - POST
+     - GET
+     allow_headers:
+     - Authorization
+     - X-API-Key
+     - X-MCP-Token
+     - Content-Type
+     max_age: 86400
+   
+   # Secrets management
+   envs:
+   - key: MCP_API_KEY_1
+     value: ${MCP_API_KEY_1}
+     type: SECRET
+     scope: RUN_TIME
+   - key: MCP_API_KEY_2
+     value: ${MCP_API_KEY_2}
+     type: SECRET
+     scope: RUN_TIME
+   - key: MCP_BEARER_TOKEN
+     value: ${MCP_BEARER_TOKEN}
+     type: SECRET
+     scope: RUN_TIME
+   - key: RULES_PATH
+     value: /app/rules
+     scope: RUN_AND_BUILD_TIME
+   - key: NODE_ENV
+     value: production
+     scope: RUN_TIME
+   - key: LOG_LEVEL
+     value: info
+     scope: RUN_TIME
+   
+   # Security headers
+   headers:
+   - key: X-Content-Type-Options
+     value: nosniff
+   - key: X-Frame-Options
+     value: DENY
+   - key: X-XSS-Protection
+     value: 1; mode=block
+   - key: Strict-Transport-Security
+     value: max-age=31536000; includeSubDomains
+   - key: Content-Security-Policy
+     value: "default-src 'self'"
+ 
+   # Internal port (not exposed to internet directly)
+   internal_ports:
+   - 8080
+ ```
+ 
+ ### Security Checklist
+ 
+ **Before Deployment:**
+ - [ ] API keys generated and stored in Digital Ocean secrets
+ - [ ] Bearer token generated (32+ character random string)
+ - [ ] CORS origins restricted to known AI assistants
+ - [ ] Rate limiting configured
+ - [ ] Request size limits set (1MB max)
+ - [ ] Input validation with Zod schemas implemented
+ - [ ] Health check endpoint secured (no sensitive data)
+ - [ ] Error messages generic (no stack traces)
+ - [ ] Logging configured (no sensitive data in logs)
+ - [ ] Security headers added (HSTS, CSP, X-Frame-Options)
+ - [ ] Digital Ocean WAF enabled (if available)
+ - [ ] VPC deployment configured
+ - [ ] IP allowlisting considered (if static IPs known)
+ 
+ **After Deployment:**
+ - [ ] Test authentication with invalid API key (should fail)
+ - [ ] Test authentication with valid API key (should succeed)
+ - [ ] Test rate limiting (should block after limit)
+ - [ ] Test CORS from allowed origins (should succeed)
+ - [ ] Test CORS from disallowed origins (should fail)
+ - [ ] Verify health check endpoint accessible
+ - [ ] Verify logs in Digital Ocean Insights
+ - [ ] Set up alerts for high error rates
+ - [ ] Set up alerts for security events
+ - [ ] Review logs for any suspicious activity
+ - [ ] Schedule regular security reviews
+ 
+ ---
+ 
+ ## 📊 Implementation Phases
 
-## 📊 Implementation Phases
+### **Phase 0: Digital Ocean Deployment Setup** (Estimated: 2-3 hours)
+
+**Goal**: Deploy MCP server to Digital Ocean App Platform with rules repository
+
+**Tasks:**
+- Create Digital Ocean App Platform spec (app.yaml)
+- Configure build process to include rules repository
+- Set up environment variables and secrets
+- Implement health check endpoint
+- Configure HTTP/WebSocket transport
+- Test deployment and connectivity
+
+**Deliverables:**
+- `.do/app.yaml` - App Platform configuration
+- Updated build scripts in package.json
+- Health check endpoint implementation
+- Deployment documentation
+
+**Success Criteria:**
+- ✅ MCP server deployed successfully
+- ✅ Health checks passing
+- ✅ Rules repository accessible
+- ✅ AI assistants can connect via HTTP
+- ✅ All tools functional in cloud environment
+
+**Phase 0 Tasks**: 5/5  
+**Phase 0 Estimated**: 2-3 hours
 
 ### **Phase 1: Core Foundation** (Estimated: 4-6 hours)
 
@@ -513,6 +1185,28 @@ match file {
 
 ## 🔮 Future Enhancements
 
+### **Phase 10: Multi-Region Deployment**
+
+- Deploy to multiple Digital Ocean regions
+- Load balancing across regions
+- Automatic failover
+- Regional caching of rules
+
+### **Phase 11: Advanced Monitoring**
+
+- Prometheus metrics integration
+- Grafana dashboards
+- Log aggregation (Digital Ocean Insights)
+- Performance monitoring
+- Error tracking (Sentry)
+
+### **Phase 12: Serverless Optimization**
+
+- Optimize for Digital Ocean Functions
+- Reduce cold start times
+- Implement connection pooling
+- Add request queuing
+
 ### **Phase 9: Machine Learning (Post MVP)**
 
 - Learn project-specific patterns
@@ -546,6 +1240,42 @@ match file {
 ## 📋 Next Steps
 
 **Immediate (This Session):**
+1. ✅ Architecture plan updated with Digital Ocean deployment
+2. ⏳ Update implementation plan with deployment phase
+3. ⏳ Update TODO list with deployment tasks
+4. ⏳ Review and approve deployment strategy
+
+**Deployment-Specific Next Steps:**
+1. Create Digital Ocean account and configure access
+2. Set up GitHub integration for automatic deployments
+3. Configure environment variables and secrets
+4. Test deployment with minimal MCP server
+5. Verify rules repository accessibility
+6. Test AI assistant connectivity
+7. Monitor health checks and logs
+8. Scale based on usage patterns
+
+**Short-term (Next Session):**
+1. Implement Phase 0: Digital Ocean deployment setup
+2. Deploy minimal MCP server (Phase 1-2)
+3. Test with Kimi CLI over HTTP
+4. Verify end-to-end workflow
+
+**Medium-term (This Week):**
+1. Complete all phases (0-9)
+2. Full integration testing with cloud deployment
+3. Performance testing and optimization
+4. Documentation and examples for cloud setup
+5. Beta release to team
+
+**Long-term (This Month):**
+1. Production deployment monitoring
+2. Community testing and feedback
+3. Iterate and improve based on usage
+4. Plan future enhancements (Phases 10-12)
+5. Consider multi-region deployment
+
+**Immediate (This Session):**
 1. ✅ Architecture plan created (this document)
 2. ⏳ Create implementation plan (docs/plans/MCP_IMPLEMENTATION_PLAN.md)
 3. ⏳ Create TODO list (docs/plans/MCP_IMPLEMENTATION_TODO.md)
@@ -572,6 +1302,37 @@ match file {
 ---
 
 ## 🎯 Success Criteria
+
+**Deployment Success Criteria:**
+- ✅ MCP server deployed to Digital Ocean App Platform
+- ✅ Health checks consistently passing
+- ✅ Rules repository accessible at runtime
+- ✅ AI assistants can connect via HTTP/WebSocket
+- ✅ All tools functional in production environment
+- ✅ Logs visible in Digital Ocean dashboard
+- ✅ Can scale automatically based on demand
+- ✅ Zero-downtime deployments working
+
+**Implementation Complete When:**
+- ✅ MCP server responds to all tool requests
+- ✅ Language detection >95% accurate
+- ✅ Style guides load correctly from deployed rules
+- ✅ Project setup creates appropriate files
+- ✅ Works with Kimi CLI over HTTP
+- ✅ Tested with sample projects (Python, TypeScript, Rust)
+- ✅ Documentation complete including deployment guide
+- ✅ Team successfully uses it
+- ✅ Digital Ocean deployment stable and monitored
+
+**Production Ready When:**
+- ✅ All tests passing
+- ✅ Performance acceptable (<1s detection)
+- ✅ Error handling robust
+- ✅ Community feedback positive
+- ✅ No critical bugs
+- ✅ Health checks and monitoring in place
+- ✅ Automatic deployments from GitHub
+- ✅ Scaled appropriately for usage
 
 **Implementation Complete When:**
 - ✅ MCP server responds to all tool requests
