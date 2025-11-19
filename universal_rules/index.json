@@ -1,0 +1,106 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2025-11-19",
+  "categories": {
+    "git": {
+      "description": "Mandatory Git workflows and conventions",
+      "rules": {
+        "checkpoint_rules": {
+          "path": "universal_rules/git/git_checkpoint_rules.md",
+          "description": "Mandatory checkpoint triggers and commit message formats",
+          "type": "mandatory"
+        },
+        "commit_conventions": {
+          "path": "universal_rules/git/commit_conventions.md",
+          "description": "Detailed commit message standards and best practices",
+          "type": "mandatory"
+        },
+        "branching_strategy": {
+          "path": "universal_rules/git/branching_strategy.md",
+          "description": "Branch naming and management strategy",
+          "type": "mandatory"
+        }
+      }
+    },
+    "testing": {
+      "description": "Comprehensive testing standards",
+      "rules": {
+        "testing_philosophy": {
+          "path": "universal_rules/testing/testing_philosophy.md",
+          "description": "Core testing principles and mindset",
+          "type": "guideline"
+        },
+        "unit_testing": {
+          "path": "universal_rules/testing/unit_testing.md",
+          "description": "Standards for unit tests",
+          "type": "mandatory"
+        },
+        "integration_testing": {
+          "path": "universal_rules/testing/integration_testing.md",
+          "description": "Standards for integration tests",
+          "type": "mandatory"
+        },
+        "test_coverage": {
+          "path": "universal_rules/testing/test_coverage_requirements.md",
+          "description": "Mandatory coverage metrics and requirements",
+          "type": "mandatory"
+        }
+      }
+    },
+    "documentation": {
+      "description": "Documentation standards and workflows",
+      "rules": {
+        "daily_workflow": {
+          "path": "universal_rules/documentation/daily_workflow.md",
+          "description": "Daily documentation habits and session logs",
+          "type": "guideline"
+        },
+        "file_organization": {
+          "path": "universal_rules/documentation/file_organization.md",
+          "description": "How to organize documentation files",
+          "type": "mandatory"
+        },
+        "naming_conventions": {
+          "path": "universal_rules/documentation/naming_conventions.md",
+          "description": "Naming standards for files and folders",
+          "type": "mandatory"
+        }
+      }
+    },
+    "project_structure": {
+      "description": "Project layout and file standards",
+      "rules": {
+        "directory_layout": {
+          "path": "universal_rules/project_structure/directory_layout.md",
+          "description": "Standard directory structure for projects",
+          "type": "mandatory"
+        },
+        "file_size_limits": {
+          "path": "universal_rules/project_structure/file_size_limits.md",
+          "description": "Mandatory file size limits (250-300 lines)",
+          "type": "mandatory"
+        },
+        "template_standards": {
+          "path": "universal_rules/project_structure/template_standards.md",
+          "description": "Standards for creating project templates",
+          "type": "guideline"
+        }
+      }
+    },
+    "ai_tool_usage": {
+      "description": "Guidelines for AI tool interaction",
+      "rules": {
+        "tool_selection": {
+          "path": "universal_rules/ai_tool_usage/tool_selection.md",
+          "description": "When to use which AI tool",
+          "type": "guideline"
+        },
+        "mcp_protocol": {
+          "path": "universal_rules/ai_tool_usage/mcp_protocol.md",
+          "description": "Standards for MCP server integration",
+          "type": "technical"
+        }
+      }
+    }
+  }
+}
