@@ -1,0 +1,168 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2025-11-19",
+  "description": "Index of all code guidelines organized by programming language",
+  "structure": {
+    "root": "code_guidelines/languages/",
+    "languages": [
+      "python",
+      "typescript",
+      "rust",
+      "kotlin",
+      "swift",
+      "haskell"
+    ]
+  },
+  "languages": {
+    "python": {
+      "name": "Python",
+      "category": "code_guidelines",
+      "files": {
+        "fp_style_guide": {
+          "path": "code_guidelines/languages/python/fp_style_guide.md",
+          "description": "Complete Python functional programming style guide",
+          "type": "primary"
+        },
+        "patterns": {
+          "path": "code_guidelines/languages/python/patterns.md",
+          "description": "Common functional programming patterns in Python",
+          "type": "reference"
+        },
+        "examples": {
+          "path": "code_guidelines/languages/python/examples.md",
+          "description": "Before/after code examples showing FP transformations",
+          "type": "examples"
+        },
+        "libraries": {
+          "path": "code_guidelines/languages/python/libraries.md",
+          "description": "Recommended functional programming libraries for Python",
+          "type": "reference"
+        }
+      },
+      "metadata": {
+        "version": "2.0.0",
+        "last_updated": "2025-11-19",
+        "tool_support": ["cursor", "kimi", "claude", "gemini"],
+        "focus_areas": ["machine_learning", "data_processing", "backend"]
+      }
+    },
+    "typescript": {
+      "name": "TypeScript",
+      "category": "code_guidelines",
+      "files": {
+        "fp_style_guide": {
+          "path": "code_guidelines/languages/typescript/fp_style_guide.md",
+          "description": "Complete TypeScript functional programming style guide",
+          "type": "primary"
+        },
+        "patterns": {
+          "path": "code_guidelines/languages/typescript/patterns.md",
+          "description": "Common functional programming patterns in TypeScript",
+          "type": "reference"
+        },
+        "examples": {
+          "path": "code_guidelines/languages/typescript/examples.md",
+          "description": "Before/after code examples showing FP transformations",
+          "type": "examples"
+        },
+        "libraries": {
+          "path": "code_guidelines/languages/typescript/libraries.md",
+          "description": "Recommended functional programming libraries for TypeScript",
+          "type": "reference"
+        }
+      },
+      "metadata": {
+        "version": "2.0.0",
+        "last_updated": "2025-11-19",
+        "tool_support": ["cursor", "kimi", "claude", "gemini"],
+        "focus_areas": ["web_apps", "backend", "fullstack"]
+      }
+    },
+    "rust": {
+      "name": "Rust",
+      "category": "code_guidelines",
+      "files": {
+        "fp_style_guide": {
+          "path": "code_guidelines/languages/rust/fp_style_guide.md",
+          "description": "Complete Rust functional programming style guide",
+          "type": "primary"
+        }
+      },
+      "metadata": {
+        "version": "2.0.0",
+        "last_updated": "2025-11-19",
+        "tool_support": ["cursor", "kimi", "claude", "gemini"],
+        "focus_areas": ["systems_programming", "cli_tools", "web_assembly"]
+      }
+    },
+    "kotlin": {
+      "name": "Kotlin",
+      "category": "code_guidelines",
+      "files": {
+        "fp_style_guide": {
+          "path": "code_guidelines/languages/kotlin/fp_style_guide.md",
+          "description": "Complete Kotlin functional programming style guide",
+          "type": "primary"
+        }
+      },
+      "metadata": {
+        "version": "2.0.0",
+        "last_updated": "2025-11-19",
+        "tool_support": ["cursor", "kimi", "claude", "gemini"],
+        "focus_areas": ["android", "ktor_backend", "multiplatform"]
+      }
+    },
+    "swift": {
+      "name": "Swift",
+      "category": "code_guidelines",
+      "files": {
+        "fp_style_guide": {
+          "path": "code_guidelines/languages/swift/fp_style_guide.md",
+          "description": "Complete Swift functional programming style guide",
+          "type": "primary"
+        }
+      },
+      "metadata": {
+        "version": "2.0.0",
+        "last_updated": "2025-11-19",
+        "tool_support": ["cursor", "kimi", "claude", "gemini"],
+        "focus_areas": ["ios", "macos", "swiftui", "server_side"]
+      }
+    },
+    "haskell": {
+      "name": "Haskell",
+      "category": "code_guidelines",
+      "files": {
+        "fp_style_guide": {
+          "path": "code_guidelines/languages/haskell/fp_style_guide.md",
+          "description": "Complete Haskell functional programming style guide (reference implementation)",
+          "type": "primary"
+        }
+      },
+      "metadata": {
+        "version": "1.0.0",
+        "last_updated": "2025-11-19",
+        "tool_support": ["cursor", "kimi", "claude", "gemini"],
+        "focus_areas": ["compilers", "financial_systems", "research", "reference_implementation"],
+        "notes": "Haskell is the reference implementation for functional programming concepts used in all other languages"
+      }
+    }
+  },
+  "access_patterns": {
+    "by_language": "Direct access via language key (e.g., languages.python)",
+    "by_tool": "All languages support all tools; tool-specific features in ai_tool_specific/",
+    "by_focus_area": {
+      "machine_learning": ["python"],
+      "web_apps": ["typescript"],
+      "systems_programming": ["rust"],
+      "android": ["kotlin"],
+      "ios": ["swift"],
+      "compilers": ["haskell"]
+    }
+  },
+  "usage_notes": {
+    "mcp_server": "Use this index for fast lookup of language-specific guidelines. File paths are relative to repository root.",
+    "tool_integration": "AI tools should load the fp_style_guide.md first, then reference patterns/examples as needed",
+    "maintenance": "Update last_updated when modifying any language guidelines"
+  }
+}
