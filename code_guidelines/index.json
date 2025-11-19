@@ -178,6 +178,25 @@
       }
     }
   },
+  "cloud": {
+    "serverless": {
+      "name": "Serverless/Cloud Functions",
+      "category": "cloud",
+      "files": {
+        "patterns": {
+          "path": "code_guidelines/cloud/serverless_fp_patterns.md",
+          "description": "Universal functional programming patterns for serverless",
+          "type": "primary"
+        }
+      },
+      "metadata": {
+        "version": "1.0.0",
+        "last_updated": "2025-11-19",
+        "tool_support": ["cursor", "kimi", "claude", "gemini"],
+        "focus_areas": ["aws_lambda", "google_cloud_functions", "azure_functions"]
+      }
+    }
+  },
   "access_patterns": {
     "by_language": "Direct access via language key (e.g., languages.python)",
     "by_tool": "All languages support all tools; tool-specific features in ai_tool_specific/",

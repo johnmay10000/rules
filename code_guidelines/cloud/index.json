@@ -1,0 +1,11 @@
+{
+  "category": "cloud",
+  "description": "Universal patterns for Serverless and Cloud Functions",
+  "files": [
+    {
+      "path": "serverless_fp_patterns.md",
+      "description": "Core FP patterns for AWS Lambda, Google Cloud Functions, and Azure Functions",
+      "tags": ["serverless", "fp", "railway", "event-sourcing"]
+    }
+  ]
+}

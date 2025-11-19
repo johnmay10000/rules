@@ -14,6 +14,7 @@
 - **Mandatory Rules**: See [KIMI.md](KIMI.md) sections 1-4  
 - **FP Principles**: See [KIMI_FP_PRINCIPLES.md](KIMI_FP_PRINCIPLES.md)  
 - **Language Guides**: See [python-fp-style-guide.md](python-fp-style-guide.md), [typescript-fp-style-guide.md](typescript-fp-style-guide.md)
+- **Universal Cloud Patterns**: See [../code_guidelines/cloud/serverless_fp_patterns.md](../code_guidelines/cloud/serverless_fp_patterns.md)
 
 ---
 
