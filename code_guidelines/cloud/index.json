@@ -6,6 +6,16 @@
       "path": "serverless_fp_patterns.md",
       "description": "Core FP patterns for AWS Lambda, Google Cloud Functions, and Azure Functions",
       "tags": ["serverless", "fp", "railway", "event-sourcing"]
+    },
+    {
+      "path": "aws/fp_patterns.md",
+      "description": "Functional Programming patterns for AWS (Lambda, DynamoDB, Step Functions)",
+      "tags": ["aws", "lambda", "dynamodb", "step-functions"]
+    },
+    {
+      "path": "gcp/fp_patterns.md",
+      "description": "Functional Programming patterns for GCP (Cloud Functions, Cloud Run, Firestore)",
+      "tags": ["gcp", "cloud-functions", "firestore", "pubsub"]
     }
   ]
 }
