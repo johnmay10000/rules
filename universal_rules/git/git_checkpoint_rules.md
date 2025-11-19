@@ -35,10 +35,11 @@ Commit **MUST** occur after:
 - Any major deliverable or design document
 - **Rationale**: Preserves architectural decisions and project foundations
 
-### 4. Logical Unit Completion
+### 4. Logical Task & Unit Completion
 - Completing a set of related templates
 - Finishing a set of examples
 - Completing a feature or user story
+- **Completing an item in `task.md`**
 - **Rationale**: Groups related changes for easier review and reversion
 
 ### 5. Context Switch
