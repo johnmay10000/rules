@@ -19,27 +19,25 @@ This is a **pure documentation repository** containing global rule sets and func
 
 ### Core Components
 
-1. **`cursor/`** - Main Cursor AI rule set (70+ files)
-   - `CURSOR.md` - Universal mandatory rules (Git, docs, testing, file size)
-   - `CURSOR_FP_PRINCIPLES.md` - Functional programming deep dive
-   - `CURSOR_WORKFLOW_GUIDE.md` - Git checkpoint and documentation workflow
-   - `SETUP_GUIDE.md` - One-time machine setup instructions
-   - `FILE_LOCATIONS_USER_GUIDE.md` - Documentation hierarchy and file placement
-   - Language-specific FP guides (Python, TypeScript, Swift, Kotlin, Rust, Haskell)
-   - `examples/` - Real-world project templates
-   - `templates/` - Smart `.cursorrules` templates
+1. **`universal_rules/`** - Mandatory rules for ALL tools
+   - `git/` - Checkpoint rules, commit conventions
+   - `testing/` - Testing philosophy and requirements
+   - `documentation/` - File organization, naming
+   - `project_structure/` - File size limits, layout
 
-2. **`gemini/`** - Gemini-specific rule set (parallel structure to `cursor/`)
-   - Isolated Gemini-specific documentation
-   - Same content organization as Cursor files
+2. **`code_guidelines/`** - Language-specific guides
+   - `languages/` - Python, TypeScript, Swift, Kotlin, Rust, Haskell
+   - `principles/` - Universal FP principles
 
-3. **`kimi/`** - Kimi CLI rule set (parallel structure to `cursor/`)
-   - Isolated Kimi-specific documentation
-   - Mirrors Cursor organization: `KIMI.md`, `KIMI_FP_PRINCIPLES.md`, `KIMI_WORKFLOW_GUIDE.md`
-   - Language-specific FP guides (6 languages + 2 platforms)
-   - `templates/` - Smart `.kimirules` templates with auto-detection
-   - `examples/` - Real-world project templates demonstrating Kimi patterns
-   - **Status**: ✅ Implementation complete (Phases 0-4)
+3. **`cursor/`** - Cursor-specific files
+   - `SETUP_GUIDE.md` - Machine setup
+   - `templates/` - Smart templates
+   - `examples/` - Real-world examples
+
+4. **`kimi/`** - Kimi-specific files
+   - `SETUP_GUIDE.md` - Machine setup
+   - `templates/` - Smart templates
+   - `examples/` - Real-world examples
 
 4. **`docs/`** - Repository planning and tracking
    - `ARCHITECTURE_PLAN.md` - High-level project strategy
@@ -76,9 +74,11 @@ This repository **does not have**:
 
 | File | Purpose | AI Agent Action |
 |------|---------|-----------------|
-| `cursor/CURSOR.md` | Universal mandatory rules for ALL projects | **READ FIRST** - Understand Git checkpoints, docs hierarchy, testing |
-| `cursor/SETUP_GUIDE.md` | Machine setup for end users | Reference when explaining setup to users |
-| `cursor/*-fp-style-guide.md` | Language-specific FP patterns | Use when generating code in specific languages |
+| File | Purpose | AI Agent Action |
+|------|---------|-----------------|
+| `universal_rules/index.json` | Index of all mandatory rules | **READ FIRST** - Discover all rules |
+| `universal_rules/git/git_checkpoint_rules.md` | Mandatory Git workflows | **FOLLOW EXACTLY** - Commit every 30-60m |
+| `code_guidelines/languages/*/fp_style_guide.md` | Language-specific FP patterns | Use when generating code |
 | `cursor/examples/*` | Real-world project templates | Copy and adapt for user projects |
 | `.cursorrules` | Rules for THIS repository | Follow when editing this repo |
 | `docs/plans/*_TODO.md` | Task tracking for features | Check and update when implementing features |

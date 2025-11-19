@@ -42,8 +42,8 @@ export CURSOR_RULES_PATH="$HOME/path/to/rules"
 **Step 2: Create `.cursorrules`**
 ```markdown
 # .cursorrules
-@${CURSOR_RULES_PATH}/cursor/CURSOR.md
-@${CURSOR_RULES_PATH}/cursor/python-fp-style-guide.md
+@${CURSOR_RULES_PATH}/universal_rules/index.json
+@${CURSOR_RULES_PATH}/code_guidelines/languages/python/fp_style_guide.md
 ```
 
 **Step 3**: Start coding! Cursor enforces Git checkpoints, Result types, and FP patterns.
@@ -61,8 +61,8 @@ export KIMI_RULES_PATH="$HOME/path/to/rules"
 **Step 2: Create `.kimirules`**
 ```markdown
 # .kimirules
-@${KIMI_RULES_PATH}/kimi/KIMI.md
-@${KIMI_RULES_PATH}/kimi/python-fp-style-guide.md
+@${KIMI_RULES_PATH}/universal_rules/index.json
+@${KIMI_RULES_PATH}/code_guidelines/languages/python/fp_style_guide.md
 ```
 
 **Step 3**: Start coding! Kimi uses parallel tools and SetTodoList for task tracking.
@@ -101,8 +101,8 @@ export GEMINI_RULES_PATH="$HOME/path/to/rules"
 **Step 2: Create `.gemini-rules`**
 ```markdown
 # .gemini-rules
-@${GEMINI_RULES_PATH}/gemini/GEMINI.md
-@${GEMINI_RULES_PATH}/gemini/python-fp-style-guide.md
+@${GEMINI_RULES_PATH}/universal_rules/index.json
+@${GEMINI_RULES_PATH}/code_guidelines/languages/python/fp_style_guide.md
 ```
 
 **Step 3**: Start coding! Gemini follows the same FP patterns.
@@ -124,19 +124,22 @@ See [SETUP_GUIDE.md](SETUP_GUIDE.md) for detailed instructions for each AI tool.
 
 ## 📚 Core Documents
 
-### Choose Your AI Tool
+### Universal Rules (All Tools)
+
+**[universal_rules/](universal_rules/)** ⭐ START HERE
+- **[universal_rules/git/git_checkpoint_rules.md](universal_rules/git/git_checkpoint_rules.md)** - Mandatory Git rules
+- **[universal_rules/project_structure/file_size_limits.md](universal_rules/project_structure/file_size_limits.md)** - File size limits
+- **[universal_rules/testing/testing_philosophy.md](universal_rules/testing/testing_philosophy.md)** - Testing standards
+
+### Tool-Specific Guides
 
 **For Cursor AI Users** 🎯
-- **[cursor/CURSOR.md](cursor/CURSOR.md)** ⭐ START HERE - Main Cursor rules
 - **[cursor/SETUP_GUIDE.md](cursor/SETUP_GUIDE.md)** 🚀 Setup instructions
-- **[cursor/CURSOR_FP_PRINCIPLES.md](cursor/CURSOR_FP_PRINCIPLES.md)** 🧠 FP deep dive
-- **[cursor/CURSOR_WORKFLOW_GUIDE.md](cursor/CURSOR_WORKFLOW_GUIDE.md)** 🔄 Workflow patterns
+- **[cursor/examples/](cursor/examples/)** 🎨 Real-world examples
 
 **For Kimi CLI Users** 🤖
-- **[kimi/KIMI.md](kimi/KIMI.md)** ⭐ START HERE - Main Kimi rules
 - **[kimi/SETUP_GUIDE.md](kimi/SETUP_GUIDE.md)** 🚀 Setup instructions
-- **[kimi/KIMI_FP_PRINCIPLES.md](kimi/KIMI_FP_PRINCIPLES.md)** 🧠 FP deep dive
-- **[kimi/KIMI_WORKFLOW_GUIDE.md](kimi/KIMI_WORKFLOW_GUIDE.md)** 🔄 Workflow patterns (with parallel execution)
+- **[kimi/examples/](kimi/examples/)** 🎨 Real-world examples
 
 **For Claude Code Users** 🔮
 - **Structure mirrors cursor/** folder (coming soon)
@@ -150,28 +153,19 @@ See [SETUP_GUIDE.md](SETUP_GUIDE.md) for detailed instructions for each AI tool.
 
 All AI tools share the same core principles:
 
-**[cursor/CURSOR_FP_PRINCIPLES.md](cursor/CURSOR_FP_PRINCIPLES.md)** / **[kimi/KIMI_FP_PRINCIPLES.md](kimi/KIMI_FP_PRINCIPLES.md)**
+**[code_guidelines/principles/](code_guidelines/principles/)**
 - ADTs explained
 - Result/Either types
 - Monadic composition
 - Railway-oriented programming
-- Real-world examples
 
-**[cursor/DATA_STRUCTURE_PATTERNS.md](cursor/DATA_STRUCTURE_PATTERNS.md)** / **[kimi/DATA_STRUCTURE_PATTERNS.md](kimi/DATA_STRUCTURE_PATTERNS.md)**
-- Data structure design guidelines
-- Foldable/Traversable patterns
+**[code_guidelines/languages/](code_guidelines/languages/)**
 - Language-specific implementations
+- Foldable/Traversable patterns
 
-**[cursor/FILE_LOCATIONS_USER_GUIDE.md](cursor/FILE_LOCATIONS_USER_GUIDE.md)** / **[kimi/FILE_LOCATIONS_USER_GUIDE.md](kimi/FILE_LOCATIONS_USER_GUIDE.md)**
-- Where to put global rules
-- Where to put project rules
-- How AI tools find files
-- Three-tier documentation hierarchy
-
-**[cursor/NAMING_CONVENTION.md](cursor/NAMING_CONVENTION.md)** / **[kimi/NAMING_CONVENTION.md](kimi/NAMING_CONVENTION.md)**
-- Sequential file naming (YYYYMMDD_NNNN)
-- Cross-reference strategies
-- Consistent terminology
+**[universal_rules/documentation/](universal_rules/documentation/)**
+- File organization
+- Naming conventions
 
 ---
 
@@ -185,8 +179,8 @@ All AI tools share the same core principles:
 
 The **gold standard** where FP concepts originated:
 
-**For Cursor:** [cursor/haskell-fp-style-guide.md](cursor/haskell-fp-style-guide.md)  
-**For Kimi:** [kimi/haskell-fp-style-guide.md](kimi/haskell-fp-style-guide.md)
+**For Cursor:** [code_guidelines/languages/haskell/fp_style_guide.md](code_guidelines/languages/haskell/fp_style_guide.md)  
+**For Kimi:** [code_guidelines/languages/haskell/fp_style_guide.md](code_guidelines/languages/haskell/fp_style_guide.md)
 
 - **Use for**: Compilers, DSLs, financial systems, type-safe web APIs
 - **Tools**: Stack, GHC, Hspec + QuickCheck
@@ -198,8 +192,8 @@ The **gold standard** where FP concepts originated:
 
 #### 🐍 Python
 
-**For Cursor:** [cursor/python-fp-style-guide.md](cursor/python-fp-style-guide.md)  
-**For Kimi:** [kimi/python-fp-style-guide.md](kimi/python-fp-style-guide.md)
+**For Cursor:** [code_guidelines/languages/python/fp_style_guide.md](code_guidelines/languages/python/fp_style_guide.md)  
+**For Kimi:** [code_guidelines/languages/python/fp_style_guide.md](code_guidelines/languages/python/fp_style_guide.md)
 
 - **Use for**: ML, data processing, cloud functions
 - **Libraries**: `returns` (Result types), `toolz`, `polars`, `mypy`
@@ -210,8 +204,8 @@ The **gold standard** where FP concepts originated:
 
 #### 📘 TypeScript
 
-**For Cursor:** [cursor/typescript-fp-style-guide.md](cursor/typescript-fp-style-guide.md)  
-**For Kimi:** [kimi/typescript-fp-style-guide.md](kimi/typescript-fp-style-guide.md)
+**For Cursor:** [code_guidelines/languages/typescript/fp_style_guide.md](code_guidelines/languages/typescript/fp_style_guide.md)  
+**For Kimi:** [code_guidelines/languages/typescript/fp_style_guide.md](code_guidelines/languages/typescript/fp_style_guide.md)
 
 - **Use for**: Next.js, backends, serverless, full-stack apps
 - **Libraries**: `fp-ts` (Cursor) or `Effect` (Kimi recommended)
@@ -222,8 +216,8 @@ The **gold standard** where FP concepts originated:
 
 #### 🍎 Swift
 
-**For Cursor:** [cursor/swift-fp-style-guide.md](cursor/swift-fp-style-guide.md)  
-**For Kimi:** [kimi/swift-fp-style-guide.md](kimi/swift-fp-style-guide.md)
+**For Cursor:** [code_guidelines/languages/swift/fp_style_guide.md](code_guidelines/languages/swift/fp_style_guide.md)  
+**For Kimi:** [code_guidelines/languages/swift/fp_style_guide.md](code_guidelines/languages/swift/fp_style_guide.md)
 
 - **Use for**: iOS, macOS, SwiftUI, Combine
 - **Libraries**: Built-in Result, Bow, TCA (The Composable Architecture)
@@ -233,8 +227,8 @@ The **gold standard** where FP concepts originated:
 
 #### 🤖 Kotlin
 
-**For Cursor:** [cursor/kotlin-fp-style-guide.md](cursor/kotlin-fp-style-guide.md)  
-**For Kimi:** [kimi/kotlin-fp-style-guide.md](kimi/kotlin-fp-style-guide.md)
+**For Cursor:** [code_guidelines/languages/kotlin/fp_style_guide.md](code_guidelines/languages/kotlin/fp_style_guide.md)  
+**For Kimi:** [code_guidelines/languages/kotlin/fp_style_guide.md](code_guidelines/languages/kotlin/fp_style_guide.md)
 
 - **Use for**: Android, Ktor, multiplatform development
 - **Libraries**: Arrow (Either, Option, Optics)
@@ -244,8 +238,8 @@ The **gold standard** where FP concepts originated:
 
 #### 🦀 Rust
 
-**For Cursor:** [cursor/rust-fp-style-guide.md](cursor/rust-fp-style-guide.md)  
-**For Kimi:** [kimi/rust-fp-style-guide.md](kimi/rust-fp-style-guide.md)
+**For Cursor:** [code_guidelines/languages/rust/fp_style_guide.md](code_guidelines/languages/rust/fp_style_guide.md)  
+**For Kimi:** [code_guidelines/languages/rust/fp_style_guide.md](code_guidelines/languages/rust/fp_style_guide.md)
 
 - **Use for**: Systems programming, performance-critical code, CLI tools
 - **Libraries**: `serde` (serialization), `rayon` (parallel), `tokio` (async)
@@ -643,61 +637,42 @@ The principles apply to **any language**:
 
 ```
 rules/
-├── cursor/                             # 🎯 All Cursor files (isolated)
-│   ├── CURSOR.md                       # ⭐ Main global rule set
-│   ├── CURSOR_FP_PRINCIPLES.md         # 🧠 FP deep dive
-│   ├── CURSOR_WORKFLOW_GUIDE.md        # 🔄 Git and docs workflow
+├── universal_rules/                    # 🌍 Mandatory rules for all tools
+│   ├── index.json                      # 📖 Master index
+│   ├── git/                            # 🔧 Git rules
+│   ├── testing/                        # 🧪 Testing rules
+│   ├── documentation/                  # 📚 Documentation rules
+│   ├── project_structure/              # 🏗️ Structure rules
+│   └── ai_tool_usage/                  # 🤖 Tool usage rules
+│
+├── code_guidelines/                    # 📝 Language-specific guidelines
+│   ├── index.json                      # 📖 Guidelines index
+│   ├── languages/                      # 🏳️ Language guides
+│   │   ├── python/
+│   │   ├── typescript/
+│   │   ├── rust/
+│   │   ├── kotlin/
+│   │   ├── swift/
+│   │   └── haskell/
+│   └── principles/                     # 🧠 FP Principles
+│
+├── cursor/                             # 🎯 Cursor-specific files
 │   ├── SETUP_GUIDE.md                  # 🚀 Initial setup
-│   ├── FILE_LOCATIONS_USER_GUIDE.md    # 📁 Where files go
-│   │
-│   ├── python-fp-style-guide.md        # 🐍 Python guide
-│   ├── typescript-fp-style-guide.md    # 📘 TypeScript guide
-│   ├── kotlin-fp-style-guide.md        # 🤖 Kotlin guide
-│   ├── swift-fp-style-guide.md         # 🍎 Swift guide
-│   ├── rust-fp-style-guide.md          # 🦀 Rust guide
-│   ├── haskell-fp-style-guide.md       # 🎩 Haskell guide ⭐ NEW (Reference Impl!)
-│   │
 │   ├── templates/                      # 📋 Smart templates
-│   │   ├── .cursorrules_smart_template_envvar
-│   │   └── .cursorrules_smart_template_submodule
-│   │
 │   └── examples/                       # 🎨 Real-world examples
-│       ├── python_project/
-│       ├── typescript_project/
-│       ├── polyglot_project/
-│       └── plan_with_todo/
 │
-├── claude/                             # 🔮 Future: Claude files (isolated)
-│
-├── kimi/                               # ✨ NEW: Kimi CLI rules (isolated)
-│   ├── KIMI.md                         # ⭐ Main Kimi rule set
-│   ├── KIMI_FP_PRINCIPLES.md           # 🧠 FP deep dive
-│   ├── KIMI_WORKFLOW_GUIDE.md          # 🔄 Git and docs workflow
+├── kimi/                               # ✨ Kimi-specific files
 │   ├── SETUP_GUIDE.md                  # 🚀 Initial setup
-│   ├── DATA_STRUCTURE_PATTERNS.md      # 📊 FP data structures
-│   ├── FILE_LOCATIONS_USER_GUIDE.md    # 📁 Where files go
-│   ├── NAMING_CONVENTION.md            # 🔤 Naming conventions
-│   ├── aws-fp-style-guide.md           # ☁️ AWS patterns
-│   ├── gcp-fp-style-guide.md           # ☁️ GCP patterns
-│   ├── typescript-fp-style-guide.md    # 📘 TypeScript guide
-│   ├── python-fp-style-guide.md        # 🐍 Python guide
-│   ├── rust-fp-style-guide.md          # 🦀 Rust guide
-│   ├── kotlin-fp-style-guide.md        # 🤖 Kotlin guide
-│   ├── swift-fp-style-guide.md         # 🍎 Swift guide
-│   ├── haskell-fp-style-guide.md       # 🎩 Haskell guide
 │   ├── templates/                      # 📋 Smart templates
-│   │   ├── .kimirules_smart_template_envvar
-│   │   └── .kimirules_smart_template_submodule
 │   └── examples/                       # 🎨 Real-world examples
-│       ├── plan_with_todo/             # SetTodoList demonstration
-│       ├── python_project/             # ML pipeline with returns
-│       ├── rust_project/               # CLI with Result types
-│       └── typescript_project/         # Full-stack with Effect-ts
 │
-├── docs/                               # 📚 Planning docs (for this repo)
-│   ├── 2025_10_30/                    # Daily work
-│   ├── 2025_10_31/                    # Daily work
-│   └── plans/                          # Sub-plans
+├── claude/                             # 🔮 Claude-specific files
+│
+├── gemini/                             # 💎 Gemini-specific files
+│
+├── docs/                               # 📚 Planning docs
+│   ├── plans/                          # Sub-plans
+│   └── YYYY_MM_DD/                     # Daily work
 │
 ├── .cursorrules                        # 🔧 Rules for this repo
 ├── README.md                           # 📖 This file

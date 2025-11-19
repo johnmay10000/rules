@@ -15,14 +15,14 @@
 7. **Verify before commit** - Read your work, check formatting, test templates
 
 **When creating language-specific guides:**
-- Reference `cursor/CURSOR.md` for mandatory rules
-- Follow existing guide structure (see `cursor/python-fp-style-guide.md` as template)
+- Reference `universal_rules/index.json` for mandatory rules
+- Follow existing guide structure (see `code_guidelines/languages/python/fp_style_guide.md` as template)
 - Include code examples showing before/after transformations
 - Add quick links section referencing related documents
 - Include setup instructions specific to that language
 
 **When working on Kimi-specific files:**
-- Reference `kimi/KIMI.md` for mandatory rules
+- Reference `universal_rules/index.json` for mandatory rules
 - Use Kimi's `SetTodoList` tool for task tracking (not just markdown TODOs)
 - Demonstrate parallel tool execution where possible (Read multiple files, Write multiple files)
 - Follow Kimi-specific formatting: include "Generated with Kimi" in commits
@@ -65,20 +65,22 @@
 
 ### Essential Reading (Always Read First)
 
-1. **`cursor/CURSOR.md`** - Universal mandatory rules (Git, docs, testing, file size)
-2. **`cursor/SETUP_GUIDE.md`** - How end users set up their machines
+1. **`universal_rules/index.json`** - Index of all mandatory rules
+2. **`universal_rules/git/git_checkpoint_rules.md`** - Mandatory Git workflow
 3. **`README.md`** - Project overview and quick start
 
 ### When Working with Specific Languages
 
 | Language | Guide File | Key Patterns | Libraries |
 |----------|------------|--------------|-----------|
-| Python | `cursor/python-fp-style-guide.md` | Result, Maybe, flow, pipe | `returns`, `toolz`, `mypy` |
-| TypeScript | `cursor/typescript-fp-style-guide.md` | Either, TaskEither, pipe | `fp-ts`, `Effect` |
-| Swift | `cursor/swift-fp-style-guide.md` | Result, flatMap, Combine | Built-in, Bow, TCA |
-| Kotlin | `cursor/kotlin-fp-style-guide.md` | Either, flatMap, coroutines | Arrow |
-| Rust | `cursor/rust-fp-style-guide.md` | Result, Option, Iterator | `serde`, `rayon`, `tokio` |
-| Haskell | `cursor/haskell-fp-style-guide.md` | Maybe, Either, monads | `base`, `containers`, `mtl` |
+| Language | Guide File | Key Patterns | Libraries |
+|----------|------------|--------------|-----------|
+| Python | `code_guidelines/languages/python/fp_style_guide.md` | Result, Maybe, flow, pipe | `returns`, `toolz`, `mypy` |
+| TypeScript | `code_guidelines/languages/typescript/fp_style_guide.md` | Either, TaskEither, pipe | `fp-ts`, `Effect` |
+| Swift | `code_guidelines/languages/swift/fp_style_guide.md` | Result, flatMap, Combine | Built-in, Bow, TCA |
+| Kotlin | `code_guidelines/languages/kotlin/fp_style_guide.md` | Either, flatMap, coroutines | Arrow |
+| Rust | `code_guidelines/languages/rust/fp_style_guide.md` | Result, Option, Iterator | `serde`, `rayon`, `tokio` |
+| Haskell | `code_guidelines/languages/haskell/fp_style_guide.md` | Maybe, Either, monads | `base`, `containers`, `mtl` |
 
 ### When Working with Platforms
 
@@ -89,10 +91,10 @@
 
 ### When Creating Documentation
 
-- **`cursor/CURSOR_WORKFLOW_GUIDE.md`** - Git checkpoint strategy and commit templates
-- **`cursor/FILE_LOCATIONS_USER_GUIDE.md`** - Where to put rules, plans, daily logs
-- **`cursor/DATA_STRUCTURE_PATTERNS.md`** - Data structure design guidelines
-- **`cursor/NAMING_CONVENTION.md`** - Consistent naming across all guides
+- **`universal_rules/documentation/daily_workflow.md`** - Git checkpoint strategy and commit templates
+- **`universal_rules/documentation/file_organization.md`** - Where to put rules, plans, daily logs
+- **`code_guidelines/principles/data_structure_patterns.md`** - Data structure design guidelines
+- **`universal_rules/documentation/naming_conventions.md`** - Consistent naming across all guides
 
 ---
 
@@ -147,8 +149,8 @@ const result = pipe(
 
 ### Task: Create New Language Guide
 
-1. Read `cursor/CURSOR.md` for mandatory structure
-2. Study existing guide (e.g., `python-fp-style-guide.md`) as template
+1. Read `universal_rules/index.json` for mandatory structure
+2. Study existing guide (e.g., `code_guidelines/languages/python/fp_style_guide.md`) as template
 3. Create `docs/plans/LANGUAGE_FP_GUIDE_PLAN.md` + `TODO.md`
 4. Research language-specific FP libraries and patterns
 5. Create guide following established structure

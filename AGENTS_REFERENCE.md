@@ -99,7 +99,7 @@ ls -la cursor/examples/python_project/
 **First Actions When Working on This Repo:**
 
 1. **Read this AGENTS.md** completely ✓ (you're doing it!)
-2. **Read `cursor/CURSOR.md`** - Understand mandatory universal rules
+2. **Read `universal_rules/index.json`** - Understand mandatory universal rules
 3. **Check current TODO lists** - Look in `docs/plans/` for active work
 4. **Review recent commits** - `git log` to understand commit style
 5. **Understand the structure** - Navigate `cursor/`, `docs/`, `examples/`
@@ -224,12 +224,12 @@ Task: {
 
 **When working with Kimi, reference these files:**
 
-- **`kimi/KIMI.md`** - Main Kimi mandatory rules (parallel tools, SetTodoList)
-- **`kimi/KIMI_WORKFLOW_GUIDE.md`** - Kimi-specific workflow patterns
-- **`kimi/KIMI_FP_PRINCIPLES.md`** - FP principles with Kimi examples
-- **`kimi/DATA_STRUCTURE_PATTERNS.md`** - FP data structures for Kimi
-- **`kimi/FILE_LOCATIONS_USER_GUIDE.md`** - File organization for Kimi projects
-- **`kimi/NAMING_CONVENTION.md`** - Naming conventions with Kimi examples
+- **`universal_rules/index.json`** - Main Kimi mandatory rules (parallel tools, SetTodoList)
+- **`universal_rules/documentation/daily_workflow.md`** - Kimi-specific workflow patterns
+- **`code_guidelines/principles/`** - FP principles with Kimi examples
+- **`code_guidelines/principles/data_structure_patterns.md`** - FP data structures for Kimi
+- **`universal_rules/documentation/file_organization.md`** - File organization for Kimi projects
+- **`universal_rules/documentation/naming_conventions.md`** - Naming conventions with Kimi examples
 
 ### Effect-ts for TypeScript (Kimi Difference)
 
