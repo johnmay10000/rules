@@ -24,89 +24,64 @@
 
 ---
 
-## 🚀 Phase 0: Digital Ocean Deployment Setup
+## 🚀 Phase 0: Local Environment Setup
 
 **Status**: ⏳ PENDING  
-**Estimated**: 2-3 hours  
+**Estimated**: 1-2 hours  
 **Priority**: HIGH
 
-### Digital Ocean Configuration
+### Local Configuration
 
-- [ ] **TASK-0.1**: Create Digital Ocean App Platform spec  
-  - Create `.do/app.yaml` configuration file  
-  - Configure service name: mcp-server  
-  - Set build command: npm run build  
-  - Set run command: npm start  
-  - Configure health checks  
-  - **Estimated**: 0.5 hours  
-
-- [ ] **TASK-0.2**: Configure build process for rules repository  
+- [ ] **TASK-0.1**: Configure build process for rules repository  
   - Update package.json with copy-rules script  
   - Ensure rules/ directory included in build  
   - Verify RULES_PATH environment variable set  
   - Test build process locally  
   - **Estimated**: 0.5 hours  
 
-- [ ] **TASK-0.3**: Implement health check endpoint  
+- [ ] **TASK-0.2**: Implement health check endpoint  
   - Create HTTP endpoint: GET /health  
   - Return 200 OK with status and timestamp  
   - Add to MCP server entry point  
   - Test health endpoint locally  
   - **Estimated**: 0.5 hours  
 
-- [ ] **TASK-0.4**: Configure HTTP/WebSocket transport  
-  - Update MCP server for HTTP transport (not just stdio)  
-  - Implement SSEServerTransport for cloud deployment  
-  - Configure port and host binding  
-  - Test with HTTP client  
-  - **Estimated**: 0.5 hours  
-
-- [ ] **TASK-0.5**: Set up environment variables  
-  - Configure RULES_PATH=/app/rules  
-  - Configure NODE_ENV=production  
-  - Configure PORT=8080  
-  - Document all required environment variables  
+- [ ] **TASK-0.3**: Configure Local Transport  
+  - Configure StdioServerTransport (default for local)  
+  - Optional: Configure HTTP transport for local testing  
   - **Estimated**: 0.3 hours  
 
-### Deployment Verification
+- [ ] **TASK-0.4**: Set up local environment variables  
+  - Create .env file  
+  - Configure RULES_PATH=./rules  
+  - Configure NODE_ENV=development  
+  - **Estimated**: 0.2 hours  
 
-- [ ] **TASK-0.6**: Test local deployment build  
+### Local Verification
+
+- [ ] **TASK-0.5**: Test local deployment build  
   - Run: npm run build  
   - Verify: dist/ directory created with rules/  
   - Check: All files copied correctly  
   - **Estimated**: 0.3 hours  
 
-- [ ] **TASK-0.7**: Deploy to Digital Ocean  
-  - Connect GitHub repository to Digital Ocean  
-  - Trigger initial deployment  
-  - Monitor deployment logs  
-  - Verify: Deployment successful  
-  - **Estimated**: 0.5 hours  
-
-- [ ] **TASK-0.8**: Verify health checks  
-  - Check: Health endpoint returns 200 OK  
-  - Verify: Digital Ocean dashboard shows healthy  
-  - Test: Health check with curl  
+- [ ] **TASK-0.6**: Test local connectivity  
+  - Run: npm start  
+  - Verify: Server starts without errors  
+  - Test: Basic health check (if HTTP enabled)  
   - **Estimated**: 0.2 hours  
-
-- [ ] **TASK-0.9**: Test AI assistant connectivity  
-  - Configure Kimi CLI with HTTP MCP endpoint  
-  - Test: List tools request  
-  - Verify: All tools accessible  
-  - **Estimated**: 0.5 hours  
 
 ### Phase 0 Completion
 
-- [ ] **TASK-0.10**: Digital Ocean deployment complete  
-  - MCP server deployed and running  
-  - Health checks passing consistently  
-  - AI assistants can connect via HTTP  
-  - Rules repository accessible  
-  - **Estimated**: 0.2 hours  
+- [ ] **TASK-0.7**: Local setup complete  
+  - Build process works  
+  - Server starts locally  
+  - Environment configured  
+  - **Estimated**: 0.1 hours  
 
-**Phase 0 Tasks**: 10/10  
+**Phase 0 Tasks**: 7/7  
 **Phase 0 Progress**: 0%  
-**Phase 0 Estimated**: 2-3 hours  
+**Phase 0 Estimated**: 1-2 hours  
 
 ---
 
@@ -666,71 +641,79 @@
 
 ---
 
-## 🚀 Phase 9: Integration & Deployment
+## 🔌 Phase 9: Remote Access Testing (Tailscale)
 
 **Status**: ⏳ PENDING  
-**Estimated**: 2-3 hours  
+**Estimated**: 1-2 hours  
 **Priority**: HIGH  
 **Depends On**: Phase 8 complete
 
-### Integration Setup
+### Tailscale Configuration
 
-- [ ] **TASK-9.1**: Create MCP configuration file  
-  - Create .cursor/mcp.json (example)  
-  - Create .kimi/mcp.json (example)  
-  - Document configuration format  
+- [ ] **TASK-9.1**: Configure Server for Remote Access  
+  - Ensure server binds to 0.0.0.0 or Tailscale IP  
+  - Verify firewall allows traffic on port 8080  
   - **Estimated**: 0.3 hours  
 
-### Testing with AI Tools
-
-- [ ] **TASK-9.2**: Test with Kimi CLI  
-  - Start: Kimi with MCP config  
-  - Test: detect_language tool  
-  - Test: load_style_guide tool  
-  - Test: setup_project_rules tool  
-  - Verify: All tools work  
-  - **Estimated**: 0.5 hours  
-
-- [ ] **TASK-9.3**: Test with real projects  
-  - Test with Python project  
-  - Test with TypeScript project  
-  - Test with Rust project  
-  - Verify: End-to-end workflow  
-  - **Estimated**: 0.5 hours  
-
-- [ ] **TASK-9.4**: Document test results  
-  - Record: Test scenarios  
-  - Note: Any issues found  
-  - Document: Workarounds needed  
+- [ ] **TASK-9.2**: Create MCP Client Config for Remote  
+  - Create config pointing to http://<tailscale-ip>:8080  
+  - Document setup for remote clients  
   - **Estimated**: 0.3 hours  
 
-### Documentation
+### Remote Verification
 
-- [ ] **TASK-9.5**: Create usage examples  
-  - Document: Kimi usage example  
-  - Document: Cursor usage example  
-  - Include: Code snippets  
-  - **Estimated**: 0.5 hours  
-
-- [ ] **TASK-9.6**: Write README.md for MCP server  
-  - Installation instructions  
-  - Configuration guide  
-  - Usage examples  
-  - Troubleshooting section  
+- [ ] **TASK-9.3**: Test Remote Connectivity  
+  - Connect from separate machine on Tailscale network  
+  - Test: List tools request  
+  - Verify: Low latency and stable connection  
   - **Estimated**: 0.5 hours  
 
 ### Phase 9 Completion
 
-- [ ] **TASK-9.7**: Integration complete  
-  - MCP server works with Kimi  
-  - All tools functional  
-  - Examples documented  
-  - Ready for production  
-  - **Estimated**: 0.2 hours  
+- [ ] **TASK-9.4**: Remote testing complete  
+  - Server accessible via Tailscale  
+  - Remote tools functional  
+  - **Estimated**: 0.1 hours  
 
-**Phase 9 Tasks**: 7/7  
+**Phase 9 Tasks**: 4/4  
 **Phase 9 Progress**: 0%  
-**Phase 9 Estimated**: 2-3 hours  
+**Phase 9 Estimated**: 1-2 hours  
+
+---
+
+## 🚀 Phase 10: Production Deployment (Digital Ocean)
+
+**Status**: ⏳ PENDING (Future)  
+**Estimated**: 2-3 hours  
+**Priority**: LOW (Post-Testing)  
+**Depends On**: Phase 9 complete & thoroughly tested
+
+### Cloud Configuration
+
+- [ ] **TASK-10.1**: Create Digital Ocean App Platform spec  
+  - Create `.do/app.yaml` configuration file  
+  - Configure service name: mcp-server  
+  - Set build command: npm run build  
+  - Set run command: npm start  
+  - Configure health checks  
+  - **Estimated**: 0.5 hours  
+
+- [ ] **TASK-10.2**: Deploy to Digital Ocean  
+  - Connect GitHub repository to Digital Ocean  
+  - Trigger initial deployment  
+  - Monitor deployment logs  
+  - Verify: Deployment successful  
+  - **Estimated**: 0.5 hours  
+
+- [ ] **TASK-10.3**: Verify Cloud Deployment  
+  - Check: Health endpoint returns 200 OK  
+  - Verify: Digital Ocean dashboard shows healthy  
+  - Test: AI assistant connectivity via public URL  
+  - **Estimated**: 0.5 hours  
+
+**Phase 10 Tasks**: 3/3  
+**Phase 10 Progress**: 0%  
+**Phase 10 Estimated**: 1.5-2 hours  
 
 ---
 

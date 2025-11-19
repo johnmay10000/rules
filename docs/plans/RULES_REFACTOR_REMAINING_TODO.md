@@ -12,8 +12,9 @@
 
 - **Phase 1 (Foundation)**: ✅ Complete
 - **Phase 2 (Code Guidelines)**: ✅ Complete
-- **Phase 3 (Universal Rules)**: 🔄 Mostly Complete (Missing index)
-- **Phase 4 (Cleanup)**: ⏳ Pending
+- **Phase 3 (Universal Rules)**: ✅ Complete
+- **Phase 4 (Cleanup)**: ✅ Complete
+- **Phase 4.5 (Cloud Guidelines)**: ✅ Complete
 - **Phase 5 (MCP Server)**: ⏳ Pending
 - **Phase 6 (Testing)**: ⏳ Pending
 - **Phase 7 (Docs)**: ⏳ Pending
@@ -24,7 +25,7 @@
 
 ### Phase 3: Universal Rules (Completion)
 
-- [ ] **TASK-3.16**: Create universal rules index
+- [x] **TASK-3.16**: Create universal rules index
   - File: `universal_rules/index.json`
   - Include: All categories, subcategories, file paths
 
@@ -32,7 +33,7 @@
 
 **Goal**: Remove generic content that has been migrated to `code_guidelines/` and `universal_rules/`.
 
-- [ ] **TASK-4.1**: Clean `cursor/` folder
+- [x] **TASK-4.1**: Clean `cursor/` folder
   - Remove: `*-fp-style-guide.md` (migrated to `code_guidelines/`)
   - Remove: `CURSOR.md` (rules migrated to `universal_rules/`)
   - Remove: `CURSOR_FP_PRINCIPLES.md` (migrated)
@@ -40,7 +41,7 @@
   - Keep: `cursor_specific_features.md` (if exists) or create it
   - Update: References to point to new locations
 
-- [ ] **TASK-4.3**: Clean `kimi/` folder
+- [x] **TASK-4.3**: Clean `kimi/` folder
   - Remove: `*-fp-style-guide.md`
   - Remove: `KIMI.md`
   - Remove: `KIMI_FP_PRINCIPLES.md`
@@ -48,7 +49,7 @@
   - Keep: `kimi_specific_features.md` (if exists) or create it
   - Update: References
 
-- [ ] **TASK-4.7**: Clean `gemini/` folder
+- [x] **TASK-4.7**: Clean `gemini/` folder
   - Remove: `*-fp-style-guide.md`
   - Remove: `GEMINI.md`
   - Remove: `GEMINI_FP_PRINCIPLES.md`
@@ -56,16 +57,34 @@
   - Keep: `gemini_specific_features.md` (if exists) or create it
   - Update: References
 
+### Phase 4.5: Universal Cloud Guidelines (Completed)
+
+- [x] **TASK-4.8**: Create universal cloud guidelines
+  - File: `code_guidelines/cloud/serverless_fp_patterns.md`
+  - File: `code_guidelines/cloud/aws/fp_patterns.md`
+  - File: `code_guidelines/cloud/gcp/fp_patterns.md`
+  - Index: `code_guidelines/cloud/index.json`
+- [x] **TASK-4.9**: Refactor Kimi cloud guides
+  - Update: `kimi/aws-fp-style-guide.md`
+  - Update: `kimi/gcp-fp-style-guide.md`
+
 ### Phase 5: MCP Server Updates
 
-- [ ] **TASK-5.1**: Update file resolution logic in MCP server
-  - File: `mcp_server/src/utils/fileResolver.ts`
-- [ ] **TASK-5.2**: Add `load_code_guidelines` tool
-- [ ] **TASK-5.3**: Add `load_universal_rules` tool
-- [ ] **TASK-5.4**: Update `load_style_guide` tool (legacy compatibility)
-- [ ] **TASK-5.5**: Add caching layer
-- [ ] **TASK-5.6**: Update error messages
-- [ ] **TASK-5.7**: Test all tools with new structure
+### Phase 5: MCP Server Updates
+
+> **Detailed Tracking**: See [MCP_IMPLEMENTATION_TODO.md](./MCP_IMPLEMENTATION_TODO.md)
+
+- [ ] **Execute Phase 1**: Project Foundation
+- [ ] **Execute Phase 0**: Local Environment Setup
+- [ ] **Execute Phase 2**: Core Server
+- [ ] **Execute Phase 3**: Language Detection
+- [ ] **Execute Phase 4**: Style Guide Loader
+- [ ] **Execute Phase 5**: Project Setup Tool
+- [ ] **Execute Phase 6**: Resources API
+- [ ] **Execute Phase 7**: Code Validation
+- [ ] **Execute Phase 8**: Testing
+- [ ] **Execute Phase 9**: Remote Access Testing (Tailscale)
+- [ ] **Execute Phase 10**: Production Deployment (Digital Ocean)
 
 ### Phase 6: Testing & Validation
 
