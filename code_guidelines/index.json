@@ -103,6 +103,21 @@
           "path": "code_guidelines/languages/kotlin/fp_style_guide.md",
           "description": "Complete Kotlin functional programming style guide",
           "type": "primary"
+        },
+        "patterns": {
+          "path": "code_guidelines/languages/kotlin/patterns.md",
+          "description": "Common functional programming patterns in Kotlin",
+          "type": "reference"
+        },
+        "examples": {
+          "path": "code_guidelines/languages/kotlin/examples.md",
+          "description": "Before/after code examples showing FP transformations",
+          "type": "examples"
+        },
+        "libraries": {
+          "path": "code_guidelines/languages/kotlin/libraries.md",
+          "description": "Recommended functional programming libraries for Kotlin",
+          "type": "reference"
         }
       },
       "metadata": {
@@ -120,6 +135,21 @@
           "path": "code_guidelines/languages/swift/fp_style_guide.md",
           "description": "Complete Swift functional programming style guide",
           "type": "primary"
+        },
+        "patterns": {
+          "path": "code_guidelines/languages/swift/patterns.md",
+          "description": "Common functional programming patterns in Swift",
+          "type": "reference"
+        },
+        "examples": {
+          "path": "code_guidelines/languages/swift/examples.md",
+          "description": "Before/after code examples showing FP transformations",
+          "type": "examples"
+        },
+        "libraries": {
+          "path": "code_guidelines/languages/swift/libraries.md",
+          "description": "Recommended functional programming libraries for Swift",
+          "type": "reference"
         }
       },
       "metadata": {
